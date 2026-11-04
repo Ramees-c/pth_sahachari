@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTH Hospice | Caring Beyond Borders</title>
+    <meta name="description"
+        content="Pookoya Thangal Hospice (PTH) - Compassionate palliative care and solace in the revered name of P.M.S.A. Pookoya Thangal.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/images/pth-logo.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 5.3.3 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Lenis CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
+
+    <!-- Swiper 11 CSS for Auto-Moving Activities Slider -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="loading-locked">
+
+    <!-- ======================================================================
+       PAGE PRELOADER / LOADING SCREEN (Spinner Only - Scroll Locked)
+       ====================================================================== -->
+    <div id="pthLoadingScreen" class="pth-loading-screen" aria-label="Loading page" role="status">
+        <div class="pth-spinner-wrap">
+            <div class="pth-spinner-outer"></div>
+            <div class="pth-spinner-inner"></div>
+            <div class="pth-spinner-dot"></div>
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Top Reading / Scroll Progress Bar -->
+    <div class="scroll-progress-line" id="scrollProgressLine" aria-hidden="true"></div>
+
+    <!-- ======================================================================
+       NAVBAR (Clean, Spacious & True to Reference)
+       ====================================================================== -->
+    <header class="pth-navbar-wrapper">
+        <div class="container-fluid px-xl-5 px-lg-4 px-3">
+            <nav class="navbar navbar-expand-lg pth-navbar">
+
+                <!-- Brand Logo (Crisp SVG geometry matching reference) -->
+                <a class="navbar-brand brand-link" href="#home">
+                    <img src="assets/images/pth-logo.png" alt="Pookoya Thangal Hospice Logo" class="brand-svg-logo">
+                </a>
+
+                <!-- Mobile Toggler -->
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-2 text-primary"></i>
+                </button>
+
+                <!-- Navbar Links & CTA -->
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav mx-auto align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-item active-home" href="#home">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-item" href="#about">ABOUT US</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-item" href="#what-we-do">WHAT WE DO</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-item" href="#where-we-are">WHERE WE ARE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-item journey-pill-link" href="#journey">
+                                <span class="the-tag">THE</span>
+                                <span class="journey-text">JOURNEY</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-item" href="#office-bearers">OFFICE BEARERS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-item" href="#gallery">GALLERY</a>
+                        </li>
+                    </ul>
+
+                    <!-- Right Social Media Icons -->
+                    <div class="nav-social-links d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="nav-social-btn nav-social-fb" aria-label="Follow PTH on Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="nav-social-btn nav-social-insta" aria-label="Follow PTH on Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="nav-social-btn nav-social-yt" aria-label="Subscribe on YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="nav-social-btn nav-social-wa" aria-label="Connect on WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </nav>
+        </div>
+    </header>
+
+    <!-- ======================================================================
+       HERO SECTION (Seamless Panoramic Design matching Screenshot)
+       ====================================================================== -->
+    <main>
+        <section class="pth-hero-container" id="home">
+            <!-- Modern Ambient Background Elements -->
+            <div class="hero-bg-blobs">
+                <div class="hero-blob hero-blob-1"></div>
+                <div class="hero-blob hero-blob-2"></div>
+                <div class="hero-blob hero-blob-3"></div>
+            </div>
+
+            <div class="container hero-layout-container">
+                <div class="row align-items-center g-4 g-lg-5">
+                    <!-- Left Hero Content -->
+                    <div class="col-lg-7 hero-col-content">
+                        <!-- Overline Tagline Badge -->
+                        <div class="hero-badge-pill">
+                            <span class="badge-dot"></span>
+                            <span>POOKOYA THANGAL HOSPICE &bull; PANAKKAD</span>
+                        </div>
+
+                        <!-- Headline: "Caring Beyond Borders" -->
+                        <h1 class="hero-script-heading">
+                            <span class="script-line-blue">Caring Beyond</span>
+                            <span class="script-line-green">Borders</span>
+                        </h1>
+
+                        <!-- Description Paragraph -->
+                        <p class="hero-bio-text">
+                            <strong class="pth-bold">PTH</strong> operates in the blessed legacy of Puthiya
+                            Maliyekkal Syed Ahmed Pookoya Thangal. Dedicated to providing dignified, cost-free palliative & hospice support, bringing comfort, warmth, and solace directly to patients and families in need.
+                        </p>
+
+                        <!-- Key Highlights / Stat Badges placed right upside the CTA buttons -->
+                        <div class="hero-stats-highlights">
+                            <div class="hero-stat-chip">
+                                <span class="stat-chip-icon bg-green-soft">
+                                    <i class="bi bi-heart-fill"></i>
+                                </span>
+                                <div class="stat-chip-info">
+                                    <strong class="stat-chip-title">100% Free</strong>
+                                    <span class="stat-chip-subtitle">Compassionate Care</span>
+                                </div>
+                            </div>
+
+                            <div class="hero-stat-chip">
+                                <span class="stat-chip-icon bg-blue-soft">
+                                    <i class="bi bi-telephone-fill"></i>
+                                </span>
+                                <div class="stat-chip-info">
+                                    <strong class="stat-chip-title">24/7 Helpline</strong>
+                                    <span class="stat-chip-subtitle">Always Available</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="hero-action-buttons">
+                            <a href="#about" class="btn btn-know-more-pth">
+                                <span>Know More</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                            <a href="#get-care" class="btn btn-hero-secondary" data-bs-toggle="modal" data-bs-target="#getCareModal">
+                                <i class="bi bi-heart-pulse"></i>
+                                <span>Get Care Assistance</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Hero Visual Image (Natural Feathered Visual, No Container Box or Shadows) -->
+                    <div class="col-lg-5 hero-col-image text-center">
+                        <img src="assets/images/caregiver-feathered.png" alt="PTH Hospice Care" class="hero-pure-img img-fluid">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           ABOUT US SECTION (Panoramic, Elegant & True to Design Philosophy)
+           ====================================================================== -->
+        <section class="about-us-section" id="about">
+            <div class="container">
+                <div class="about-card-wrapper">
+                    <!-- Subtle Organic Curved Arc Accent matching Reference -->
+                    <div class="about-curved-arc" aria-hidden="true"></div>
+
+                    <div class="row align-items-stretch position-relative g-0">
+                        <!-- Left Content Column -->
+                        <div class="col-lg-6 about-col-content">
+                            <!-- Minimal Rectangle Badge -->
+                            <div class="about-badge-rect">
+                                <span>ABOUT US</span>
+                            </div>
+
+                            <!-- Cursive Script Title matching reference screenshot -->
+                            <h2 class="about-script-title">
+                                <span class="about-title-line">Pookoya Thangal</span>
+                                <span class="about-title-line">Hospice</span>
+                            </h2>
+
+                            <!-- Body Description -->
+                            <div class="about-text-content">
+                                <p class="about-paragraph">
+                                    The <strong class="text-iu-league">Indian Union Muslim League</strong> is a political movement that has been at the forefront of unparalleled humanitarian and charitable initiatives in the field of healthcare and social welfare.
+                                </p>
+                                <p class="about-paragraph sub-paragraph">
+                                    Inspired by the enduring legacy of <strong>P.M.S.A. Pookoya Thangal</strong>, PTH Hospice provides completely cost-free palliative care, dedicated bedside visits, essential medical equipment, and human solace to patients and families in need.
+                                </p>
+                            </div>
+
+                            
+                        </div>
+
+                        <!-- Right Visual Column with Seamless Caregiver Photo -->
+                        <div class="col-lg-6 about-col-visual">
+                            <div class="about-image-frame">
+                                <img src="assets/images/about-caregiver-clean.png" alt="Pookoya Thangal Hospice Nurse providing bedside palliative care" class="about-caregiver-img img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           WHAT WE DO SECTION (Modern Bento Showcase with Visual Anchor)
+           ====================================================================== -->
+        <section class="what-we-do-section" id="what-we-do">
+            <div class="container">
+                <!-- Section Header -->
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-8">
+                        <div class="section-badge-pill">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                            <span>OUR SERVICES & COMMITMENT</span>
+                        </div>
+                        <h2 class="section-main-heading">
+                            Comprehensive Care Wrapped with <span class="highlight-green">Compassion</span>
+                        </h2>
+                        <p class="section-sub-text">
+                            At Pookoya Thangal Hospice, every service is rendered <strong>100% free of charge</strong>, bringing medical expertise, personal dignity, and heartfelt solace straight to the doorsteps of patients and families.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sticky Visual + Scrolling Services Showcase -->
+                <div class="row g-4 g-xl-5 align-items-start">
+                    <!-- Left: Sticky Visual Impact Card (Stays fixed while scrolling) -->
+                    <div class="col-lg-5 sticky-visual-col">
+                        <div class="what-we-do-visual-card">
+                            <div class="visual-card-media">
+                                <img src="assets/images/pookoya-thangal-portrait.png" alt="Pookoya Thangal Hospice Legacy" class="visual-card-img">
+                                <div class="visual-media-gradient"></div>
+                            </div>
+                            
+                            <!-- Floating Trust Quote Tag -->
+                            <div class="visual-quote-bubble">
+                                <i class="bi bi-quote quote-icon"></i>
+                                <p class="quote-text">
+                                    "A comforting touch and dignified relief for every person in distress, without boundaries."
+                                </p>
+                                <div class="quote-author">P.M.S.A. Pookoya Thangal Legacy</div>
+                            </div>
+
+                            <!-- Bottom Floating Stats Pill -->
+                            <div class="visual-bottom-stat">
+                                <div class="stat-badge-round">
+                                    <i class="bi bi-patch-check-fill"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-big-val">100% Free Service</span>
+                                    <span class="stat-sub-val">Non-profit Humanitarian Care</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Scrolling Services Stream -->
+                    <div class="col-lg-7 scrolling-services-col">
+                        <div class="scrolling-services-wrap">
+                            <!-- Service 1: Home Palliative Care -->
+                            <div class="service-stream-item">
+                                <div class="service-card">
+                                    <div class="service-card-top">
+                                        <div class="service-icon-box bg-blue-tint">
+                                            <i class="bi bi-house-heart-fill"></i>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="service-number-pill">01</span>
+                                            <span class="service-tag">Core Mission</span>
+                                        </div>
+                                    </div>
+                                    <h3 class="service-title">Home Care Visits</h3>
+                                    <p class="service-desc">
+                                        Specialized mobile medical teams consisting of doctors, certified palliative nurses, and dedicated caregivers visit bedridden and terminally ill patients directly in their homes.
+                                    </p>
+                                    <ul class="service-feature-list">
+                                        <li><i class="bi bi-check2-circle"></i> Regular home medical consultations</li>
+                                        <li><i class="bi bi-check2-circle"></i> Catheter, wound & bed-sore dressing</li>
+                                        <li><i class="bi bi-check2-circle"></i> Systematic pain relief & comfort therapy</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Service 2: In-Patient Hospice Center -->
+                            <div class="service-stream-item">
+                                <div class="service-card highlight-card">
+                                    <div class="service-card-top">
+                                        <div class="service-icon-box bg-green-tint">
+                                            <i class="bi bi-hospital-fill"></i>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="service-number-pill">02</span>
+                                            <span class="service-tag tag-green">In-Patient</span>
+                                        </div>
+                                    </div>
+                                    <h3 class="service-title">Hospice Care Center</h3>
+                                    <p class="service-desc">
+                                        A peaceful, welcoming sanctuary providing round-the-clock supportive in-patient care for patients who require acute symptom management, continuous nursing, and comfort care.
+                                    </p>
+                                    <ul class="service-feature-list">
+                                        <li><i class="bi bi-check2-circle"></i> 24/7 Doctor & nurse supervision</li>
+                                        <li><i class="bi bi-check2-circle"></i> Serene, hygienic & dignified rooms</li>
+                                        <li><i class="bi bi-check2-circle"></i> Warm bystander hospitality & care</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Service 3: Free Medicines & Equipment -->
+                            <div class="service-stream-item">
+                                <div class="service-card">
+                                    <div class="service-card-top">
+                                        <div class="service-icon-box bg-gold-tint bg-amber-tint">
+                                            <i class="bi bi-capsule-pill"></i>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="service-number-pill">03</span>
+                                            <span class="service-tag tag-gold">Direct Aid</span>
+                                        </div>
+                                    </div>
+                                    <h3 class="service-title">Medicines & Medical Gear</h3>
+                                    <p class="service-desc">
+                                        Providing vital palliative medications and loaning costly critical medical appliances without any deposit or charges, keeping patient care continuous without financial hardship.
+                                    </p>
+                                    <ul class="service-feature-list">
+                                        <li><i class="bi bi-check2-circle"></i> Oxygen concentrators & cylinders loan</li>
+                                        <li><i class="bi bi-check2-circle"></i> Specialized air beds, water beds & wheelchairs</li>
+                                        <li><i class="bi bi-check2-circle"></i> Monthly free life-saving medicine support</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Service 4: Psychosocial & Family Counseling -->
+                            <div class="service-stream-item">
+                                <div class="service-card">
+                                    <div class="service-card-top">
+                                        <div class="service-icon-box bg-cyan-tint bg-teal-tint">
+                                            <i class="bi bi-people-fill"></i>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="service-number-pill">04</span>
+                                            <span class="service-tag tag-cyan">Solace</span>
+                                        </div>
+                                    </div>
+                                    <h3 class="service-title">Psychosocial & Family Counseling</h3>
+                                    <p class="service-desc">
+                                        Prolonged illness affects the whole family emotionally. Our trained counselors offer compassionate guidance, mental reassurance, and bereavement solace.
+                                    </p>
+                                    <ul class="service-feature-list">
+                                        <li><i class="bi bi-check2-circle"></i> Mental relief & moral encouragement</li>
+                                        <li><i class="bi bi-check2-circle"></i> Bystander burnout mitigation</li>
+                                        <li><i class="bi bi-check2-circle"></i> Empathetic bereavement follow-ups</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Service 5: Rehabilitation & Sahachari Aid -->
+                            <div class="service-stream-item">
+                                <div class="service-card">
+                                    <div class="service-card-top">
+                                        <div class="service-icon-box bg-red-tint bg-indigo-tint">
+                                            <i class="bi bi-basket3-fill"></i>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="service-number-pill">05</span>
+                                            <span class="service-tag tag-red">Welfare</span>
+                                        </div>
+                                    </div>
+                                    <h3 class="service-title">Sahachari Rehabilitation Aid</h3>
+                                    <p class="service-desc">
+                                        Extending support beyond medicine through monthly food grocery distribution and educational assistance for school-going children of impoverished bedridden patients.
+                                    </p>
+                                    <ul class="service-feature-list">
+                                        <li><i class="bi bi-check2-circle"></i> Nutritious grocery food kits</li>
+                                        <li><i class="bi bi-check2-circle"></i> Children's education scholarships</li>
+                                        <li><i class="bi bi-check2-circle"></i> Community volunteer care network</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            
+                        </div>
+                    </div>
+                </div>
+
+               
+            </div>
+        </section>
+
+      
+
+        <!-- ======================================================================
+           CARE THROUGHOUT THE JOURNEY SECTION (Seamless Continuum of Compassion)
+           ====================================================================== -->
+        <section class="pth-journey-section" id="journey">
+            <!-- Ambient Background Glows -->
+            <div class="journey-ambient-glow journey-ambient-1" aria-hidden="true"></div>
+            <div class="journey-ambient-glow journey-ambient-2" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                <!-- Section Header -->
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-8 col-xl-7">
+                        <div class="section-badge-pill">
+                            <i class="bi bi-compass-fill"></i>
+                            <span>CONTINUUM OF COMPASSION</span>
+                        </div>
+                        <h2 class="section-main-heading">
+                            Care Throughout <span class="highlight-journey">The Journey</span>
+                        </h2>
+                        <p class="section-sub-text">
+                            From patient registration and palliative care to continued follow-up, PTH remains committed to supporting patients and their families throughout their journey.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 4 Connected Journey Milestone Cards -->
+                <div class="journey-flow-wrapper">
+                    <!-- Connecting Rail Across Steps (Desktop) -->
+                    <div class="journey-track-line d-none d-lg-block" aria-hidden="true"></div>
+
+                    <div class="row g-4 align-items-stretch position-relative">
+                        <!-- Step 01: Patient Registration -->
+                        <div class="col-lg-3 col-md-6 journey-col-item">
+                            <div class="journey-card journey-card-blue h-100">
+                                <!-- Top Step Pill & Accent -->
+                                <div class="journey-card-top">
+                                    <span class="journey-step-badge">Stage 01</span>
+                                    <span class="journey-dot"></span>
+                                </div>
+
+                                <!-- Icon Aura with Multi-layer Glow -->
+                                <div class="journey-icon-aura aura-blue">
+                                    <div class="journey-icon-disc">
+                                        <svg width="42" height="42" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Patient Registration Icon">
+                                            <rect x="10" y="8" width="28" height="34" rx="4" stroke="#003f94" stroke-width="2.5" fill="#f0f7ff"/>
+                                            <path d="M18 6h12a2 2 0 0 1 2 2v2H16V8a2 2 0 0 1 2-2z" fill="#003f94"/>
+                                            <circle cx="24" cy="20" r="5" stroke="#003f94" stroke-width="2.2" fill="#ffffff"/>
+                                            <path d="M17 31c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#003f94" stroke-width="2.2" stroke-linecap="round"/>
+                                            <circle cx="34" cy="36" r="6.5" fill="#027b15"/>
+                                            <path d="M31.5 36l2 2 3.5-3.5" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Card Content -->
+                                <h3 class="journey-card-title">Patient Registration</h3>
+                                <p class="journey-card-text">
+                                    Seamless, compassionate enrollment with zero administrative hurdles. We quickly evaluate patient needs to provide prompt, dignified care.
+                                </p>
+
+                                <!-- Micro Tags -->
+                                <div class="journey-meta-tags">
+                                    <span class="journey-tag"><i class="bi bi-patch-check"></i> Zero Cost</span>
+                                    <span class="journey-tag"><i class="bi bi-clock-history"></i> Immediate Intake</span>
+                                </div>
+
+                                <!-- Desktop Flow Arrow to Next Step -->
+                                <div class="journey-arrow d-none d-lg-flex" aria-hidden="true">
+                                    <i class="bi bi-arrow-right-short"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 02: Palliative Care -->
+                        <div class="col-lg-3 col-md-6 journey-col-item">
+                            <div class="journey-card journey-card-green h-100">
+                                <!-- Top Step Pill & Accent -->
+                                <div class="journey-card-top">
+                                    <span class="journey-step-badge">Stage 02</span>
+                                    <span class="journey-dot"></span>
+                                </div>
+
+                                <!-- Icon Aura with Multi-layer Glow -->
+                                <div class="journey-icon-aura aura-green">
+                                    <div class="journey-icon-disc">
+                                        <svg width="42" height="42" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Palliative Care Icon">
+                                            <path d="M24 18.5c-3.2-5-9-4-11.5-.5-3 4.2-.5 9.5 5 13.5l6.5 5.5 6.5-5.5c5.5-4 8-9.3 5-13.5-2.5-3.5-8.3-4.5-11.5.5z" fill="#f0fdf4" stroke="#027b15" stroke-width="2.2"/>
+                                            <path d="M24 15.5v7M20.5 19h7" stroke="#027b15" stroke-width="2.4" stroke-linecap="round"/>
+                                            <path d="M10 33c3 0 7-1 10-2l6 3c3 1.5 6 1 8-1l3-3c1.5-1.5 3.5-.5 3.5 1.5 0 2-2 4-4 5.5l-8 4.5c-3 1.5-6.5 1-9.5 0L10 37" stroke="#015e10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Card Content -->
+                                <h3 class="journey-card-title">Palliative Care</h3>
+                                <p class="journey-card-text">
+                                    Comprehensive pain management, regular bedside nursing, and doctor visits right at home or in-center, ensuring physical comfort and emotional calm.
+                                </p>
+
+                                <!-- Micro Tags -->
+                                <div class="journey-meta-tags">
+                                    <span class="journey-tag"><i class="bi bi-heart-pulse"></i> Pain Relief</span>
+                                    <span class="journey-tag"><i class="bi bi-house-door"></i> Bedside Visits</span>
+                                </div>
+
+                                <!-- Desktop Flow Arrow to Next Step -->
+                                <div class="journey-arrow d-none d-lg-flex" aria-hidden="true">
+                                    <i class="bi bi-arrow-right-short"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 03: Continuous Follow-up -->
+                        <div class="col-lg-3 col-md-6 journey-col-item">
+                            <div class="journey-card journey-card-cyan journey-card-purple h-100">
+                                <!-- Top Step Pill & Accent -->
+                                <div class="journey-card-top">
+                                    <span class="journey-step-badge">Stage 03</span>
+                                    <span class="journey-dot"></span>
+                                </div>
+
+                                <!-- Icon Aura with Multi-layer Glow -->
+                                <div class="journey-icon-aura aura-cyan aura-purple">
+                                    <div class="journey-icon-disc">
+                                        <svg width="42" height="42" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Continuous Follow-up Icon">
+                                            <rect x="8" y="11" width="32" height="29" rx="4" stroke="#0099e3" stroke-width="2.2" fill="#e6f6fd"/>
+                                            <path d="M8 19h32" stroke="#0099e3" stroke-width="2"/>
+                                            <path d="M16 7v6M32 7v6" stroke="#0099e3" stroke-width="2.5" stroke-linecap="round"/>
+                                            <circle cx="16" cy="26" r="1.8" fill="#0099e3"/>
+                                            <circle cx="24" cy="26" r="1.8" fill="#0099e3"/>
+                                            <circle cx="16" cy="32" r="1.8" fill="#0099e3"/>
+                                            <circle cx="33" cy="31" r="7" fill="#0099e3"/>
+                                            <path d="M30.5 31l2 2 3.5-3.5" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Card Content -->
+                                <h3 class="journey-card-title">Continuous Follow-up</h3>
+                                <p class="journey-card-text">
+                                    Active monitoring through routine check-ins, medication refills, and 24/7 helpline access, guaranteeing that support never pauses.
+                                </p>
+
+                                <!-- Micro Tags -->
+                                <div class="journey-meta-tags">
+                                    <span class="journey-tag"><i class="bi bi-calendar-check"></i> Routine Reviews</span>
+                                    <span class="journey-tag"><i class="bi bi-telephone-fill"></i> 24/7 Desk</span>
+                                </div>
+
+                                <!-- Desktop Flow Arrow to Next Step -->
+                                <div class="journey-arrow d-none d-lg-flex" aria-hidden="true">
+                                    <i class="bi bi-arrow-right-short"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 04: Family Support -->
+                        <div class="col-lg-3 col-md-6 journey-col-item">
+                            <div class="journey-card journey-card-red journey-card-orange h-100">
+                                <!-- Top Step Pill & Accent -->
+                                <div class="journey-card-top">
+                                    <span class="journey-step-badge">Stage 04</span>
+                                    <span class="journey-dot"></span>
+                                </div>
+
+                                <!-- Icon Aura with Multi-layer Glow -->
+                                <div class="journey-icon-aura aura-red aura-orange">
+                                    <div class="journey-icon-disc">
+                                        <svg width="42" height="42" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Family Support Icon">
+                                            <path d="M24 11.5c-1.5-2.5-4.5-2-5.8-.3-1.5 2.1-.3 4.8 2.5 6.8l3.3 2.8 3.3-2.8c2.8-2 4-4.7 2.5-6.8-1.3-1.7-4.3-2.2-5.8.3z" fill="#d60000"/>
+                                            <circle cx="18" cy="20" r="3" stroke="#d60000" stroke-width="1.8" fill="#fef2f2"/>
+                                            <path d="M13 28c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5" stroke="#d60000" stroke-width="1.8" stroke-linecap="round"/>
+                                            <circle cx="30" cy="20" r="3" stroke="#d60000" stroke-width="1.8" fill="#fef2f2"/>
+                                            <path d="M25 28c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5" stroke="#d60000" stroke-width="1.8" stroke-linecap="round"/>
+                                            <circle cx="24" cy="23" r="2.2" stroke="#d60000" stroke-width="1.6" fill="#fef2f2"/>
+                                            <path d="M20.5 29c0-1.8 1.6-3.2 3.5-3.2s3.5 1.4 3.5 3.2" stroke="#d60000" stroke-width="1.6" stroke-linecap="round"/>
+                                            <path d="M9 36c3-1 6-4 9-4m21 4c-3-1-6-4-9-4" stroke="#b80000" stroke-width="2.2" stroke-linecap="round"/>
+                                            <path d="M12 40c4 0 8-2 12-2s8 2 12 2" stroke="#b80000" stroke-width="2.2" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Card Content -->
+                                <h3 class="journey-card-title">Family Support</h3>
+                                <p class="journey-card-text">
+                                    Empathy for the entire household: professional psychological counseling, caregiver relief, free medical gear, and Sahachari nutrition kits.
+                                </p>
+
+                                <!-- Micro Tags -->
+                                <div class="journey-meta-tags">
+                                    <span class="journey-tag"><i class="bi bi-people-fill"></i> Counseling</span>
+                                    <span class="journey-tag"><i class="bi bi-box2-heart"></i> Food & Gear</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Care Assurance Strip -->
+                <div class="journey-assurance-strip mt-5">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8 d-flex align-items-center gap-3">
+                            <div class="assurance-icon-circle">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="assurance-heading mb-1">Unbroken Commitment at Every Milestone</h4>
+                                <p class="assurance-sub mb-0">
+                                    Every consultation, home visit, medicine, and equipment loan is provided <strong>100% free of charge</strong>, with total equality and human dignity.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-lg-end text-start">
+                            <a href="#getCareModal" data-bs-toggle="modal" class="btn btn-journey-action">
+                                <i class="bi bi-heart-pulse-fill"></i>
+                                <span>Request Care Assistance</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           IMPACT & PEOPLE SECTION (Activity Report & People Behind The Care)
+           ====================================================================== -->
+        <section class="pth-impact-section" id="impact">
+            
+            <!-- Ambient Lighting -->
+            <div class="impact-ambient-blob blob-left" aria-hidden="true"></div>
+            <div class="impact-ambient-blob blob-right" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                <!-- Top Guiding Motto Banner -->
+                <div class="impact-motto-wrapper text-center mb-5">
+                    <p class="impact-top-quote">
+                        “More people. More places. <span class="quote-highlight">One commitment to care.</span>”
+                    </p>
+                    <div class="impact-divider-pill mx-auto"></div>
+                </div>
+
+                <!-- ==============================================================
+                   PART 1: OUR IMPACT & ACTIVITY REPORT
+                   ============================================================== -->
+                <div class="impact-block mb-5 pb-lg-2">
+                    <!-- Block Header -->
+                    <div class="row align-items-end mb-4">
+                        <div class="col-lg-8">
+                            <div class="impact-mini-badge">
+                                <span class="badge-dot-green"></span>
+                                <span>OUR IMPACT</span>
+                            </div>
+                            <h2 class="impact-script-heading">Activity Report</h2>
+                            <p class="impact-lead-text mb-0">
+                                A snapshot of the care, services and support delivered through Pookoya Thangal Hospice centres.
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <span class="impact-live-tag">
+                                <i class="bi bi-shield-fill-check"></i> Verified Clinical Registry
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 3 Major Impact Metric Cards -->
+                    <div class="row g-4 mb-4">
+                        <!-- Total Registration -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="kpi-hero-card kpi-card-green h-100">
+                                <div class="kpi-header">
+                                    <div class="kpi-icon-squircle icon-green">
+                                        <i class="bi bi-file-earmark-medical-fill"></i>
+                                    </div>
+                                    <span class="kpi-label">TOTAL REGISTRATION</span>
+                                </div>
+                                <div class="kpi-number-wrap">
+                                    <h3 class="kpi-number text-green" data-target="67156">67,156</h3>
+                                </div>
+                                <div class="kpi-sub-breakdown">
+                                    <span class="breakdown-chip"><i class="bi bi-person-check-fill"></i> <strong>21,392</strong> Regular</span>
+                                    <span class="breakdown-sep">&bull;</span>
+                                    <span class="breakdown-chip"><i class="bi bi-lightning-fill"></i> <strong>45,764</strong> Emergency</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Services -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="kpi-hero-card kpi-card-blue h-100">
+                                <div class="kpi-header">
+                                    <div class="kpi-icon-squircle icon-blue">
+                                        <i class="bi bi-heart-pulse-fill"></i>
+                                    </div>
+                                    <span class="kpi-label">TOTAL SERVICES</span>
+                                </div>
+                                <div class="kpi-number-wrap">
+                                    <h3 class="kpi-number text-blue" data-target="379503">379,503</h3>
+                                </div>
+                                <p class="kpi-sub-text">
+                                    <i class="bi bi-check2-circle text-blue me-1"></i> Compassionate care services delivered to date
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Total Visits -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="kpi-hero-card kpi-card-red kpi-card-coral h-100">
+                                <div class="kpi-header">
+                                    <div class="kpi-icon-squircle icon-red icon-coral">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                    </div>
+                                    <span class="kpi-label">TOTAL VISITS</span>
+                                </div>
+                                <div class="kpi-number-wrap">
+                                    <h3 class="kpi-number text-red text-coral" data-target="328432">328,432</h3>
+                                </div>
+                                <p class="kpi-sub-text">
+                                    <i class="bi bi-door-open-fill text-red text-coral me-1"></i> Dedicated visits across all working centres
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Operational Metrics Bar (4 Stats) -->
+                    <div class="metrics-strip-card">
+                        <div class="row g-0 align-items-center text-center">
+                            <div class="col-6 col-md-3 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-indigo">
+                                        <i class="bi bi-hospital"></i>
+                                    </div>
+                                    <div class="strip-stat-val">53</div>
+                                    <div class="strip-stat-lbl">Total Centres</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-teal">
+                                        <i class="bi bi-hospital-bed"></i>
+                                    </div>
+                                    <div class="strip-stat-val">2,106</div>
+                                    <div class="strip-stat-lbl">IP Admission</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-purple">
+                                        <i class="bi bi-house-heart-fill"></i>
+                                    </div>
+                                    <div class="strip-stat-val">8,089</div>
+                                    <div class="strip-stat-lbl">Total Death (Home)</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-amber">
+                                        <i class="bi bi-activity"></i>
+                                    </div>
+                                    <div class="strip-stat-val">1,448</div>
+                                    <div class="strip-stat-lbl">Total Death (Other)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==============================================================
+                   PART 2: OUR PEOPLE & PEOPLE BEHIND THE CARE
+                   ============================================================== -->
+                <div class="impact-block">
+                    <!-- Block Header -->
+                    <div class="row align-items-end mb-4">
+                        <div class="col-lg-8">
+                            <div class="impact-mini-badge badge-red-soft badge-orange-soft">
+                                <span class="badge-dot-red badge-dot-orange"></span>
+                                <span>OUR PEOPLE</span>
+                            </div>
+                            <h2 class="impact-script-heading">People Behind The Care</h2>
+                            <p class="impact-lead-text mb-0">
+                                Building a stronger community through volunteer training, academic sessions and dedicated staff.
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <span class="impact-live-tag tag-volunteer">
+                                <i class="bi bi-people-fill"></i> Community Care Force
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 2 Main Volunteer Highlight Cards -->
+                    <div class="row g-4 mb-4">
+                        <!-- Trained Volunteers -->
+                        <div class="col-lg-6 col-md-6">
+                            <div class="people-hero-card card-blue-tint card-purple-tint h-100">
+                                <div class="people-card-header">
+                                    <div class="people-icon-box bg-blue-soft bg-purple-soft">
+                                        <i class="bi bi-person-heart"></i>
+                                    </div>
+                                    <div>
+                                        <span class="people-kpi-badge">TRAINED VOLUNTEERS</span>
+                                        <h3 class="people-kpi-number text-dark-blue">5,839</h3>
+                                    </div>
+                                </div>
+                                <p class="people-kpi-desc mb-0">
+                                    Community members equipped with palliative support skills, providing dedicated compassionate comfort to patients.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Student Volunteers -->
+                        <div class="col-lg-6 col-md-6">
+                            <div class="people-hero-card card-gold-tint card-amber-tint h-100">
+                                <div class="people-card-header">
+                                    <div class="people-icon-box bg-gold-soft bg-amber-soft">
+                                        <i class="bi bi-mortarboard-fill"></i>
+                                    </div>
+                                    <div>
+                                        <span class="people-kpi-badge">STUDENT VOLUNTEERS</span>
+                                        <h3 class="people-kpi-number text-gold text-amber">954</h3>
+                                    </div>
+                                </div>
+                                <p class="people-kpi-desc mb-0">
+                                    Active students bringing hope, vital energy, and empathetic solidarity to hospice care initiatives across Kerala.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Training & Staff Strip (6 Stats) -->
+                    <div class="metrics-strip-card strip-card-people">
+                        <div class="row g-0 align-items-center text-center">
+                            <div class="col-4 col-lg-2 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-indigo">
+                                        <i class="bi bi-journal-bookmark-fill"></i>
+                                    </div>
+                                    <div class="strip-stat-val">118</div>
+                                    <div class="strip-stat-lbl">Training Classes</div>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-2 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-teal">
+                                        <i class="bi bi-mortarboard"></i>
+                                    </div>
+                                    <div class="strip-stat-val">12</div>
+                                    <div class="strip-stat-lbl">Training Class (Student)</div>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-2 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-blue">
+                                        <i class="bi bi-person-badge-fill"></i>
+                                    </div>
+                                    <div class="strip-stat-val">887</div>
+                                    <div class="strip-stat-lbl">Trained Volunteers (Students)</div>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-2 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-green">
+                                        <i class="bi bi-award-fill"></i>
+                                    </div>
+                                    <div class="strip-stat-val">67</div>
+                                    <div class="strip-stat-lbl">Advanced Students</div>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-2 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-purple">
+                                        <i class="bi bi-display-fill"></i>
+                                    </div>
+                                    <div class="strip-stat-val">11</div>
+                                    <div class="strip-stat-lbl">Academic Sessions</div>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-2 metric-strip-item">
+                                <div class="metric-strip-inner">
+                                    <div class="strip-icon-circle icon-coral">
+                                        <i class="bi bi-people-fill"></i>
+                                    </div>
+                                    <div class="strip-stat-val">201</div>
+                                    <div class="strip-stat-lbl">No. of Staffs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+          <!-- ======================================================================
+           WHERE WE ARE SECTION (6 Districts Covered & 53 Palliative Care Centers)
+           ====================================================================== -->
+        <section class="pth-where-we-are-section" id="where-we-are">
+            <!-- Ambient Background Shapes -->
+            <div class="map-ambient-glow glow-left" aria-hidden="true"></div>
+            <div class="map-ambient-glow glow-right" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                <div class="row align-items-center g-5">
+                    
+                    <!-- Left Column: District Statistics & Interactive Centers Explorer -->
+                    <div class="col-lg-6 where-content-col">
+                        <!-- Overline Badge -->
+                        <div class="section-badge-pill mb-3">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>OUR GEOGRAPHIC FOOTPRINT</span>
+                        </div>
+
+                        <!-- Big Number + Title Unit -->
+                        <div class="district-hero-metric d-flex align-items-baseline gap-3 mb-3">
+                            <span class="district-big-number">6</span>
+                            <div>
+                                <h2 class="district-hero-title mb-0">Districts Covered</h2>
+                                <span class="district-hero-subtitle">53 Active Care Centers Across Kerala</span>
+                            </div>
+                        </div>
+
+                        <!-- Lead Description -->
+                        <p class="section-sub-text mb-4">
+                            Expanding our network of compassionate care across Kerala, ensuring dignity reaches every community. From coastal hamlets to highland settlements, our palliative teams provide cost-free solace wherever needed.
+                        </p>
+
+                        <!-- District Selection Pills / Filter Tabs -->
+                        <div class="district-filter-tabs d-flex flex-wrap gap-2 mb-4" id="districtTabs">
+                            <button class="district-tab-btn active" data-district="all">
+                                <span>All Districts</span>
+                                <span class="badge-count">53</span>
+                            </button>
+                            <button class="district-tab-btn" data-district="kozhikode">
+                                <span>Kozhikode</span>
+                                <span class="badge-count">20</span>
+                            </button>
+                            <button class="district-tab-btn" data-district="kannur">
+                                <span>Kannur</span>
+                                <span class="badge-count">13</span>
+                            </button>
+                            <button class="district-tab-btn" data-district="malappuram">
+                                <span>Malappuram</span>
+                                <span class="badge-count">9</span>
+                            </button>
+                            <button class="district-tab-btn" data-district="kasaragod">
+                                <span>Kasaragod</span>
+                                <span class="badge-count">7</span>
+                            </button>
+                            <button class="district-tab-btn" data-district="wayanad">
+                                <span>Wayanad</span>
+                                <span class="badge-count">3</span>
+                            </button>
+                            <button class="district-tab-btn" data-district="thrissur">
+                                <span>Thrissur</span>
+                                <span class="badge-count">1</span>
+                            </button>
+                        </div>
+
+                        
+
+                    </div>
+
+                    <!-- Right Column: Kerala Map Visual Card -->
+                    <div class="col-lg-6 where-visual-col text-center">
+                        <div class="kerala-map-card">
+                            <div class="map-card-header">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="map-title-badge"><i class="bi bi-compass"></i> Kerala State Coverage</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold small">
+                                        <i class="bi bi-record-fill text-success blink-dot"></i> Active Network
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="kerala-map-view-wrapper position-relative">
+                                <img src="assets/images/kerala-map-clean.png" alt="Kerala District Map - Pookoya Thangal Hospice Coverage" class="img-fluid kerala-map-img">
+
+                                <!-- Floating Stat Badges on Map -->
+                               
+
+                              
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           WAYANAD MEGA HOMECARE DRIVE (Disaster Relief & Compassion in Action)
+           ====================================================================== -->
+        <section class="pth-wayanad-section" id="wayanad-relief">
+            <!-- Subtle Ambient Background Accents -->
+            <div class="wayanad-ambient-glow glow-1" aria-hidden="true"></div>
+            <div class="wayanad-ambient-glow glow-2" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                
+                <!-- Main Mission Feature Card -->
+                <div class="wayanad-mission-card">
+                    <div class="row align-items-center g-4 g-lg-5">
+                        
+                        <!-- Left Content Column -->
+                        <div class="col-lg-6 wayanad-col-content">
+                            <!-- Live Mission Beacon Badge -->
+                            <div class="wayanad-badge-pill mb-3">
+                                <span class="wayanad-beacon-dot"></span>
+                                <span>ONE DAY MEGA HOMECARE DRIVE</span>
+                            </div>
+
+                            <!-- Main Heading -->
+                            <h2 class="wayanad-heading mb-4">
+                                Standing With <span class="wayanad-highlight">Wayanad</span>,<br class="d-none d-sm-inline"> Beyond The Disaster
+                            </h2>
+
+                            <!-- Emotional Narrative Description -->
+                            <p class="wayanad-desc mb-4">
+                                Following the catastrophic Wayanad landslide disaster, Pookoya Thangal Hospice mobilized an emergency response cadre to conduct a comprehensive <strong>One-Day Mega Homecare Drive</strong>. Our multidisciplinary medical teams reached into cut-off hill terrains to assess and address the urgent medical, social, livelihood, and psychosocial recovery needs of affected families.
+                            </p>
+
+                            <!-- Key Pillars / Focus Tags -->
+                            <div class="wayanad-focus-tags mb-4">
+                                <span class="wayanad-tag">
+                                    <i class="bi bi-shield-check"></i> On-Site Medical Triage
+                                </span>
+                                <span class="wayanad-tag">
+                                    <i class="bi bi-capsule"></i> Free Essential Medicines
+                                </span>
+                                <span class="wayanad-tag">
+                                    <i class="bi bi-heart-pulse"></i> Psychosocial Trauma Care
+                                </span>
+                                <span class="wayanad-tag">
+                                    <i class="bi bi-box2-heart"></i> Livelihood & Relief Kits
+                                </span>
+                            </div>
+
+                            
+                        </div>
+
+                        <!-- Right Media / Authentic Photo Column -->
+                        <div class="col-lg-6 wayanad-col-media">
+                            <div class="wayanad-photo-wrapper">
+                                <!-- Subtle Background Aura Frame -->
+                                <div class="wayanad-photo-aura" aria-hidden="true"></div>
+
+                                <!-- Actual On-The-Ground Photo Container -->
+                                <div class="wayanad-photo-frame shadow-lg">
+                                    <img src="assets/images/pth-wayanad-relief-drive.jpg" 
+                                         alt="PTH Sahachari One Day Mega Homecare Drive in Wayanad Landslide Region" 
+                                         class="wayanad-photo-img" 
+                                         loading="lazy">
+
+                                    <!-- Top Location Pill Overlay -->
+                                    <div class="wayanad-photo-badge">
+                                        <i class="bi bi-geo-alt-fill text-danger"></i>
+                                        <span>Chooralmala & Meppadi Hills, Wayanad</span>
+                                    </div>
+
+                                    <!-- Bottom Action Pill Overlay -->
+                                    <div class="wayanad-photo-caption">
+                                        <div class="caption-icon">
+                                            <i class="bi bi-patch-check-fill"></i>
+                                        </div>
+                                        <div class="caption-text">
+                                            <strong>Direct Doorstep Palliative Care</strong>
+                                            <span>PTH doctors & nurses delivering emergency medical kits</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Bottom Metrics Counter Strip -->
+                    <div class="wayanad-stats-strip mt-5">
+                        <div class="row g-0 align-items-center">
+                            
+                            <!-- Stat 1: Patients Assessed -->
+                            <div class="col-6 col-md-3 wayanad-stat-item">
+                                <div class="stat-inner">
+                                    <div class="stat-number-wrapper">
+                                        <span class="stat-number">104</span>
+                                    </div>
+                                    <div class="stat-label">
+                                        <i class="bi bi-person-heart"></i>
+                                        <span>Patients Assessed</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stat 2: Doctors -->
+                            <div class="col-6 col-md-3 wayanad-stat-item">
+                                <div class="stat-inner">
+                                    <div class="stat-number-wrapper">
+                                        <span class="stat-number">07</span>
+                                    </div>
+                                    <div class="stat-label">
+                                        <i class="bi bi-hospital"></i>
+                                        <span>Specialist Doctors</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stat 3: Nurses -->
+                            <div class="col-6 col-md-3 wayanad-stat-item">
+                                <div class="stat-inner">
+                                    <div class="stat-number-wrapper">
+                                        <span class="stat-number">34</span>
+                                    </div>
+                                    <div class="stat-label">
+                                        <i class="bi bi-heart-pulse"></i>
+                                        <span>Palliative Nurses</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stat 4: Volunteers -->
+                            <div class="col-6 col-md-3 wayanad-stat-item">
+                                <div class="stat-inner">
+                                    <div class="stat-number-wrapper">
+                                        <span class="stat-number">34</span>
+                                    </div>
+                                    <div class="stat-label">
+                                        <i class="bi bi-people-fill"></i>
+                                        <span>Field Volunteers</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           TRAINED VOLUNTEERS SECTION (The Grassroots Humanitarian Cadre)
+           ====================================================================== -->
+        <section class="pth-volunteers-section" id="volunteers">
+            <!-- Ambient Glows -->
+            <div class="volunteer-ambient-blob blob-1" aria-hidden="true"></div>
+            <div class="volunteer-ambient-blob blob-2" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                <div class="row align-items-center g-5">
+                    
+                    <!-- Left Content Column -->
+                    <div class="col-lg-6 volunteer-col-content">
+                        <!-- Section Badge -->
+                        <div class="section-badge-pill mb-3">
+                            <i class="bi bi-people-fill"></i>
+                            <span>COMMUNITY CARE FORCE</span>
+                        </div>
+
+                        <!-- Main Heading -->
+                        <h2 class="section-main-heading mb-3">
+                            Trained Volunteers: <span class="highlight-green">The Soul of Sahachari</span>
+                        </h2>
+
+                        <!-- Lead Description -->
+                        <p class="section-sub-text mb-4">
+                            Beyond medical charts and clinical therapy, genuine palliative solace begins with empathetic human companionship. With <strong>5,839 certified community volunteers</strong> and <strong>954 dedicated student caregivers</strong>, our grassroots movement brings solace, warmth, and dignity directly to bedridden patients across Kerala.
+                        </p>
+
+                        <!-- Key Pillars List / Bento Items -->
+                        <div class="volunteer-pillars-list mb-4">
+                            <!-- Pillar 1 -->
+                            <div class="volunteer-pillar-card">
+                                <div class="pillar-icon bg-blue-soft text-primary">
+                                    <i class="bi bi-clipboard2-pulse-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="pillar-title">118 Certified Training Modules</h4>
+                                    <p class="pillar-text mb-0">
+                                        Volunteers undergo comprehensive clinical and psychosocial orientation on patient hygiene, bed-sore dressing, pain observation, and empathetic bedside communication.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Pillar 2 -->
+                            <div class="volunteer-pillar-card">
+                                <div class="pillar-icon bg-green-soft text-success">
+                                    <i class="bi bi-heart-half"></i>
+                                </div>
+                                <div>
+                                    <h4 class="pillar-title">Psychosocial & Family Reassurance</h4>
+                                    <p class="pillar-text mb-0">
+                                        Offering compassionate listening, bystander burnout relief, and emotional comfort so that no family feels isolated or helpless during terminal illness.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Pillar 3 -->
+                            <div class="volunteer-pillar-card">
+                                <div class="pillar-icon bg-amber-soft text-warning">
+                                    <i class="bi bi-mortarboard-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="pillar-title">954 Student Volunteer Movement</h4>
+                                    <p class="pillar-text mb-0">
+                                        Mobilizing university and school students through specialized youth sessions, cultivating lifelong empathy, social responsibility, and selfless community leadership.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Visual Column with Volunteer Photograph -->
+                    <div class="col-lg-6 volunteer-col-visual">
+                        <div class="volunteer-image-card">
+                            <div class="volunteer-photo-frame position-relative">
+                                <img src="assets/images/trained-volunteers-hero.jpg" alt="Dedicated Trained Volunteers of Pookoya Thangal Hospice in Kerala" class="volunteer-hero-img img-fluid">
+                                <div class="volunteer-photo-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           HISTORIC MILESTONE SECTION (Flagged Off by Panakkad Hyderali Shihab Thangal)
+           ====================================================================== -->
+        <section class="pth-flagoff-section" id="office-bearers">
+            <!-- Subtle Ambient Light Orbs -->
+            <div class="flagoff-orb orb-1" aria-hidden="true"></div>
+            <div class="flagoff-orb orb-2" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                <div class="flagoff-card-wrapper">
+                    <div class="row align-items-center g-4 g-lg-5">
+                        
+                        <!-- Left Column: Authentic Ceremony Photo -->
+                        <div class="col-lg-5 col-xl-5">
+                            <div class="flagoff-photo-container position-relative">
+                                <div class="flagoff-photo-frame">
+                                    <img src="assets/images/pth-flag-off-photo-clean.jpg" alt="Panakkad Sayed Hyderali Shihab Thangal flagging off PTH 24x7 Emergency Palliative Home Care Van" class="flagoff-ceremony-img img-fluid">
+                                    <div class="flagoff-img-gradient"></div>
+                                </div>
+
+                                <!-- Floating Van Badge -->
+                                <div class="flagoff-fleet-pill">
+                                    <i class="bi bi-truck-front-fill text-warning"></i>
+                                    <span>24x7 Emergency Mobile Care Unit</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Title, Initiative & Dignitary Tribute -->
+                        <div class="col-lg-7 col-xl-7 flagoff-content-col">
+                            <!-- Kicker Badge -->
+                            <div class="flagoff-kicker-pill mb-3">
+                                <i class="bi bi-flag-fill text-warning"></i>
+                                <span>HISTORIC LAUNCH & COMMENCEMENT</span>
+                            </div>
+
+                            <!-- Main Title -->
+                            <h2 class="flagoff-title mb-2">
+                                POOKOYA THANGAL <span class="highlight-title-accent">HOSPICE</span>
+                            </h2>
+
+                            <!-- Initiative Tagline -->
+                            <p class="flagoff-initiative-text mb-3">
+                                <em>An Initiative of <strong class="text-white">IUML Kerala State Committee</strong></em>
+                            </p>
+
+                            <!-- Descriptive Narrative -->
+                            <p class="flagoff-narrative mb-4">
+                                Dedicated to the blessed legacy of P.M.S.A. Pookoya Thangal. Providing dignified, cost-free palliative solace, clinical bedside nursing, and emergency hospice support straight to bedridden patients across Kerala.
+                            </p>
+
+                            <!-- Leader Tribute Credential Card -->
+                            <div class="flagoff-leader-card">
+                                <div class="leader-avatar-wrap">
+                                    <img src="assets/images/avatar-hyderali.png" alt="Panakkad Sayed Hyderali Shihab Thangal" class="leader-avatar-img">
+                                    <span class="leader-avatar-badge"><i class="bi bi-flag-fill"></i></span>
+                                </div>
+                                <div class="leader-info-wrap">
+                                    <span class="leader-flag-kicker">FLAGGED OFF BY</span>
+                                    <h3 class="leader-name">Panakkad Sayed Hyderali Shihab Thangal</h3>
+                                    <span class="leader-role">Former State President &bull; Indian Union Muslim League</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           ACTIVITIES SECTION (Life & Work at PTH - Auto-Moving Facebook Video Slider)
+           ====================================================================== -->
+        <section class="pth-activities-section" id="activities">
+            
+            
+            <!-- Ambient Background Shapes -->
+            <div class="activities-ambient-blob blob-1" aria-hidden="true"></div>
+            <div class="activities-ambient-blob blob-2" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                <!-- Section Header with Controls -->
+                <div class="row align-items-end justify-content-between mb-5">
+                    <div class="col-lg-8">
+                        <div class="section-badge-pill mb-3">
+                            <i class="bi bi-camera-reels-fill"></i>
+                            <span>ACTIVITIES</span>
+                        </div>
+                        <h2 class="section-main-heading mb-3">
+                            Life & Work at <span class="highlight-green">PTH</span>
+                        </h2>
+                        <p class="section-sub-text mb-0">
+                            Real moments of compassion, mobile doctor consultations, bedside relief, and volunteer dedication captured straight from the field. Click any video to play the story.
+                        </p>
+                    </div>
+
+                    <!-- Slider Next/Prev Arrows & Live Stories Badge -->
+                    <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <button class="slider-nav-btn activities-prev" aria-label="Previous Activity Video">
+                                <i class="bi bi-arrow-left"></i>
+                            </button>
+                            <button class="slider-nav-btn activities-next" aria-label="Next Activity Video">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                            <span class="activities-live-tag ms-2">
+                                <i class="bi bi-play-circle-fill text-danger blink-dot"></i> Live Stories
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swiper Auto-Moving Video Slider Container -->
+                <div class="swiper activities-slider">
+                    <div class="swiper-wrapper">
+
+                        <!-- Slide 1: Historic Flag-Off -->
+                        <div class="swiper-slide">
+                            <div class="portrait-video-card" 
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#videoPlayerModal" 
+                                 data-video-url="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fpookoyathangal%2Fvideos%2F10153231379946729%2F&show_text=false&autoplay=true"
+                                 data-video-title="Historic Launch: Flagging Off 24x7 Emergency Mobile Care Van"
+                                 data-fb-url="https://www.facebook.com/">
+                                
+                                <img src="assets/images/pth-flag-off-photo-clean.jpg" alt="Historic Ambulance Flag-off" class="portrait-video-img">
+                                <div class="portrait-video-overlay"></div>
+
+                                <!-- Centered Pulsing Play Button -->
+                                <div class="portrait-play-btn" aria-label="Play Video">
+                                    <i class="bi bi-play-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Trained Volunteer Caregivers -->
+                        <div class="swiper-slide">
+                            <div class="portrait-video-card" 
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#videoPlayerModal" 
+                                 data-video-url="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fpookoyathangal%2Fvideos%2F10153231379946730%2F&show_text=false&autoplay=true"
+                                 data-video-title="Behind The Care: 5,839+ Certified Volunteers in Action"
+                                 data-fb-url="https://www.facebook.com/">
+                                
+                                <img src="assets/images/trained-volunteers-hero.jpg" alt="Trained Volunteers in Action" class="portrait-video-img">
+                                <div class="portrait-video-overlay"></div>
+
+                                <div class="portrait-play-btn" aria-label="Play Video">
+                                    <i class="bi bi-play-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Bedside Palliative Care Visit -->
+                        <div class="swiper-slide">
+                            <div class="portrait-video-card" 
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#videoPlayerModal" 
+                                 data-video-url="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fpookoyathangal%2Fvideos%2F10153231379946731%2F&show_text=false&autoplay=true"
+                                 data-video-title="Doorstep Compassion: Doctor & Nurse Home Visits"
+                                 data-fb-url="https://www.facebook.com/">
+                                
+                                <img src="assets/images/about-banner-clean.jpg" alt="Doorstep Palliative Visits" class="portrait-video-img">
+                                <div class="portrait-video-overlay"></div>
+
+                                <div class="portrait-play-btn" aria-label="Play Video">
+                                    <i class="bi bi-play-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: In-Patient Hospice Center Life -->
+                        <div class="swiper-slide">
+                            <div class="portrait-video-card" 
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#videoPlayerModal" 
+                                 data-video-url="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fpookoyathangal%2Fvideos%2F10153231379946732%2F&show_text=false&autoplay=true"
+                                 data-video-title="Sanctuary of Comfort: Inside PTH Hospice In-Patient Center"
+                                 data-fb-url="https://www.facebook.com/">
+                                
+                                <img src="assets/images/about-caregiver-clean.png" alt="PTH In-Patient Center" class="portrait-video-img">
+                                <div class="portrait-video-overlay"></div>
+
+                                <div class="portrait-play-btn" aria-label="Play Video">
+                                    <i class="bi bi-play-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5: Free Equipment & Sahachari Aid Distribution -->
+                        <div class="swiper-slide">
+                            <div class="portrait-video-card" 
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#videoPlayerModal" 
+                                 data-video-url="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fpookoyathangal%2Fvideos%2F10153231379946733%2F&show_text=false&autoplay=true"
+                                 data-video-title="Lifeline of Aid: Free Oxygen Concentrators & Food Kit Distribution"
+                                 data-fb-url="https://www.facebook.com/">
+                                
+                                <img src="assets/images/hero-clean-backdrop.png" alt="Medical Equipment & Sahachari Aid" class="portrait-video-img">
+                                <div class="portrait-video-overlay"></div>
+
+                                <div class="portrait-play-btn" aria-label="Play Video">
+                                    <i class="bi bi-play-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 6: Student Volunteer Movement -->
+                        <div class="swiper-slide">
+                            <div class="portrait-video-card" 
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#videoPlayerModal" 
+                                 data-video-url="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fpookoyathangal%2Fvideos%2F10153231379946734%2F&show_text=false&autoplay=true"
+                                 data-video-title="Next-Gen Solace: 954 Campus Students Spreading Hope"
+                                 data-fb-url="https://www.facebook.com/">
+                                
+                                <img src="assets/images/about-caregiver.jpg" alt="Student Volunteers" class="portrait-video-img">
+                                <div class="portrait-video-overlay"></div>
+
+                                <div class="portrait-play-btn" aria-label="Play Video">
+                                    <i class="bi bi-play-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Pagination Dots -->
+                    <div class="activities-pagination text-center mt-4"></div>
+                </div>
+
+                <!-- Bottom Facebook Follow Bar -->
+                <div class="activities-fb-strip mt-5">
+                    <div class="row align-items-center g-3">
+                        <div class="col-lg-8 d-flex align-items-center gap-3">
+                            <div class="fb-icon-disc">
+                                <i class="bi bi-facebook"></i>
+                            </div>
+                            <div>
+                                <h4 class="fb-strip-title mb-1">Follow Our Daily Hospice Missions on Facebook</h4>
+                                <p class="fb-strip-text mb-0">Stay connected with regular photo stories, community events, and inspiring humanitarian updates from our 53 centers.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-lg-end text-start">
+                            <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" class="btn btn-fb-follow">
+                                <i class="bi bi-facebook"></i>
+                                <span>Visit Official Facebook Page</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ======================================================================
+           GALLERY SECTION (Visual Chronicles with Smooth Zoom & Lightbox)
+           ====================================================================== -->
+        <section class="pth-gallery-section" id="gallery">
+            <!-- Ambient Glows -->
+            <div class="gallery-ambient-glow glow-1" aria-hidden="true"></div>
+            <div class="gallery-ambient-glow glow-2" aria-hidden="true"></div>
+
+            <div class="container position-relative">
+                
+                <!-- Section Header -->
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-8 col-xl-7">
+                        <div class="section-badge-pill mb-3">
+                            <i class="bi bi-images"></i>
+                            <span>VISUAL CHRONICLES</span>
+                        </div>
+                        <h2 class="section-main-heading mb-3">
+                            Moments of <span class="highlight-journey">Grace & Compassion</span>
+                        </h2>
+                        <p class="section-sub-text mb-0">
+                            A visual journey through our bedside homecare visits, emergency disaster relief, volunteer rallies, and daily palliative missions across 53 centres in Kerala.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Gallery Collage (Natural Aspect Ratio Masonry Mosaic) -->
+                <div class="gallery-collage-grid">
+                    
+                    <!-- Collage Item 1: Bedside Care -->
+                    <div class="gallery-card" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#galleryLightboxModal"
+                         data-img-src="assets/images/gallery-bedside-care.jpg">
+                        <div class="gallery-card-img-wrapper">
+                            <img src="assets/images/gallery-bedside-care.jpg" 
+                                 alt="PTH Hospice Moment" 
+                                 class="gallery-card-img" 
+                                 loading="lazy">
+                            <div class="gallery-card-overlay">
+                                <div class="gallery-zoom-icon-center" aria-label="View Fullscreen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collage Item 2: Wayanad Relief Drive -->
+                    <div class="gallery-card" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#galleryLightboxModal"
+                         data-img-src="assets/images/pth-wayanad-relief-drive.jpg">
+                        <div class="gallery-card-img-wrapper">
+                            <img src="assets/images/pth-wayanad-relief-drive.jpg" 
+                                 alt="PTH Hospice Moment" 
+                                 class="gallery-card-img" 
+                                 loading="lazy">
+                            <div class="gallery-card-overlay">
+                                <div class="gallery-zoom-icon-center" aria-label="View Fullscreen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collage Item 3: Volunteer Cadre -->
+                    <div class="gallery-card" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#galleryLightboxModal"
+                         data-img-src="assets/images/trained-volunteers-hero.jpg">
+                        <div class="gallery-card-img-wrapper">
+                            <img src="assets/images/trained-volunteers-hero.jpg" 
+                                 alt="PTH Hospice Moment" 
+                                 class="gallery-card-img" 
+                                 loading="lazy">
+                            <div class="gallery-card-overlay">
+                                <div class="gallery-zoom-icon-center" aria-label="View Fullscreen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collage Item 4: Historic Flag-Off -->
+                    <div class="gallery-card" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#galleryLightboxModal"
+                         data-img-src="assets/images/pth-flag-off-photo-clean.jpg">
+                        <div class="gallery-card-img-wrapper">
+                            <img src="assets/images/pth-flag-off-photo-clean.jpg" 
+                                 alt="PTH Hospice Moment" 
+                                 class="gallery-card-img" 
+                                 loading="lazy">
+                            <div class="gallery-card-overlay">
+                                <div class="gallery-zoom-icon-center" aria-label="View Fullscreen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collage Item 5: Community Care & Supplies -->
+                    <div class="gallery-card" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#galleryLightboxModal"
+                         data-img-src="assets/images/gallery-community-camp.jpg">
+                        <div class="gallery-card-img-wrapper">
+                            <img src="assets/images/gallery-community-camp.jpg" 
+                                 alt="PTH Hospice Moment" 
+                                 class="gallery-card-img" 
+                                 loading="lazy">
+                            <div class="gallery-card-overlay">
+                                <div class="gallery-zoom-icon-center" aria-label="View Fullscreen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collage Item 6: In-Patient Bedside Care -->
+                    <div class="gallery-card" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#galleryLightboxModal"
+                         data-img-src="assets/images/about-caregiver-clean.png">
+                        <div class="gallery-card-img-wrapper">
+                            <img src="assets/images/about-caregiver-clean.png" 
+                                 alt="PTH Hospice Moment" 
+                                 class="gallery-card-img" 
+                                 loading="lazy">
+                            <div class="gallery-card-overlay">
+                                <div class="gallery-zoom-icon-center" aria-label="View Fullscreen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collage Item 7: Doorstep Consultation -->
+                    <div class="gallery-card" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#galleryLightboxModal"
+                         data-img-src="assets/images/about-banner-clean.jpg">
+                        <div class="gallery-card-img-wrapper">
+                            <img src="assets/images/about-banner-clean.jpg" 
+                                 alt="PTH Hospice Moment" 
+                                 class="gallery-card-img" 
+                                 loading="lazy">
+                            <div class="gallery-card-overlay">
+                                <div class="gallery-zoom-icon-center" aria-label="View Fullscreen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        
+    </main>
+
+    <!-- ======================================================================
+       FOOTER (Brand, Quick Links, Contact & Copyright)
+       ====================================================================== -->
+    <footer class="pth-footer position-relative">
+        <!-- Ambient Background Glows -->
+        <div class="footer-ambient-glow glow-1" aria-hidden="true"></div>
+        <div class="footer-ambient-glow glow-2" aria-hidden="true"></div>
+
+        <div class="container position-relative py-5">
+            <div class="row g-5">
+                
+                <!-- Column 1: Brand Logo, Description, Social Media Icons -->
+                <div class="col-lg-5 col-md-12 footer-col-brand">
+                    <div class="footer-brand-header d-flex align-items-center gap-3 mb-3">
+                        <img src="assets/images/pth-logo.png" alt="Pookoya Thangal Hospice Logo" class="footer-logo-img">
+                        
+                    </div>
+                    <p class="footer-desc mb-4">
+                        Operating in the blessed legacy of P.M.S.A. Pookoya Thangal, our mission is dedicated to providing cost-free palliative homecare, medical equipment, pain relief, and compassionate solace across 53 centers in 6 districts of Kerala.
+                    </p>
+                    
+                    <!-- Social Media Icons -->
+                    <div class="footer-social-links d-flex align-items-center gap-2">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-btn btn-fb" aria-label="Follow PTH on Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-btn btn-insta" aria-label="Follow PTH on Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-btn btn-yt" aria-label="Subscribe on YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-btn btn-wa" aria-label="Connect on WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="col-lg-3 col-md-6 footer-col-links">
+                    <h5 class="footer-heading mb-4">Quick Links</h5>
+                    <ul class="footer-links-list list-unstyled mb-0">
+                        <li><a href="#home"><i class="bi bi-chevron-right"></i> Home</a></li>
+                        <li><a href="#about"><i class="bi bi-chevron-right"></i> About Us</a></li>
+                        <li><a href="#what-we-do"><i class="bi bi-chevron-right"></i> What We Do</a></li>
+                        <li><a href="#where-we-are"><i class="bi bi-chevron-right"></i> Where We Are</a></li>
+                        <li><a href="#journey"><i class="bi bi-chevron-right"></i> The Journey</a></li>
+                        <li><a href="#impact"><i class="bi bi-chevron-right"></i> Activity Report</a></li>
+                        <li><a href="#wayanad-relief"><i class="bi bi-chevron-right"></i> Wayanad Relief</a></li>
+                        <li><a href="#volunteers"><i class="bi bi-chevron-right"></i> Volunteers</a></li>
+                        <li><a href="#office-bearers"><i class="bi bi-chevron-right"></i> Office Bearers</a></li>
+                        <li><a href="#activities"><i class="bi bi-chevron-right"></i> Activities & Reels</a></li>
+                        <li><a href="#gallery"><i class="bi bi-chevron-right"></i> Photo Gallery</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Location, Email, Contact Number -->
+                <div class="col-lg-4 col-md-6 footer-col-contact">
+                    <h5 class="footer-heading mb-4">Contact Information</h5>
+                    <ul class="footer-contact-list list-unstyled mb-0">
+                        <li class="d-flex align-items-start gap-3 mb-3">
+                            <div class="contact-icon-disc">
+                                <i class="bi bi-geo-alt-fill text-danger"></i>
+                            </div>
+                            <div class="contact-details">
+                                <span class="contact-label">Location</span>
+                                <p class="contact-value mb-0">
+                                    Panakkad, Malappuram District,<br>
+                                    Kerala 676519, India<br>
+                                    <small class="text-white-50">53 Centers across 6 Districts</small>
+                                </p>
+                            </div>
+                        </li>
+
+                        <li class="d-flex align-items-start gap-3 mb-3">
+                            <div class="contact-icon-disc">
+                                <i class="bi bi-envelope-fill text-primary"></i>
+                            </div>
+                            <div class="contact-details">
+                                <span class="contact-label">Email Us</span>
+                                <a href="#" class="contact-value contact-link d-block">
+                                    info@pthsahachari.org
+                                </a>
+                            </div>
+                        </li>
+
+                        <li class="d-flex align-items-start gap-3">
+                            <div class="contact-icon-disc">
+                                <i class="bi bi-telephone-fill text-success"></i>
+                            </div>
+                            <div class="contact-details">
+                                <span class="contact-label">Contact Number & Helpline</span>
+                                <a href="#" class="contact-value contact-link d-block">
+                                    +91 483 273 4000
+                                </a>
+                                <a href="#" class="contact-value contact-link text-warning d-block small">
+                                    <i class="bi bi-headset me-1"></i> 24x7 Helpline: +91 98460 00000
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Copyright Section -->
+        <div class="footer-copyright-bar">
+            <div class="container">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-8 text-center text-md-start">
+                        <p class="copyright-text mb-0">
+                            &copy; 2026 <strong>Pookoya Thangal Hospice (PTH)</strong>. All Rights Reserved.
+                            <span class="d-block d-sm-inline ms-sm-2 text-white-50">
+                                An Initiative of IUML Kerala State Committee
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <a href="#home" class="footer-back-to-top" aria-label="Back to Top">
+                            <span>Back to top</span>
+                            <i class="bi bi-arrow-up"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======================================================================
+       FACEBOOK VIDEO PLAYER MODAL (Portrait Reel Player)
+       ====================================================================== -->
+    <div class="modal fade" id="videoPlayerModal" tabindex="-1" aria-labelledby="videoPlayerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered portrait-modal-dialog">
+            <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden bg-black text-white">
+                <div class="modal-header border-0 py-3 px-3 bg-dark bg-opacity-75 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-facebook text-primary fs-5"></i>
+                        <h5 class="modal-title fw-bold text-white fs-6 mb-0 text-truncate" id="videoPlayerModalLabel" style="max-width: 280px;">
+                            PTH Activities Video
+                        </h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 position-relative bg-black d-flex align-items-center justify-content-center">
+                    <!-- Responsive Portrait Video Ratio (9:16) -->
+                    <div class="portrait-video-wrapper w-100">
+                        <iframe id="modalVideoIframe" 
+                                src="" 
+                                width="100%" 
+                                height="100%" 
+                                style="border:none;overflow:hidden" 
+                                scrolling="no" 
+                                frameborder="0" 
+                                allowfullscreen="true" 
+                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                        </iframe>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 py-2 px-3 bg-dark bg-opacity-75 d-flex align-items-center justify-content-between">
+                    <span class="small text-white-50">
+                        <i class="bi bi-play-circle me-1"></i> PTH Facebook Video
+                    </span>
+                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" id="modalFbDirectLink" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">
+                        <i class="bi bi-facebook me-1"></i> Watch on FB
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+
+    <!-- ======================================================================
+       GALLERY LIGHTBOX MODAL (Clean Image View - No Black Box Container)
+       ====================================================================== -->
+    <div class="modal fade" id="galleryLightboxModal" tabindex="-1" aria-hidden="true">
+        <!-- Close button positioned at top right side of the screen -->
+        <button type="button" class="btn-close btn-close-white gallery-screen-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-dialog-centered justify-content-center">
+            <div class="modal-content border-0 bg-transparent w-auto">
+                <div class="modal-body p-0 text-center">
+                    <img id="modalGalleryImg" src="" alt="Gallery Image" class="gallery-modal-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- ======================================================================
+       SCRIPTS: Bootstrap 5, Lenis, GSAP, Custom JS
+       ====================================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <!-- Swiper 11 JS for Auto-Moving Slider -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>
