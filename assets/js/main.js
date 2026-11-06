@@ -124,10 +124,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
           e.preventDefault();
+          const isServiceChip = this.classList.contains('service-pill-chip');
+          const offsetVal = isServiceChip ? -95 : -80;
+
           if (lenis) {
-            lenis.scrollTo(targetElement, { offset: -80, duration: 1.2 });
+            lenis.scrollTo(targetElement, { offset: offsetVal, duration: 1.1 });
           } else {
-            targetElement.scrollIntoView({ behavior: 'smooth' });
+            const targetPos = targetElement.getBoundingClientRect().top + window.pageYOffset + offsetVal;
+            window.scrollTo({ top: targetPos, behavior: 'smooth' });
+          }
+
+          // Service Directory Chip Navigation Polish
+          if (isServiceChip) {
+            document.querySelectorAll('.service-pill-chip').forEach(c => c.classList.remove('is-active'));
+            document.querySelectorAll(`.service-pill-chip[href="${targetId}"]`).forEach(c => c.classList.add('is-active'));
+
+            const quickSlider = document.querySelector('.services-quick-slider');
+            if (quickSlider) {
+              quickSlider.classList.add('is-paused');
+              setTimeout(() => {
+                quickSlider.classList.remove('is-paused');
+              }, 3000);
+            }
+
+            const card = targetElement.querySelector('.service-card') || targetElement;
+            if (card) {
+              card.classList.add('service-card-targeted');
+              setTimeout(() => {
+                card.classList.remove('service-card-targeted');
+              }, 1600);
+            }
           }
 
           // Close mobile menu collapse if open
@@ -141,21 +167,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Quick Services Directory Slider Touch-Pause Support
+  const quickSlider = document.querySelector('.services-quick-slider');
+  if (quickSlider) {
+    let touchResumeTimer = null;
+    quickSlider.addEventListener('touchstart', () => {
+      quickSlider.classList.add('is-paused');
+      clearTimeout(touchResumeTimer);
+    }, { passive: true });
+
+    quickSlider.addEventListener('touchend', () => {
+      touchResumeTimer = setTimeout(() => {
+        quickSlider.classList.remove('is-paused');
+      }, 2500);
+    }, { passive: true });
+  }
+
   // --------------------------------------------------------------------------
-  // 2. Sticky Navbar Glass Effect & Top Progress Bar on Scroll
+  // 2. Smart Fixed Navbar on Scroll Up & Reduced Logo Size on Scroll
   // --------------------------------------------------------------------------
   const navbar = document.querySelector('.pth-navbar-wrapper');
   const scrollProgressBar = document.getElementById('scrollProgressLine');
+  const mainNav = document.getElementById('mainNav');
+
+  let lastScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
 
   const onScroll = () => {
     const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
-    
-    // Sticky Navbar
-    if (scrollY > 20) {
-      navbar?.classList.add('scrolled');
-    } else {
+    const scrollDelta = scrollY - lastScrollY;
+    const isMobileNavOpen = mainNav && mainNav.classList.contains('show');
+
+    // Only fix & show navbar when scrolling UP (or at top of page)
+    if (scrollY <= 20) {
+      // At top of page: navbar in normal position, full size logo, transparent background
+      navbar?.classList.remove('navbar-hidden');
       navbar?.classList.remove('scrolled');
+    } else {
+      if (isMobileNavOpen) {
+        // Keep navbar visible while mobile menu is open
+        navbar?.classList.remove('navbar-hidden');
+        navbar?.classList.add('scrolled');
+      } else if (scrollDelta > 4 && scrollY > 80) {
+        // Scrolling DOWN: hide navbar smoothly to give full content view
+        navbar?.classList.add('navbar-hidden');
+      } else if (scrollDelta < -4) {
+        // Scrolling UP: reveal fixed navbar with compact scrolled style & reduced logo
+        navbar?.classList.remove('navbar-hidden');
+        navbar?.classList.add('scrolled');
+      } else if (!navbar?.classList.contains('navbar-hidden')) {
+        // If stopped mid-page or on reload, ensure scrolled style is active
+        navbar?.classList.add('scrolled');
+      }
     }
+
+    lastScrollY = scrollY <= 0 ? 0 : scrollY;
 
     // Top Reading Scroll Progress Line
     if (scrollProgressBar) {
@@ -182,6 +247,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+
+    // Dynamic Active State for Quick Services Directory Chips on Scroll
+    const serviceChips = document.querySelectorAll('.service-pill-chip');
+    if (serviceChips.length > 0) {
+      const serviceItems = document.querySelectorAll('.service-stream-item');
+      let activeServiceId = null;
+
+      serviceItems.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        if (rect.top <= 240 && rect.bottom >= 120) {
+          activeServiceId = '#' + item.id;
+        }
+      });
+
+      if (activeServiceId) {
+        serviceChips.forEach((chip) => {
+          if (chip.getAttribute('href') === activeServiceId) {
+            chip.classList.add('is-active');
+          } else {
+            chip.classList.remove('is-active');
+          }
+        });
+      }
+    }
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -196,24 +285,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof gsap !== 'undefined') {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-    // Navbar Entrance
-    tl.from('.brand-link', {
-      y: -20,
+    // Navbar Entrance (Brand logo is always solid & visible, animate nav items cleanly)
+    tl.from('.navbar-nav .nav-item', {
+      y: -12,
       opacity: 0,
-      duration: 0.7,
+      duration: 0.5,
+      stagger: 0.06,
+      clearProps: 'all',
     })
-    .from('.navbar-nav .nav-item', {
-      y: -15,
+    .from('.nav-social-links a', {
+      y: -10,
       opacity: 0,
-      duration: 0.5,
-      stagger: 0.08,
-    }, '-=0.4')
-    .from('.btn-get-care', {
-      scale: 0.85,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'back.out(1.7)',
-    }, '-=0.3');
+      duration: 0.4,
+      stagger: 0.05,
+      clearProps: 'all',
+    }, '-=0.2');
 
     // Hero Elements Entrance
     const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
@@ -589,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   if (typeof Swiper !== 'undefined') {
     new Swiper('.activities-slider', {
-      slidesPerView: 1.4,
+      slidesPerView: 'auto',
       spaceBetween: 16,
       loop: true,
       speed: 800,
@@ -609,48 +695,157 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       breakpoints: {
         576: {
-          slidesPerView: 2.2,
+          slidesPerView: 'auto',
           spaceBetween: 18,
         },
         768: {
-          slidesPerView: 3,
+          slidesPerView: 'auto',
           spaceBetween: 20,
         },
         1024: {
-          slidesPerView: 3.8,
+          slidesPerView: 'auto',
           spaceBetween: 22,
         },
         1280: {
-          slidesPerView: 4.3,
+          slidesPerView: 'auto',
           spaceBetween: 24,
         },
       },
     });
   }
 
-  // Facebook Video Modal Event Listeners
+  // --------------------------------------------------------------------------
+  // Helper: Format Facebook Share URLs (Videos & Image Posts) into Embed Plugin URLs
+  // Always enforces show_text=false (Hides post titles, author, and captions)
+  // --------------------------------------------------------------------------
+  function isFacebookVideoUrl(url) {
+    if (!url) return false;
+    return /\/(?:share\/v|share\/r|reel|videos|watch)\b/i.test(url) || url.includes('plugins/video.php');
+  }
+
+  function formatFacebookEmbedUrl(url, autoplay = false) {
+    if (!url) return '';
+
+    // If it's already an embed plugin URL
+    if (url.includes('facebook.com/plugins/')) {
+      let cleanUrl = url;
+      // Enforce show_text=false so post title, author, and caption never show
+      if (cleanUrl.includes('show_text=true')) {
+        cleanUrl = cleanUrl.replace('show_text=true', 'show_text=false');
+      } else if (!cleanUrl.includes('show_text=')) {
+        cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + 'show_text=false';
+      }
+      if (autoplay && !cleanUrl.includes('autoplay=true')) {
+        cleanUrl += '&autoplay=true';
+      } else if (!autoplay && cleanUrl.includes('autoplay=true')) {
+        cleanUrl = cleanUrl.replace(/[?&]autoplay=true/, '');
+      }
+      return cleanUrl;
+    }
+
+    // YouTube handler
+    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+    if (ytMatch) {
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=${autoplay ? '1' : '0'}&rel=0`;
+    }
+
+    // Facebook Share URL handling (video reel vs photo/image post)
+    const isVideo = isFacebookVideoUrl(url);
+    const pluginType = isVideo ? 'video.php' : 'post.php';
+    const encodedHref = encodeURIComponent(url);
+
+    let embedUrl = `https://www.facebook.com/plugins/${pluginType}?href=${encodedHref}&show_text=false`;
+    if (isVideo && autoplay) {
+      embedUrl += '&autoplay=true';
+    }
+    return embedUrl;
+  }
+
+  // Automatic Facebook Video / Image Story Card Initialization in the Slider
+  document.querySelectorAll('.portrait-video-card').forEach((card) => {
+    const rawUrl = card.getAttribute('data-fb-url') || 
+                   card.getAttribute('data-video-url') || 
+                   card.getAttribute('data-post-url');
+    let iframe = card.querySelector('.portrait-fb-iframe') || card.querySelector('iframe');
+    const existingImg = card.querySelector('.portrait-video-img');
+
+    if (rawUrl && (rawUrl.includes('facebook.com') || rawUrl.includes('fb.watch'))) {
+      // For Facebook share URLs: NEVER show local <img> - remove it completely
+      if (existingImg) {
+        existingImg.remove();
+      }
+
+      const isVideo = isFacebookVideoUrl(rawUrl) || card.classList.contains('is-video');
+      const embedUrl = formatFacebookEmbedUrl(rawUrl, false);
+
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.className = 'portrait-fb-iframe';
+        iframe.setAttribute('src', embedUrl);
+        iframe.setAttribute('scrolling', 'no');
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', 'true');
+        iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share');
+        iframe.setAttribute('loading', 'lazy');
+        card.insertBefore(iframe, card.firstChild);
+      } else if (!iframe.getAttribute('src')) {
+        iframe.setAttribute('src', embedUrl);
+      }
+
+      // Configure card post type classes
+      if (isVideo) {
+        card.classList.add('is-video');
+        card.classList.remove('is-image-post');
+      } else {
+        card.classList.add('is-image-post');
+        card.classList.remove('is-video');
+      }
+
+      // Route all Facebook share cards to videoPlayerModal for clean lightbox viewing
+      card.setAttribute('data-bs-target', '#videoPlayerModal');
+    } else {
+      // Fallback for non-Facebook static image slides if any remain
+      const imgSrc = card.getAttribute('data-img-src') || card.getAttribute('data-thumb');
+      if (existingImg && (!existingImg.src || existingImg.src === '#' || existingImg.getAttribute('src') === '')) {
+        if (imgSrc) existingImg.src = imgSrc;
+      }
+    }
+  });
+
+  // Video & Story Lightbox Modal (Pure Media - Fixed Height & Auto Width for Content)
   const videoModalEl = document.getElementById('videoPlayerModal');
   const videoIframe = document.getElementById('modalVideoIframe');
-  const videoTitleEl = document.getElementById('videoPlayerModalLabel');
-  const videoFbLink = document.getElementById('modalFbDirectLink');
+  const videoWrapper = videoModalEl ? videoModalEl.querySelector('.portrait-video-wrapper') : null;
 
   if (videoModalEl) {
     videoModalEl.addEventListener('show.bs.modal', function (event) {
       const trigger = event.relatedTarget;
       if (!trigger) return;
 
-      const videoUrl = trigger.getAttribute('data-video-url');
-      const videoTitle = trigger.getAttribute('data-video-title');
-      const fbUrl = trigger.getAttribute('data-fb-url');
+      const rawUrl = trigger.getAttribute('data-fb-url') || 
+                     trigger.getAttribute('data-video-url') || 
+                     trigger.getAttribute('data-post-url') ||
+                     trigger.getAttribute('data-video');
 
-      if (videoTitleEl && videoTitle) {
-        videoTitleEl.textContent = videoTitle;
-      }
-      if (videoFbLink && fbUrl) {
-        videoFbLink.setAttribute('href', fbUrl);
-      }
-      if (videoIframe && videoUrl) {
-        videoIframe.setAttribute('src', videoUrl);
+      if (rawUrl) {
+        const isVideo = isFacebookVideoUrl(rawUrl) || trigger.classList.contains('is-video');
+
+        // Dynamically adjust modal aspect ratio so width is auto based on content type
+        if (videoWrapper) {
+          const customRatio = trigger.getAttribute('data-aspect-ratio');
+          if (customRatio) {
+            videoWrapper.style.aspectRatio = customRatio;
+          } else if (isVideo) {
+            videoWrapper.style.aspectRatio = '9 / 16';
+          } else {
+            videoWrapper.style.aspectRatio = '4 / 5';
+          }
+        }
+
+        const embedUrl = formatFacebookEmbedUrl(rawUrl, isVideo);
+        if (videoIframe && embedUrl) {
+          videoIframe.setAttribute('src', embedUrl);
+        }
       }
     });
 
@@ -660,7 +855,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  // Gallery Lightbox Modal (Clean Fullscreen View)
+
+  // Gallery Lightbox Modal (Pure Photo - No Titles)
   const galleryModalEl = document.getElementById('galleryLightboxModal');
   const modalGalleryImg = document.getElementById('modalGalleryImg');
 
@@ -669,7 +865,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const trigger = event.relatedTarget;
       if (!trigger) return;
 
-      const imgSrc = trigger.getAttribute('data-img-src');
+      const imgSrc = trigger.getAttribute('data-img-src') || (trigger.querySelector('img') ? trigger.querySelector('img').getAttribute('src') : null);
       if (modalGalleryImg && imgSrc) {
         modalGalleryImg.src = imgSrc;
       }
