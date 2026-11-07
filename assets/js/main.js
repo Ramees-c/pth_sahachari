@@ -374,6 +374,32 @@ document.addEventListener('DOMContentLoaded', () => {
         clearProps: 'all',
       });
 
+      // ScrollTrigger Animation for Vision & Mission Section
+      gsap.from('.pth-vision-mission-section .vm-col-card', {
+        scrollTrigger: {
+          trigger: '.pth-vision-mission-section',
+          start: 'top 80%',
+        },
+        y: 35,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'power3.out',
+        clearProps: 'all',
+      });
+
+      gsap.from('.vm-values-strip', {
+        scrollTrigger: {
+          trigger: '.vm-values-strip',
+          start: 'top 85%',
+        },
+        y: 25,
+        opacity: 0,
+        duration: 0.7,
+        ease: 'power2.out',
+        clearProps: 'all',
+      });
+
       // ScrollTrigger Animation for What We Do Cards & Visual Anchor
       gsap.from('.what-we-do-visual-card', {
         scrollTrigger: {
@@ -594,50 +620,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearProps: 'all',
       });
     }
-
-    // Continuous Gentle Floating Movement for Leaf Shapes
-    gsap.to('.leaf-1', {
-      y: -15,
-      rotation: -10,
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-    });
-
-    gsap.to('.leaf-2', {
-      y: 12,
-      rotation: 12,
-      duration: 3.5,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-      delay: 0.4,
-    });
-
-    // Desktop Interactive Mouse Parallax on Panoramic Layer
-    if (window.innerWidth > 992) {
-      const heroSection = document.querySelector('.pth-hero-container');
-      heroSection?.addEventListener('mousemove', (e) => {
-        const { clientX, clientY } = e;
-        const xOffset = (clientX / window.innerWidth - 0.5) * 16;
-        const yOffset = (clientY / window.innerHeight - 0.5) * 12;
-
-        gsap.to('.hero-panoramic-bg', {
-          x: xOffset * 0.4,
-          y: yOffset * 0.3,
-          duration: 1.2,
-          ease: 'power1.out',
-        });
-
-        gsap.to('.hero-floating-leaves', {
-          x: -xOffset * 1.5,
-          y: -yOffset * 1.5,
-          duration: 1.2,
-          ease: 'power1.out',
-        });
-      });
-    }
   }
 
   // --------------------------------------------------------------------------
@@ -735,6 +717,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (!cleanUrl.includes('show_text=')) {
         cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + 'show_text=false';
       }
+      if (cleanUrl.includes('plugins/post.php') && !cleanUrl.includes('width=')) {
+        cleanUrl += '&width=500';
+      }
       if (autoplay && !cleanUrl.includes('autoplay=true')) {
         cleanUrl += '&autoplay=true';
       } else if (!autoplay && cleanUrl.includes('autoplay=true')) {
@@ -755,6 +740,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const encodedHref = encodeURIComponent(url);
 
     let embedUrl = `https://www.facebook.com/plugins/${pluginType}?href=${encodedHref}&show_text=false`;
+    if (!isVideo) {
+      embedUrl += '&width=500';
+    }
     if (isVideo && autoplay) {
       embedUrl += '&autoplay=true';
     }
@@ -788,17 +776,26 @@ document.addEventListener('DOMContentLoaded', () => {
         iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share');
         iframe.setAttribute('loading', 'lazy');
         card.insertBefore(iframe, card.firstChild);
-      } else if (!iframe.getAttribute('src')) {
-        iframe.setAttribute('src', embedUrl);
+      } else {
+        const currentSrc = iframe.getAttribute('src');
+        if (!currentSrc) {
+          iframe.setAttribute('src', embedUrl);
+        } else if (currentSrc.includes('show_text=true') || (!isVideo && !currentSrc.includes('width='))) {
+          iframe.setAttribute('src', formatFacebookEmbedUrl(currentSrc, false));
+        }
       }
 
-      // Configure card post type classes
+      // Configure card post type classes & natural orientation
       if (isVideo) {
         card.classList.add('is-video');
         card.classList.remove('is-image-post');
       } else {
         card.classList.add('is-image-post');
         card.classList.remove('is-video');
+        const customCardRatio = card.getAttribute('data-aspect-ratio');
+        if (customCardRatio) {
+          card.style.aspectRatio = customCardRatio;
+        }
       }
 
       // Route all Facebook share cards to videoPlayerModal for clean lightbox viewing
@@ -822,36 +819,62 @@ document.addEventListener('DOMContentLoaded', () => {
       const trigger = event.relatedTarget;
       if (!trigger) return;
 
+      const cardIframe = trigger.querySelector('.portrait-fb-iframe') || trigger.querySelector('iframe');
+      const cardSrc = cardIframe ? cardIframe.getAttribute('src') : null;
+
       const rawUrl = trigger.getAttribute('data-fb-url') || 
                      trigger.getAttribute('data-video-url') || 
                      trigger.getAttribute('data-post-url') ||
                      trigger.getAttribute('data-video');
 
-      if (rawUrl) {
-        const isVideo = isFacebookVideoUrl(rawUrl) || trigger.classList.contains('is-video');
+      const isVideo = trigger.classList.contains('is-video') || (rawUrl ? isFacebookVideoUrl(rawUrl) : false);
 
-        // Dynamically adjust modal aspect ratio so width is auto based on content type
-        if (videoWrapper) {
-          const customRatio = trigger.getAttribute('data-aspect-ratio');
-          if (customRatio) {
-            videoWrapper.style.aspectRatio = customRatio;
-          } else if (isVideo) {
-            videoWrapper.style.aspectRatio = '9 / 16';
+      // Dynamically adjust modal aspect ratio and layout mode based on content type
+      if (videoWrapper) {
+        const customRatio = trigger.getAttribute('data-aspect-ratio');
+        if (customRatio) {
+          videoWrapper.style.aspectRatio = customRatio;
+          if (isVideo) {
+            videoWrapper.classList.remove('is-image-modal');
+            videoWrapper.classList.add('is-video-modal');
           } else {
-            videoWrapper.style.aspectRatio = '4 / 5';
+            videoWrapper.classList.remove('is-video-modal');
+            videoWrapper.classList.add('is-image-modal');
           }
+        } else if (isVideo) {
+          videoWrapper.classList.remove('is-image-modal');
+          videoWrapper.classList.add('is-video-modal');
+          videoWrapper.style.aspectRatio = '9 / 16';
+        } else {
+          videoWrapper.classList.remove('is-video-modal');
+          videoWrapper.classList.add('is-image-modal');
+          videoWrapper.style.aspectRatio = '4 / 3';
         }
+      }
 
-        const embedUrl = formatFacebookEmbedUrl(rawUrl, isVideo);
-        if (videoIframe && embedUrl) {
-          videoIframe.setAttribute('src', embedUrl);
+      // Prioritize the exact working embed URL from the card's active iframe
+      let embedUrl = '';
+      if (cardSrc && cardSrc.includes('facebook.com/plugins/')) {
+        embedUrl = cardSrc;
+        if (isVideo && !embedUrl.includes('autoplay=true')) {
+          embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'autoplay=true';
         }
+      } else if (rawUrl) {
+        embedUrl = formatFacebookEmbedUrl(rawUrl, isVideo);
+      }
+
+      if (videoIframe && embedUrl) {
+        videoIframe.setAttribute('src', embedUrl);
       }
     });
 
     videoModalEl.addEventListener('hidden.bs.modal', function () {
       if (videoIframe) {
         videoIframe.setAttribute('src', '');
+      }
+      if (videoWrapper) {
+        videoWrapper.classList.remove('is-image-modal', 'is-video-modal');
+        videoWrapper.style.aspectRatio = '9 / 16';
       }
     });
   }
