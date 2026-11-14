@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Close mobile menu collapse if open
           const navCollapse = document.getElementById('mainNav');
           if (navCollapse && navCollapse.classList.contains('show') && typeof bootstrap !== 'undefined') {
-            const bsCollapse = bootstrap.Collapse.getInstance(navCollapse);
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(navCollapse);
             if (bsCollapse) bsCollapse.hide();
           }
         }
@@ -278,6 +278,67 @@ document.addEventListener('DOMContentLoaded', () => {
     lenis.on('scroll', onScroll);
   }
   onScroll();
+
+  // --------------------------------------------------------------------------
+  // 2b. Mobile Navbar Toggler State Sync & Outside Click Handling
+  // --------------------------------------------------------------------------
+  const pthNavCollapse = document.getElementById('mainNav');
+  const pthNavToggler = document.querySelector('.pth-nav-toggler');
+
+  if (pthNavCollapse && pthNavToggler) {
+    pthNavCollapse.addEventListener('show.bs.collapse', () => {
+      pthNavToggler.classList.remove('collapsed');
+      pthNavToggler.setAttribute('aria-expanded', 'true');
+    });
+
+    pthNavCollapse.addEventListener('shown.bs.collapse', () => {
+      pthNavToggler.classList.remove('collapsed');
+      pthNavToggler.setAttribute('aria-expanded', 'true');
+    });
+
+    pthNavCollapse.addEventListener('hide.bs.collapse', () => {
+      pthNavToggler.classList.add('collapsed');
+      pthNavToggler.setAttribute('aria-expanded', 'false');
+    });
+
+    pthNavCollapse.addEventListener('hidden.bs.collapse', () => {
+      pthNavToggler.classList.add('collapsed');
+      pthNavToggler.setAttribute('aria-expanded', 'false');
+    });
+
+    // Close mobile navbar on tap outside
+    document.addEventListener('click', (e) => {
+      if (pthNavCollapse.classList.contains('show')) {
+        if (!pthNavCollapse.contains(e.target) && !pthNavToggler.contains(e.target)) {
+          if (typeof bootstrap !== 'undefined') {
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(pthNavCollapse);
+            if (bsCollapse) bsCollapse.hide();
+          }
+        }
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && pthNavCollapse.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined') {
+          const bsCollapse = bootstrap.Collapse.getOrCreateInstance(pthNavCollapse);
+          if (bsCollapse) bsCollapse.hide();
+        }
+        pthNavToggler.focus();
+      }
+    });
+
+    // Automatically close mobile menu if resizing to desktop (>= 992px)
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 992 && pthNavCollapse.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined') {
+          const bsCollapse = bootstrap.Collapse.getOrCreateInstance(pthNavCollapse);
+          if (bsCollapse) bsCollapse.hide();
+        }
+      }
+    });
+  }
 
   // --------------------------------------------------------------------------
   // 3. GSAP Animations & Interactions

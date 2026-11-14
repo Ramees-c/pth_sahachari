@@ -529,6 +529,174 @@ a {
   border-color: #25d366;
 }
 
+/* ==========================================================================
+   ATTRACTIVE MODERN NAVBAR TOGGLER (Animated Hamburger to Close)
+   ========================================================================== */
+.navbar-toggler.pth-nav-toggler {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-toggler.pth-nav-toggler {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid rgba(0, 63, 148, 0.18) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(1, 30, 123, 0.08);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    outline: none !important;
+  }
+
+  .navbar-toggler.pth-nav-toggler:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .navbar-toggler.pth-nav-toggler:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+  }
+
+
+
+  
+
+  /* 22px x 22px Geometric Icon Canvas */
+  .pth-nav-toggler .toggler-bars {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* Each Line Bar */
+  .pth-nav-toggler .bar {
+    position: absolute;
+    left: 0;
+    width: 22px;
+    height: 2.2px;
+    border-radius: 2px;
+    background-color: var(--pth-primary);
+    transform-origin: center;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.2s ease,
+                background-color 0.2s ease;
+  }
+
+  /* Collapsed Default Positions: all 3 bars uniform and consistent */
+  .pth-nav-toggler .bar-1 {
+    top: 3.5px;
+  }
+
+  .pth-nav-toggler .bar-2 {
+    top: 10px;
+    width: 22px;
+    left: 0;
+    right: auto;
+    background-color: var(--pth-primary);
+  }
+
+  .pth-nav-toggler .bar-3 {
+    top: 16.5px;
+  }
+
+  /* Open / Active State: Smooth Morph into a Bold, Perfectly Centered '✕' */
+  .pth-nav-toggler:not(.collapsed),
+  .pth-nav-toggler[aria-expanded="true"] {
+    background: var(--pth-primary-light);
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  .navbar-toggler.pth-nav-toggler:not(.collapsed):focus,
+  .navbar-toggler.pth-nav-toggler[aria-expanded="true"]:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    border-color: transparent !important;
+  }
+
+  .pth-nav-toggler:not(.collapsed) .bar,
+  .pth-nav-toggler[aria-expanded="true"] .bar {
+    background-color: var(--pth-primary) !important;
+    width: 22px !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  .pth-nav-toggler:not(.collapsed) .bar-1,
+  .pth-nav-toggler[aria-expanded="true"] .bar-1 {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+
+  .pth-nav-toggler:not(.collapsed) .bar-2,
+  .pth-nav-toggler[aria-expanded="true"] .bar-2 {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .pth-nav-toggler:not(.collapsed) .bar-3,
+  .pth-nav-toggler[aria-expanded="true"] .bar-3 {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .navbar-toggler.pth-nav-toggler {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+  .pth-nav-toggler .toggler-bars {
+    width: 20px;
+    height: 20px;
+  }
+  .pth-nav-toggler .bar {
+    width: 20px;
+  }
+  .pth-nav-toggler .bar-1 {
+    top: 3px;
+  }
+  .pth-nav-toggler .bar-2 {
+    top: 9px;
+    width: 20px;
+    left: 0;
+    right: auto;
+    background-color: var(--pth-primary);
+  }
+  .pth-nav-toggler .bar-3 {
+    top: 15px;
+  }
+  .pth-nav-toggler:not(.collapsed) .bar,
+  .pth-nav-toggler[aria-expanded="true"] .bar {
+    width: 20px !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+  .pth-nav-toggler:not(.collapsed) .bar-1,
+  .pth-nav-toggler[aria-expanded="true"] .bar-1 {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .pth-nav-toggler:not(.collapsed) .bar-3,
+  .pth-nav-toggler[aria-expanded="true"] .bar-3 {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar-toggler.pth-nav-toggler {
+    display: none !important;
+  }
+}
+
 /* Responsive adjustment for small desktop / laptops (992px to 1199px) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
   .pth-navbar {
@@ -574,7 +742,18 @@ a {
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #f8fbff 0%, #edf5fc 50%, #f4fbf7 100%);
+  background-color: #f8fbff;
+  background-image: 
+    linear-gradient(180deg, 
+      rgba(248, 251, 255, 0.93) 0%, 
+      rgba(248, 251, 255, 0.88) 40%, 
+      rgba(248, 251, 255, 0.82) 70%, 
+      rgba(248, 251, 255, 0.95) 100%
+    ),
+    url('../images/hero_bg.jpeg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
 }
 
 /* Ambient Floating Blobs */
@@ -853,10 +1032,14 @@ a {
   transform: scale(1.02);
 }
 
+/* Right Side Column Image (Hidden because hero_bg.jpeg is now used as the hero section background) */
+.hero-col-image {
+  display: none !important;
+}
+
 /* Row-time Hero Layout (Desktop & Large Screens >= 992px):
-   Display right-side image as seamless background in hero container,
-   while hiding redundant inline column image.
-   Mobile/stacked column layout (< 992px) remains completely unchanged. */
+   Horizontal gradient preserves left-side text contrast while showcasing
+   the photo cleanly across the right side of the screen */
 @media (min-width: 992px) {
   .pth-hero-container {
     background-color: #f8fbff;
@@ -882,10 +1065,6 @@ a {
     background-repeat: no-repeat;
     background-position: right center, top center, bottom center, right center;
     background-size: cover, 100% 110px, 100% 90px, cover;
-  }
-
-  .hero-col-image {
-    display: none !important;
   }
 }
 
@@ -949,12 +1128,14 @@ a {
     height: 64px;
   }
   .pth-hero-container {
-    padding-top: 88px;
-    padding-bottom: 28px;
+    padding-top: 92px;
+    padding-bottom: 36px;
+    min-height: 88vh;
+    background-position: center center;
   }
 
   .hero-col-content {
-    margin-bottom: 30px;
+    margin-bottom: 0;
     text-align: left;
     width: 100%;
     max-width: 100%;
@@ -1821,81 +2002,85 @@ a {
   transition: var(--transition);
 }
 
-/* Elegant Organic Curved Arc Accent matching the design reference */
+/* Organic Soft Glow Accent */
 .about-curved-arc {
   position: absolute;
-  top: -12%;
-  right: 28%;
-  width: 640px;
-  height: 640px;
+  top: -15%;
+  right: -5%;
+  width: 520px;
+  height: 520px;
   border-radius: 50%;
-  border: 66px solid rgba(195, 226, 255, 0.55);
+  background: radial-gradient(circle, rgba(195, 226, 255, 0.45) 0%, rgba(237, 245, 252, 0) 70%);
+  border: none;
   pointer-events: none;
   z-index: 1;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.about-card-wrapper:hover .about-curved-arc {
-  transform: scale(1.02);
+  filter: blur(40px);
 }
 
 /* Left Content Column */
 .about-col-content {
   position: relative;
   z-index: 3;
-  padding: 56px 40px 56px 56px;
+  padding: 56px 44px 56px 56px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-/* Minimal Rectangle Badge */
+/* Section Badge Pill */
 .about-badge-rect {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   align-self: flex-start;
-  background-color: var(--pth-primary);
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-size: clamp(0.64rem, 1vw + 0.32rem, 0.72rem);
+  background: var(--pth-primary-light);
+  color: var(--pth-primary);
+  border: 1px solid rgba(0, 63, 148, 0.14);
+  font-family: var(--font-heading);
+  font-size: clamp(0.66rem, 1vw + 0.28rem, 0.76rem);
   font-weight: 700;
-  letter-spacing: clamp(0.8px, 1vw, 1.2px);
-  padding: clamp(3px, 0.6vw + 1px, 4px) clamp(8px, 1.2vw + 3px, 10px);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
   border-radius: 50px;
-  margin-bottom: clamp(12px, 2vw, 20px);
-  box-shadow: 0 3px 10px rgba(0, 63, 148, 0.18);
+  margin-bottom: clamp(14px, 2vw, 18px);
+  box-shadow: none;
 }
 
-/* Cursive Script Title */
+/* Heading Title */
 .about-script-title {
-  margin-bottom: 20px;
-  line-height: 1.06;
+  margin-bottom: clamp(16px, 2vw, 20px);
+  line-height: 1.22;
 }
 
 .about-title-line {
   display: block;
-  font-family: var(--font-script);
-  font-size: clamp(1.4rem, 2vw + 0.5rem, 2.35rem);
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 2.3vw + 0.5rem, 2.35rem);
+  font-weight: 800;
   color: var(--pth-primary);
-  line-height: 1.12;
-  letter-spacing: -0.025em;
-  text-shadow: 0 2px 8px rgba(0, 63, 148, 0.08);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
 /* Body Text */
 .about-text-content {
-  margin-bottom: 26px;
-  max-width: 530px;
+  margin-bottom: 0;
   font-family: var(--font-malayalam);
 }
 
 .about-paragraph {
-  font-size: 1.02rem;
+  font-family: var(--font-malayalam);
+  font-size: clamp(0.98rem, 0.35vw + 0.88rem, 1.04rem);
   color: var(--pth-text-body);
-  line-height: 1.76;
-  margin-bottom: 12px;
+  line-height: 1.82;
+  margin-bottom: 14px;
+  letter-spacing: 0;
+}
+
+.about-paragraph:last-child {
+  margin-bottom: 0;
 }
 
 .text-iu-league {
@@ -1903,44 +2088,40 @@ a {
   font-weight: 700;
 }
 
-.about-paragraph.sub-paragraph {
-  font-size: 0.96rem;
-  color: var(--pth-text-muted);
-  line-height: 1.72;
-  margin-bottom: 0;
-}
-
 /* Right Visual Column */
 .about-col-visual {
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
   align-self: stretch;
-  min-height: 440px;
+  min-height: 100%;
   overflow: hidden;
 }
 
 .about-image-frame {
+  position: relative;
   width: 100%;
   height: 100%;
+  min-height: 100%;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
   overflow: hidden;
+}
+
+.about-image-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(244, 248, 254, 0.3) 0%, rgba(244, 248, 254, 0) 15%);
 }
 
 .about-caregiver-img {
   width: 100%;
   height: 100%;
-  max-height: 490px;
+  min-height: 100%;
   object-fit: cover;
-  object-position: right bottom;
+  object-position: center center;
   display: block;
   transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1954,15 +2135,6 @@ a {
   .about-col-content {
     padding: 44px 32px 44px 44px;
   }
-  .about-curved-arc {
-    width: 520px;
-    height: 520px;
-    right: 24%;
-    border-width: 54px;
-  }
-  .about-caregiver-img {
-    max-height: 440px;
-  }
 }
 
 @media (max-width: 991.98px) {
@@ -1973,22 +2145,28 @@ a {
     border-radius: 28px;
   }
   .about-col-content {
-    padding: 38px 28px 24px 28px;
+    padding: 38px 28px 28px 28px;
   }
   .about-curved-arc {
     display: none;
   }
   .about-col-visual {
-    min-height: auto;
     width: 100%;
-    justify-content: center;
+    min-height: auto;
+  }
+  .about-image-frame {
+    height: 320px;
+    min-height: 320px;
+  }
+  .about-image-frame::before {
+    background: linear-gradient(180deg, rgba(244, 248, 254, 0.25) 0%, rgba(244, 248, 254, 0) 20%);
   }
   .about-caregiver-img {
-    max-height: 320px;
-    object-position: center bottom;
+    height: 100%;
+    object-position: center center;
   }
   .about-script-title .about-title-line {
-    font-size: clamp(1.35rem, 2.6vw + 0.4rem, 1.95rem);
+    font-size: clamp(1.4rem, 2.6vw + 0.4rem, 1.95rem);
   }
 }
 
@@ -1997,14 +2175,14 @@ a {
     border-radius: 22px;
   }
   .about-col-content {
-    padding: 30px 20px 20px 20px;
+    padding: 28px 20px 22px 20px;
+  }
+  .about-image-frame {
+    height: 240px;
+    min-height: 240px;
   }
   .about-script-title .about-title-line {
     font-size: clamp(1.3rem, 4.8vw, 1.65rem);
-  }
-
-  .about-caregiver-img {
-    max-height: 250px;
   }
 }
 
@@ -5585,7 +5763,7 @@ a {
   }
   .about-badge-rect {
     font-size: clamp(0.65rem, 2.4vw, 0.72rem);
-    padding: 3px 8px;
+    padding: 4px 10px;
     letter-spacing: 0.8px;
   }
   .vm-badge-pill {
@@ -5624,7 +5802,7 @@ a {
   }
   .about-badge-rect {
     font-size: 0.62rem;
-    padding: 2px 6px;
+    padding: 3px 8px;
     letter-spacing: 0.6px;
   }
   .vm-badge-pill {
