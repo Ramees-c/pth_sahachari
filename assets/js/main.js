@@ -5,73 +5,33 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
-  // 0. Fullscreen Page Loading Screen (Spinner Only - Scroll Locked)
+  // 0. Initial Setup & Responsive Small Loading Spinner Dismissal
   // --------------------------------------------------------------------------
-  const loadingScreen = document.getElementById('pthLoadingScreen');
-  const loaderStartTime = Date.now();
-  const MIN_SPINNER_DISPLAY_MS = 450;
-  let isLoaderDismissed = false;
-
-  const dismissLoadingScreen = () => {
-    if (isLoaderDismissed) return;
-    isLoaderDismissed = true;
-
-    if (!loadingScreen) {
-      document.body.classList.remove('loading-locked');
-      document.documentElement.classList.remove('loading-locked');
-      if (lenis) {
-        lenis.start();
-        lenis.resize();
-      }
-      return;
+  const hidePreloader = () => {
+    const loadingScreen = document.getElementById('pthLoadingScreen');
+    document.body.classList.remove('loading-locked');
+    document.documentElement.classList.remove('loading-locked');
+    if (loadingScreen && !loadingScreen.classList.contains('fade-out')) {
+      loadingScreen.classList.add('fade-out');
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 400);
     }
-
-    // Trigger smooth fade out transition
-    loadingScreen.classList.add('fade-out');
-
-    setTimeout(() => {
-      // Re-enable background scrolling
-      document.body.classList.remove('loading-locked');
-      document.documentElement.classList.remove('loading-locked');
-      loadingScreen.style.display = 'none';
-
-      // Resume Lenis smooth scroll and refresh ScrollTrigger
-      if (lenis) {
-        lenis.start();
-        lenis.resize();
-      }
-      if (typeof ScrollTrigger !== 'undefined') {
-        ScrollTrigger.refresh();
-      }
-    }, 450);
   };
 
-  // Prevent background scroll interactions while loading screen is visible
-  if (loadingScreen) {
-    loadingScreen.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
-    loadingScreen.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-    loadingScreen.addEventListener('keydown', (e) => {
-      // Block Arrow, PageUp, PageDown, Space, Home, End keys while loading
-      if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
-        e.preventDefault();
-      }
-    });
-  }
-
-  const scheduleDismiss = () => {
-    const elapsed = Date.now() - loaderStartTime;
-    const remainingTime = Math.max(0, MIN_SPINNER_DISPLAY_MS - elapsed);
-    setTimeout(dismissLoadingScreen, remainingTime);
-  };
-
+  // Dismiss smoothly once resources load, with quick fallback so user is never blocked
   if (document.readyState === 'complete') {
-    scheduleDismiss();
+    hidePreloader();
   } else {
-    window.addEventListener('load', scheduleDismiss);
+    window.addEventListener('load', hidePreloader);
+    setTimeout(hidePreloader, 1200);
   }
 
-  // Safety fallback: maximum 2.5s in case any external widget or iframe hangs
-  setTimeout(scheduleDismiss, 2500);
+  // Dynamic Copyright Year
+  const yearEl = document.getElementById('currentYear');
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+  }
 
   // --------------------------------------------------------------------------
   // 1. Lenis Smooth Scroll Initialisation
@@ -97,11 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       requestAnimationFrame(raf);
 
-      // Stop Lenis while initial loading screen is active
-      if (document.body.classList.contains('loading-locked')) {
-        lenis.stop();
-      }
-
       // GSAP ScrollTrigger Integration
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
@@ -111,6 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         gsap.ticker.lagSmoothing(0);
       }
+
+      window.addEventListener('load', () => {
+        if (lenis) lenis.resize();
+        if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+      });
     }
   } catch (err) {
     console.warn('Lenis Smooth Scroll init notice:', err);
@@ -237,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (targetId && targetId !== '#') {
         const targetSection = document.querySelector(targetId);
         if (targetSection) {
-          const top = targetSection.offsetTop;
+          const top = targetSection.getBoundingClientRect().top + scrollY;
           const height = targetSection.offsetHeight;
           if (scrollPos >= top && scrollPos < top + height) {
             link.classList.add('active-home');
@@ -271,6 +231,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
     }
+
+    // Dynamic Visibility for Floating Donation Button (Visible after Hero Section)
+    const floatingDonateBtn = document.getElementById('pthFloatingDonate');
+    const heroSection = document.getElementById('home') || document.querySelector('.pth-hero-container');
+    if (floatingDonateBtn && heroSection) {
+      const heroBottom = (heroSection.offsetTop + heroSection.offsetHeight) - 100;
+      if (scrollY > heroBottom) {
+        floatingDonateBtn.classList.add('is-visible');
+      } else {
+        floatingDonateBtn.classList.remove('is-visible');
+      }
+    }
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -278,6 +250,23 @@ document.addEventListener('DOMContentLoaded', () => {
     lenis.on('scroll', onScroll);
   }
   onScroll();
+
+  // Floating Donation Button: Viewport Observer for Seamless Triggering
+  const pthFloatingDonate = document.getElementById('pthFloatingDonate');
+  const heroEl = document.getElementById('home') || document.querySelector('.pth-hero-container');
+  if (pthFloatingDonate && heroEl && 'IntersectionObserver' in window) {
+    const heroObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        // When hero section is out of view (scrolled past), reveal floating donation button
+        if (!entry.isIntersecting) {
+          pthFloatingDonate.classList.add('is-visible');
+        } else {
+          pthFloatingDonate.classList.remove('is-visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    heroObserver.observe(heroEl);
+  }
 
   // --------------------------------------------------------------------------
   // 2b. Mobile Navbar Toggler State Sync & Outside Click Handling
@@ -341,344 +330,834 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 3. GSAP Animations & Interactions
+  // 3. GSAP Animations & Interactions (Hero Kinetic Typography & Scroll Triggers)
   // --------------------------------------------------------------------------
-  if (typeof gsap !== 'undefined') {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  let heroEntrancePlayed = false;
+
+  // Kinetic Hero Typography Engine: Splits Malayalam into true grapheme clusters (aksharas)
+  function splitIntoGraphemes(text) {
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      try {
+        const seg = new Intl.Segmenter('ml', { granularity: 'grapheme' });
+        return Array.from(seg.segment(text), (s) => s.segment);
+      } catch (e) {
+        // Fallback to regex
+      }
+    }
+    const matches = text.match(/[\u0D00-\u0D7F][\u0D3E-\u0D4D\u0D57\u0D62\u0D63]*|[^\u0D00-\u0D7F]/gu);
+    return matches || Array.from(text);
+  }
+
+  function splitLineIntoCharSpans(el) {
+    if (!el || el.dataset.letterSplitted === 'true') return;
+    el.dataset.letterSplitted = 'true';
+
+    const rawText = el.textContent.trim();
+    if (!rawText) return;
+    if (!el.getAttribute('aria-label')) {
+      el.setAttribute('aria-label', rawText);
+    }
+
+    const words = rawText.split(/\s+/);
+    const wordsHtml = words
+      .map((word) => {
+        const chars = splitIntoGraphemes(word);
+        const charsHtml = chars
+          .map((char) => `<span class="hero-char" aria-hidden="true">${char}</span>`)
+          .join('');
+        return `<span class="hero-word" aria-hidden="true">${charsHtml}</span>`;
+      })
+      .join('<span class="hero-space" aria-hidden="true">&nbsp;</span>');
+
+    el.innerHTML = wordsHtml;
+  }
+
+  function splitBioIntoWordSpans(el) {
+    if (!el || el.dataset.wordSplitted === 'true') return;
+    el.dataset.wordSplitted = 'true';
+
+    const rawText = el.textContent.trim();
+    if (!rawText) return;
+    if (!el.getAttribute('aria-label')) {
+      el.setAttribute('aria-label', rawText);
+    }
+
+    const words = rawText.split(/\s+/);
+    const wordsHtml = words
+      .map((word) => `<span class="hero-bio-word" aria-hidden="true">${word}</span>`)
+      .join(' ');
+
+    el.innerHTML = wordsHtml;
+  }
+
+  function replayHeroLetterWave() {
+    if (typeof gsap === 'undefined') return;
+    const chars = document.querySelectorAll('.hero-script-heading .hero-char');
+    if (!chars.length) return;
+
+    gsap.killTweensOf(chars);
+    gsap.fromTo(
+      chars,
+      {
+        y: -14,
+        scale: 1.18,
+        rotate: (i) => (i % 2 === 0 ? -4 : 4),
+        textShadow: (i, el) =>
+          el.closest('.script-line-blue')
+            ? '0 10px 24px rgba(0, 63, 148, 0.45)'
+            : '0 10px 24px rgba(2, 123, 21, 0.45)',
+      },
+      {
+        y: 0,
+        scale: 1,
+        rotate: 0,
+        textShadow: '',
+        duration: 0.65,
+        stagger: {
+          each: 0.03,
+          from: 'start',
+        },
+        ease: 'elastic.out(1.2, 0.42)',
+        clearProps: 'transform,textShadow',
+      }
+    );
+  }
+
+  function initHeroLetterTypography() {
+    splitLineIntoCharSpans(document.querySelector('.script-line-blue'));
+    splitLineIntoCharSpans(document.querySelector('.script-line-green'));
+    splitBioIntoWordSpans(document.querySelector('.hero-bio-text'));
+
+    // Interactive Replay: Clicking or tapping the hero heading re-ripples letters with a spring wave
+    const heroHeading = document.querySelector('.hero-script-heading');
+    if (heroHeading) {
+      heroHeading.addEventListener('click', () => {
+        replayHeroLetterWave();
+      });
+    }
+
+    // Replay when clicking the HOME navigation link
+    document.querySelectorAll('a[href="#home"]').forEach((homeLink) => {
+      homeLink.addEventListener('click', () => {
+        setTimeout(replayHeroLetterWave, 250);
+      });
+    });
+  }
+
+  // Pre-split the hero letters immediately upon script execution
+  initHeroLetterTypography();
+
+  // Play hero entrance immediately on first load
+  playHeroEntrance();
+
+  function playHeroEntrance() {
+    if (heroEntrancePlayed || typeof gsap === 'undefined') return;
+    heroEntrancePlayed = true;
+
+    // Respect user's motion preferences
+    const prefersReducedMotion =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      gsap.set(
+        '.hero-badge-pill, .hero-overline, .script-line-blue, .script-line-green, .hero-char, .hero-bio-word, .hero-bio-text, .hero-stat-chip, .btn, .hero-pure-img',
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          rotateX: 0,
+          filter: 'none',
+          clearProps: 'all',
+        }
+      );
+      return;
+    }
 
     // Navbar Entrance (Brand logo is always solid & visible, animate nav items cleanly)
-    tl.from('.navbar-nav .nav-item', {
-      y: -12,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.06,
-      clearProps: 'all',
-    })
-    .from('.nav-social-links a', {
-      y: -10,
-      opacity: 0,
-      duration: 0.4,
-      stagger: 0.05,
-      clearProps: 'all',
-    }, '-=0.2');
+    const navTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    navTl
+      .fromTo(
+        '.navbar-nav .nav-item',
+        { y: -16, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.55,
+          stagger: 0.05,
+          clearProps: 'transform,opacity',
+        }
+      )
+      .fromTo(
+        '.nav-social-links a',
+        { y: -12, opacity: 0, scale: 0.8 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.45,
+          stagger: 0.05,
+          ease: 'back.out(1.5)',
+          clearProps: 'transform,opacity',
+        },
+        '-=0.25'
+      );
 
-    // Hero Elements Entrance
+    // Hero Elements Entrance Timeline
     const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    heroTl.from('.hero-badge-pill, .hero-overline', {
-      y: 15,
-      opacity: 0,
-      duration: 0.6,
-    })
-    .from('.script-line-blue', {
-      y: 35,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'back.out(1.4)',
-    }, '-=0.4')
-    .from('.script-line-green', {
-      y: 35,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'back.out(1.4)',
-    }, '-=0.6')
-    .from('.hero-bio-text', {
-      y: 20,
-      opacity: 0,
-      duration: 0.7,
-    }, '-=0.4')
-    .from('.hero-stats-highlights .hero-stat-chip', {
-      y: 15,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      clearProps: 'opacity,transform',
-    }, '-=0.4')
-    .from('.hero-action-buttons .btn', {
-      y: 15,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.12,
-      ease: 'back.out(1.6)',
-      clearProps: 'all',
-    }, '-=0.3')
-    .from('.hero-pure-img', {
-      y: 25,
-      opacity: 0,
-      duration: 1,
-      ease: 'power2.out',
-      clearProps: 'opacity,transform',
-    }, '-=0.5');
 
-    // ScrollTrigger Animation for About Us Section
+    // 1. Tagline Pill drops in
+    heroTl.fromTo(
+      '.hero-badge-pill, .hero-overline',
+      { y: 18, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.65, ease: 'power2.out', clearProps: 'transform,opacity' }
+    );
+
+    // 2. Line 1: "അതിരുകൾക്കപ്പുറം" Letter-by-Letter Kinetic Wave
+    const blueChars = document.querySelectorAll('.script-line-blue .hero-char');
+    if (blueChars.length) {
+      heroTl.fromTo(
+        blueChars,
+        {
+          y: 38,
+          opacity: 0,
+          scale: 0.76,
+          rotateX: -45,
+          filter: 'blur(7px)',
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          rotateX: 0,
+          filter: 'blur(0px)',
+          duration: 0.72,
+          stagger: 0.04,
+          ease: 'back.out(1.5)',
+          clearProps: 'transform,opacity,filter',
+        },
+        '-=0.35'
+      );
+    } else {
+      heroTl.fromTo(
+        '.script-line-blue',
+        { y: 35, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.4)', clearProps: 'transform,opacity' },
+        '-=0.35'
+      );
+    }
+
+    // 3. Line 2: "കരുതലിന്റെ കരങ്ങൾ" Letter-by-Letter Kinetic Wave
+    const greenChars = document.querySelectorAll('.script-line-green .hero-char');
+    if (greenChars.length) {
+      heroTl.fromTo(
+        greenChars,
+        {
+          y: 38,
+          opacity: 0,
+          scale: 0.76,
+          rotateX: -45,
+          filter: 'blur(7px)',
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          rotateX: 0,
+          filter: 'blur(0px)',
+          duration: 0.72,
+          stagger: 0.04,
+          ease: 'back.out(1.5)',
+          clearProps: 'transform,opacity,filter',
+        },
+        '-=0.52'
+      );
+    } else {
+      heroTl.fromTo(
+        '.script-line-green',
+        { y: 35, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.4)', clearProps: 'transform,opacity' },
+        '-=0.52'
+      );
+    }
+
+    // 4. Bio Text Paragraph: Word-by-Word Smooth Rise
+    const bioWords = document.querySelectorAll('.hero-bio-text .hero-bio-word');
+    if (bioWords.length) {
+      heroTl.fromTo(
+        bioWords,
+        {
+          y: 18,
+          opacity: 0,
+          filter: 'blur(5px)',
+        },
+        {
+          y: 0,
+          opacity: 1,
+          filter: 'blur(0px)',
+          duration: 0.65,
+          stagger: 0.065,
+          ease: 'power2.out',
+          clearProps: 'transform,opacity,filter',
+        },
+        '-=0.4'
+      );
+    } else {
+      heroTl.fromTo(
+        '.hero-bio-text',
+        { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.75, ease: 'power2.out', clearProps: 'transform,opacity' },
+        '-=0.4'
+      );
+    }
+
+    heroTl
+      .fromTo(
+        '.hero-stats-highlights .hero-stat-chip',
+        { y: 18, opacity: 0, scale: 0.95 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.55,
+          stagger: 0.1,
+          ease: 'back.out(1.4)',
+          clearProps: 'transform,opacity',
+        },
+        '-=0.35'
+      )
+      .fromTo(
+        '.hero-action-buttons .btn',
+        { y: 18, opacity: 0, scale: 0.95 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.55,
+          stagger: 0.12,
+          ease: 'back.out(1.5)',
+          clearProps: 'transform,opacity',
+        },
+        '-=0.3'
+      )
+      .fromTo(
+        '.hero-pure-img',
+        { y: 25, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.9,
+          ease: 'power2.out',
+          clearProps: 'transform,opacity',
+        },
+        '-=0.5'
+      );
+  }
+
+  // Trigger hero entrance immediately on first load
+  playHeroEntrance();
+
+  if (typeof gsap !== 'undefined') {
+    // Number Counter Roll-Up Animation Helper
+    function animateCounter(el, duration = 1.8) {
+      if (!el || el.dataset.counterAnimated === 'true') return;
+      el.dataset.counterAnimated = 'true';
+
+      const originalText = el.textContent.trim();
+      const match = originalText.match(/^([^\d]*)([\d,]+)([^\d]*)$/);
+      if (!match) return;
+
+      const prefix = match[1] || '';
+      const rawNumberStr = match[2].replace(/,/g, '');
+      const suffix = match[3] || '';
+      const targetVal = parseInt(rawNumberStr, 10);
+      if (isNaN(targetVal)) return;
+
+      const hasLeadingZero = match[2].startsWith('0') && match[2].length > 1;
+      const padLength = match[2].length;
+      const hasCommas = match[2].includes(',');
+
+      const obj = { val: 0 };
+      gsap.to(obj, {
+        val: targetVal,
+        duration: duration,
+        ease: 'power2.out',
+        onUpdate: () => {
+          const current = Math.floor(obj.val);
+          let formatted;
+          if (hasLeadingZero) {
+            formatted = String(current).padStart(padLength, '0');
+          } else if (hasCommas || targetVal >= 1000) {
+            formatted = current.toLocaleString('en-US');
+          } else {
+            formatted = String(current);
+          }
+          el.textContent = prefix + formatted + suffix;
+        },
+        onComplete: () => {
+          el.textContent = originalText;
+        }
+      });
+    }
+
+    // ScrollTrigger Choreography
     if (typeof ScrollTrigger !== 'undefined') {
-      gsap.from('.about-col-content', {
+      // 1. Generic Section Header Reveals (Harmonious Staggered Rhythm)
+      const sectionHeaderConfigs = [
+        '.pth-vision-mission-section',
+        '.what-we-do-section',
+        '.pth-where-we-are-section',
+        '.pth-journey-section',
+        '.pth-volunteers-section',
+        '.pth-activities-section',
+        '.pth-gallery-section'
+      ];
+
+      sectionHeaderConfigs.forEach((selector) => {
+        const sec = document.querySelector(selector);
+        if (!sec) return;
+        const badge = sec.querySelector('.section-badge-pill, .where-badge-pill, .volunteers-badge-pill, .activities-badge-pill, .gallery-badge-pill');
+        const heading = sec.querySelector('.section-main-heading, .where-heading, .volunteers-heading, .activities-heading, .gallery-heading');
+        const sub = sec.querySelector('.section-sub-text, .where-desc, .volunteers-desc, .activities-sub-text, .gallery-sub-text');
+
+        const targets = [badge, heading, sub].filter(Boolean);
+        if (targets.length > 0) {
+          gsap.from(targets, {
+            scrollTrigger: {
+              trigger: sec,
+              start: 'top 82%',
+              once: true,
+            },
+            y: 26,
+            opacity: 0,
+            duration: 0.75,
+            stagger: 0.1,
+            ease: 'power3.out',
+            clearProps: 'transform,opacity',
+          });
+        }
+      });
+
+      // 2. About Us Section Content & Photo
+      gsap.from('.about-col-content > *', {
         scrollTrigger: {
           trigger: '.about-us-section',
           start: 'top 80%',
+          once: true,
         },
-        x: -30,
+        y: 24,
         opacity: 0,
-        duration: 0.9,
+        duration: 0.8,
+        stagger: 0.12,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.about-image-frame', {
         scrollTrigger: {
           trigger: '.about-us-section',
           start: 'top 80%',
+          once: true,
         },
-        x: 30,
+        x: 35,
         opacity: 0,
-        duration: 1,
+        scale: 0.96,
+        duration: 0.95,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Vision & Mission Section
+      // 3. Vision & Mission Cards Grid
       gsap.from('.pth-vision-mission-section .vm-col-card', {
         scrollTrigger: {
-          trigger: '.pth-vision-mission-section',
-          start: 'top 80%',
+          trigger: '.pth-vision-mission-section .vm-col-card',
+          start: 'top 82%',
+          once: true,
         },
         y: 35,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
+        scale: 0.98,
+        duration: 0.85,
+        stagger: 0.18,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.vm-values-strip', {
         scrollTrigger: {
           trigger: '.vm-values-strip',
-          start: 'top 85%',
+          start: 'top 88%',
+          once: true,
         },
         y: 25,
         opacity: 0,
-        duration: 0.7,
+        duration: 0.75,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for What We Do Cards & Visual Anchor
+      // 4. What We Do Cards & Visual Anchor
       gsap.from('.what-we-do-visual-card', {
         scrollTrigger: {
           trigger: '.what-we-do-section',
           start: 'top 80%',
+          once: true,
         },
-        x: -40,
+        x: -35,
         opacity: 0,
         duration: 0.9,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.what-we-do-section .service-stream-item', {
         scrollTrigger: {
           trigger: '.scrolling-services-wrap',
           start: 'top 85%',
+          once: true,
         },
-        y: 40,
+        y: 35,
         opacity: 0,
         duration: 0.7,
-        stagger: 0.15,
+        stagger: 0.08,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.what-we-do-strip', {
         scrollTrigger: {
           trigger: '.what-we-do-strip',
-          start: 'top 85%',
+          start: 'top 88%',
+          once: true,
         },
         y: 20,
         opacity: 0,
-        duration: 0.8,
+        duration: 0.75,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Where We Are Section
+      // 5. Where We Are Section
       gsap.from('.where-content-col', {
         scrollTrigger: {
           trigger: '.pth-where-we-are-section',
           start: 'top 80%',
+          once: true,
         },
-        x: -35,
+        x: -30,
         opacity: 0,
         duration: 0.9,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
+      });
+
+      gsap.from('.district-tab-btn', {
+        scrollTrigger: {
+          trigger: '.district-nav-tabs',
+          start: 'top 85%',
+          once: true,
+        },
+        scale: 0.92,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.04,
+        ease: 'back.out(1.4)',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.where-visual-col', {
         scrollTrigger: {
           trigger: '.pth-where-we-are-section',
           start: 'top 80%',
+          once: true,
         },
-        x: 35,
+        x: 30,
         opacity: 0,
-        duration: 1,
+        scale: 0.97,
+        duration: 0.95,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Care Throughout The Journey Section
+      // 6. Care Throughout The Journey
       gsap.from('.journey-col-item', {
         scrollTrigger: {
-          trigger: '.pth-journey-section',
-          start: 'top 80%',
+          trigger: '.pth-journey-section .journey-col-item',
+          start: 'top 82%',
+          once: true,
         },
         y: 35,
         opacity: 0,
         duration: 0.8,
-        stagger: 0.15,
+        stagger: 0.12,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.journey-assurance-strip', {
         scrollTrigger: {
           trigger: '.journey-assurance-strip',
           start: 'top 90%',
+          once: true,
         },
         y: 25,
         opacity: 0,
         duration: 0.8,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Impact & People Section
-      gsap.from('.kpi-hero-card', {
+      // 7. Impact & People Section + Counter Triggers
+      gsap.from('.impact-motto-wrapper', {
         scrollTrigger: {
           trigger: '.pth-impact-section',
           start: 'top 80%',
+          once: true,
+        },
+        y: 22,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        clearProps: 'transform,opacity',
+      });
+
+      gsap.from('.impact-block:first-of-type .row.align-items-end > *', {
+        scrollTrigger: {
+          trigger: '.impact-block:first-of-type',
+          start: 'top 82%',
+          once: true,
+        },
+        y: 20,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: 'power2.out',
+        clearProps: 'transform,opacity',
+      });
+
+      gsap.from('.kpi-hero-card', {
+        scrollTrigger: {
+          trigger: '.pth-impact-section .kpi-hero-card',
+          start: 'top 82%',
+          once: true,
         },
         y: 35,
         opacity: 0,
+        scale: 0.97,
         duration: 0.8,
         stagger: 0.12,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.people-hero-card', {
         scrollTrigger: {
           trigger: '.people-hero-card',
           start: 'top 85%',
+          once: true,
         },
         y: 30,
         opacity: 0,
+        scale: 0.97,
         duration: 0.8,
         stagger: 0.15,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Gallery Section
-      gsap.from('.gallery-card', {
+      gsap.from('.metric-strip-item', {
         scrollTrigger: {
-          trigger: '.pth-gallery-section',
-          start: 'top 80%',
+          trigger: '.strip-card-people',
+          start: 'top 88%',
+          once: true,
         },
-        y: 35,
+        y: 20,
         opacity: 0,
-        stagger: 0.1,
-        duration: 0.85,
+        duration: 0.6,
+        stagger: 0.05,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Wayanad Mega Homecare Drive
+      // Trigger Impact Numbers Animation
+      ScrollTrigger.create({
+        trigger: '.pth-impact-section',
+        start: 'top 75%',
+        once: true,
+        onEnter: () => {
+          document.querySelectorAll('.pth-impact-section .kpi-number, .pth-impact-section .people-kpi-number, .pth-impact-section .strip-stat-val').forEach((el) => {
+            animateCounter(el, 1.8);
+          });
+        }
+      });
+
+      // 8. Wayanad Mega Homecare Drive
       gsap.from('.wayanad-col-content', {
         scrollTrigger: {
           trigger: '.pth-wayanad-section',
           start: 'top 80%',
+          once: true,
         },
-        y: 30,
+        x: -30,
         opacity: 0,
         duration: 0.9,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.wayanad-photo-wrapper', {
         scrollTrigger: {
           trigger: '.pth-wayanad-section',
           start: 'top 80%',
+          once: true,
         },
-        y: 35,
+        x: 30,
         opacity: 0,
         scale: 0.96,
-        duration: 1,
+        duration: 0.95,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.wayanad-stat-item', {
         scrollTrigger: {
           trigger: '.wayanad-stats-strip',
           start: 'top 85%',
+          once: true,
         },
         y: 25,
         opacity: 0,
-        stagger: 0.12,
-        duration: 0.8,
+        stagger: 0.1,
+        duration: 0.75,
         ease: 'power2.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Trained Volunteers Section
+      // Trigger Wayanad Numbers Animation
+      ScrollTrigger.create({
+        trigger: '.pth-wayanad-section',
+        start: 'top 75%',
+        once: true,
+        onEnter: () => {
+          document.querySelectorAll('.pth-wayanad-section .stat-number').forEach((el) => {
+            animateCounter(el, 1.6);
+          });
+        }
+      });
+
+      // 9. Volunteers Section
       gsap.from('.volunteer-col-content', {
         scrollTrigger: {
           trigger: '.pth-volunteers-section',
           start: 'top 80%',
+          once: true,
         },
         x: -35,
         opacity: 0,
         duration: 0.9,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
       gsap.from('.volunteer-col-visual', {
         scrollTrigger: {
           trigger: '.pth-volunteers-section',
           start: 'top 80%',
+          once: true,
         },
         x: 35,
         opacity: 0,
-        duration: 1,
+        scale: 0.96,
+        duration: 0.95,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Flag-off Milestone Section
-      gsap.from('.flagoff-card-wrapper', {
+      // 10. Flag-off Milestone Section
+      gsap.from('.flagoff-photo-container', {
         scrollTrigger: {
           trigger: '.pth-flagoff-section',
-          start: 'top 85%',
+          start: 'top 82%',
+          once: true,
+        },
+        x: -30,
+        opacity: 0,
+        scale: 0.96,
+        duration: 0.9,
+        ease: 'power3.out',
+        clearProps: 'transform,opacity',
+      });
+
+      gsap.from('.flagoff-content-col', {
+        scrollTrigger: {
+          trigger: '.pth-flagoff-section',
+          start: 'top 82%',
+          once: true,
+        },
+        x: 30,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        clearProps: 'transform,opacity',
+      });
+
+      // 11. Activities Section
+      gsap.from('.activities-slider', {
+        scrollTrigger: {
+          trigger: '.pth-activities-section',
+          start: 'top 80%',
+          once: true,
         },
         y: 35,
         opacity: 0,
         duration: 0.9,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'transform,opacity',
       });
 
-      // ScrollTrigger Animation for Activities Section
-      gsap.from('.activities-slider', {
+      // 12. Gallery Section
+      gsap.from('.gallery-card', {
         scrollTrigger: {
-          trigger: '.pth-activities-section',
+          trigger: '.pth-gallery-section',
           start: 'top 80%',
+          once: true,
         },
-        y: 40,
+        y: 30,
         opacity: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-        clearProps: 'all',
+        scale: 0.96,
+        stagger: 0.06,
+        duration: 0.8,
+        ease: 'power2.out',
+        clearProps: 'transform,opacity',
+      });
+
+      // 13. Footer Section
+      gsap.from('.footer-col-brand, .footer-col-links, .footer-col-contact', {
+        scrollTrigger: {
+          trigger: '.pth-footer',
+          start: 'top 88%',
+          once: true,
+        },
+        y: 25,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 0.8,
+        ease: 'power2.out',
+        clearProps: 'transform,opacity',
+      });
+
+      // 14. Subtle Parallax Scrub on Ambient Glow Elements
+      gsap.utils.toArray('.vm-ambient-glow, .impact-ambient-blob, .wayanad-ambient-glow, .flagoff-orb, .footer-ambient-glow').forEach((glow) => {
+        if (glow.parentElement) {
+          gsap.to(glow, {
+            y: -35,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: glow.parentElement,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5,
+            }
+          });
+        }
       });
     }
   }
@@ -812,9 +1291,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Automatic Facebook Video / Image Story Card Initialization in the Slider
   document.querySelectorAll('.portrait-video-card').forEach((card) => {
-    const rawUrl = card.getAttribute('data-fb-url') || 
-                   card.getAttribute('data-video-url') || 
-                   card.getAttribute('data-post-url');
+    const rawUrl = card.getAttribute('data-fb-url') ||
+      card.getAttribute('data-video-url') ||
+      card.getAttribute('data-post-url');
     let iframe = card.querySelector('.portrait-fb-iframe') || card.querySelector('iframe');
     const existingImg = card.querySelector('.portrait-video-img');
 
@@ -877,16 +1356,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (videoModalEl) {
     videoModalEl.addEventListener('show.bs.modal', function (event) {
+      if (lenis) lenis.stop();
       const trigger = event.relatedTarget;
       if (!trigger) return;
 
       const cardIframe = trigger.querySelector('.portrait-fb-iframe') || trigger.querySelector('iframe');
       const cardSrc = cardIframe ? cardIframe.getAttribute('src') : null;
 
-      const rawUrl = trigger.getAttribute('data-fb-url') || 
-                     trigger.getAttribute('data-video-url') || 
-                     trigger.getAttribute('data-post-url') ||
-                     trigger.getAttribute('data-video');
+      const rawUrl = trigger.getAttribute('data-fb-url') ||
+        trigger.getAttribute('data-video-url') ||
+        trigger.getAttribute('data-post-url') ||
+        trigger.getAttribute('data-video');
 
       const isVideo = trigger.classList.contains('is-video') || (rawUrl ? isFacebookVideoUrl(rawUrl) : false);
 
@@ -937,6 +1417,7 @@ document.addEventListener('DOMContentLoaded', () => {
         videoWrapper.classList.remove('is-image-modal', 'is-video-modal');
         videoWrapper.style.aspectRatio = '9 / 16';
       }
+      if (lenis) lenis.start();
     });
   }
 
@@ -946,6 +1427,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (galleryModalEl) {
     galleryModalEl.addEventListener('show.bs.modal', function (event) {
+      if (lenis) lenis.stop();
       const trigger = event.relatedTarget;
       if (!trigger) return;
 
@@ -959,6 +1441,60 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modalGalleryImg) {
         modalGalleryImg.src = '';
       }
+      if (lenis) lenis.start();
     });
   }
+
+  // Donation & Care Modals Lenis Scroll Integration
+  ['donationModal', 'careAssistanceModal'].forEach(function (modalId) {
+    const modalEl = document.getElementById(modalId);
+    if (modalEl) {
+      modalEl.addEventListener('show.bs.modal', function () {
+        if (lenis) lenis.stop();
+        document.documentElement.classList.add('modal-open');
+      });
+      modalEl.addEventListener('hidden.bs.modal', function () {
+        if (lenis) lenis.start();
+        document.documentElement.classList.remove('modal-open');
+      });
+    }
+  });
 });
+
+// Copy to Clipboard Utility for Donation Modal
+window.copyToClipboard = function (text, btnElement) {
+  function showCopied() {
+    if (!btnElement) return;
+    const origHtml = btnElement.innerHTML;
+    btnElement.innerHTML = '<i class="bi bi-check2"></i> <span>Copied!</span>';
+    btnElement.classList.add('text-success');
+    setTimeout(function () {
+      btnElement.innerHTML = origHtml;
+      btnElement.classList.remove('text-success');
+    }, 2000);
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(showCopied).catch(function () {
+      fallbackCopy(text, showCopied);
+    });
+  } else {
+    fallbackCopy(text, showCopied);
+  }
+};
+
+function fallbackCopy(text, callback) {
+  try {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    if (callback) callback();
+  } catch (err) {
+    console.error('Copy failed:', err);
+  }
+}
