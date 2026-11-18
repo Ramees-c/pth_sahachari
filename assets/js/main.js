@@ -28,10 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Dynamic Copyright Year
+  const currentFullYear = new Date().getFullYear();
   const yearEl = document.getElementById('currentYear');
   if (yearEl) {
-    yearEl.textContent = new Date().getFullYear();
+    yearEl.textContent = currentFullYear;
   }
+  document.querySelectorAll('.current-year, [data-current-year]').forEach((el) => {
+    el.textContent = currentFullYear;
+  });
 
   // --------------------------------------------------------------------------
   // 1. Lenis Smooth Scroll Initialisation
@@ -41,23 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     if (typeof Lenis !== 'undefined') {
       lenis = new Lenis({
-        duration: 1.2,
+        duration: 1.15,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         gestureOrientation: 'vertical',
         smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 2,
+        wheelMultiplier: 0.95,
+        touchMultiplier: 1.5,
+        syncTouch: false,
         infinite: false,
+        autoResize: true,
       });
 
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
+      window.lenis = lenis;
 
-      // GSAP ScrollTrigger Integration
+      // GSAP ScrollTrigger Integration (Unified Single Ticker)
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
         lenis.on('scroll', ScrollTrigger.update);
@@ -65,12 +67,29 @@ document.addEventListener('DOMContentLoaded', () => {
           lenis.raf(time * 1000);
         });
         gsap.ticker.lagSmoothing(0);
+      } else {
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
       }
 
       window.addEventListener('load', () => {
         if (lenis) lenis.resize();
         if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
       });
+
+      window.addEventListener('resize', () => {
+        if (lenis) lenis.resize();
+      }, { passive: true });
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          if (lenis) lenis.resize();
+          if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+        });
+      }
     }
   } catch (err) {
     console.warn('Lenis Smooth Scroll init notice:', err);
@@ -88,7 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
           const offsetVal = isServiceChip ? -95 : -80;
 
           if (lenis) {
-            lenis.scrollTo(targetElement, { offset: offsetVal, duration: 1.1 });
+            lenis.scrollTo(targetElement, {
+              offset: offsetVal,
+              duration: 1.15,
+              easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+              immediate: false,
+              lock: false,
+            });
           } else {
             const targetPos = targetElement.getBoundingClientRect().top + window.pageYOffset + offsetVal;
             window.scrollTo({ top: targetPos, behavior: 'smooth' });
@@ -236,8 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const floatingDonateBtn = document.getElementById('pthFloatingDonate');
     const heroSection = document.getElementById('home') || document.querySelector('.pth-hero-container');
     if (floatingDonateBtn && heroSection) {
-      const heroBottom = (heroSection.offsetTop + heroSection.offsetHeight) - 100;
-      if (scrollY > heroBottom) {
+      const triggerThreshold = (heroSection.offsetTop + heroSection.offsetHeight) - 120;
+      if (scrollY > triggerThreshold) {
         floatingDonateBtn.classList.add('is-visible');
       } else {
         floatingDonateBtn.classList.remove('is-visible');
@@ -246,27 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
   if (lenis) {
     lenis.on('scroll', onScroll);
   }
   onScroll();
-
-  // Floating Donation Button: Viewport Observer for Seamless Triggering
-  const pthFloatingDonate = document.getElementById('pthFloatingDonate');
-  const heroEl = document.getElementById('home') || document.querySelector('.pth-hero-container');
-  if (pthFloatingDonate && heroEl && 'IntersectionObserver' in window) {
-    const heroObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        // When hero section is out of view (scrolled past), reveal floating donation button
-        if (!entry.isIntersecting) {
-          pthFloatingDonate.classList.add('is-visible');
-        } else {
-          pthFloatingDonate.classList.remove('is-visible');
-        }
-      });
-    }, { threshold: 0.1 });
-    heroObserver.observe(heroEl);
-  }
 
   // --------------------------------------------------------------------------
   // 2b. Mobile Navbar Toggler State Sync & Outside Click Handling
@@ -1445,19 +1454,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Donation & Care Modals Lenis Scroll Integration
-  ['donationModal', 'careAssistanceModal'].forEach(function (modalId) {
-    const modalEl = document.getElementById(modalId);
-    if (modalEl) {
-      modalEl.addEventListener('show.bs.modal', function () {
-        if (lenis) lenis.stop();
-        document.documentElement.classList.add('modal-open');
-      });
-      modalEl.addEventListener('hidden.bs.modal', function () {
-        if (lenis) lenis.start();
-        document.documentElement.classList.remove('modal-open');
-      });
-    }
+  // Universal Modal Scroll & Lenis Integration for ALL Modals
+  document.querySelectorAll('.modal').forEach(function (modalEl) {
+    modalEl.addEventListener('show.bs.modal', function () {
+      if (lenis) lenis.stop();
+      document.body.classList.add('modal-open');
+      document.documentElement.classList.add('modal-open');
+    });
+    modalEl.addEventListener('hidden.bs.modal', function () {
+      setTimeout(function () {
+        if (!document.querySelector('.modal.show')) {
+          if (lenis) lenis.start();
+          document.body.classList.remove('modal-open');
+          document.documentElement.classList.remove('modal-open');
+        }
+      }, 50);
+    });
   });
 });
 
