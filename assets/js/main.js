@@ -141,6 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
 
+          // Nav Link Item Active State Polish
+          if (this.classList.contains('nav-link-item')) {
+            document.querySelectorAll('.pth-navbar .nav-link-item').forEach(l => l.classList.remove('active-home'));
+            this.classList.add('active-home');
+          }
+
           // Close mobile menu collapse if open
           const navCollapse = document.getElementById('mainNav');
           if (navCollapse && navCollapse.classList.contains('show') && typeof bootstrap !== 'undefined') {
@@ -327,9 +333,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Automatically close mobile menu if resizing to desktop (>= 992px)
+    // Automatically close mobile menu if resizing to desktop (>= 1200px)
     window.addEventListener('resize', () => {
-      if (window.innerWidth >= 992 && pthNavCollapse.classList.contains('show')) {
+      if (window.innerWidth >= 1200 && pthNavCollapse.classList.contains('show')) {
         if (typeof bootstrap !== 'undefined') {
           const bsCollapse = bootstrap.Collapse.getOrCreateInstance(pthNavCollapse);
           if (bsCollapse) bsCollapse.hide();
@@ -1202,10 +1208,170 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --------------------------------------------------------------------------
-  // 5. Activities Portrait Video Slider (Swiper) & Video Modal Handlers
+  // 5. Activities Facebook Video & Story Slider (Swiper) & Modal Handlers
   // --------------------------------------------------------------------------
+  function isFacebookReelUrl(url) {
+    if (!url) return false;
+    return /\/(?:reel|reels|share\/r)\b/i.test(url) || (url.includes('plugins/video.php') && url.includes('height=476'));
+  }
+
+  function isFacebookVideoUrl(url) {
+    if (!url) return false;
+    return /\/(?:share\/v|share\/r|reel|reels|videos|watch)\b/i.test(url) || url.includes('plugins/video.php');
+  }
+
+  function getContentAspectRatio(el) {
+    if (!el) return '9 / 16';
+    const attr = el.getAttribute('data-aspect-ratio');
+    if (attr && attr.trim()) return attr.trim();
+
+    if (el.classList.contains('is-reel')) return '9 / 16';
+    if (el.classList.contains('is-landscape')) return '16 / 9';
+    if (el.classList.contains('is-square')) return '1 / 1';
+    if (el.classList.contains('is-image-post')) return '4 / 3';
+
+    const rawUrl = el.getAttribute('data-fb-url') ||
+      el.getAttribute('data-video-url') ||
+      el.getAttribute('data-post-url') ||
+      el.getAttribute('data-video') || '';
+
+    if (isFacebookReelUrl(rawUrl)) return '9 / 16';
+    if (isFacebookVideoUrl(rawUrl)) return '16 / 9';
+    return '4 / 3';
+  }
+
+  function formatFacebookEmbedUrl(url, isVideo = false, targetWidth = null) {
+    if (!url) return '';
+
+    // YouTube handler
+    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+    if (ytMatch) {
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`;
+    }
+
+    // If it's already an embed plugin URL
+    if (url.includes('facebook.com/plugins/')) {
+      try {
+        const parsed = new URL(url);
+        parsed.searchParams.delete('height');
+        parsed.searchParams.delete('width');
+        parsed.searchParams.set('show_text', 'false');
+
+        const isVid = isVideo || parsed.pathname.includes('video.php');
+        if (isVid) {
+          parsed.searchParams.set('autoplay', 'true');
+          if (targetWidth) {
+            parsed.searchParams.set('width', Math.round(targetWidth).toString());
+          }
+        } else {
+          // post.php accepts width between 350 and 750
+          const w = targetWidth ? Math.min(750, Math.max(350, Math.round(targetWidth))) : 500;
+          parsed.searchParams.set('width', w.toString());
+        }
+        return parsed.toString();
+      } catch (e) {
+        let clean = url.replace(/([?&])height=\d+&?/, '$1').replace(/([?&])width=\d+&?/, '$1');
+        clean = clean.replace(/[?&]show_text=[^&]+/, '');
+        clean += (clean.includes('?') ? '&' : '?') + 'show_text=false';
+        if (isVideo && !clean.includes('autoplay=')) {
+          clean += '&autoplay=true';
+        }
+        return clean;
+      }
+    }
+
+    // Facebook Share URL handling (video reel vs photo/image post)
+    const isVid = isVideo || isFacebookVideoUrl(url);
+    const pluginType = isVid ? 'video.php' : 'post.php';
+    const encodedHref = encodeURIComponent(url);
+
+    let embedUrl = `https://www.facebook.com/plugins/${pluginType}?href=${encodedHref}&show_text=false`;
+    if (isVid) {
+      embedUrl += '&autoplay=true';
+      if (targetWidth) {
+        embedUrl += `&width=${Math.round(targetWidth)}`;
+      }
+    } else {
+      const w = targetWidth ? Math.min(750, Math.max(350, Math.round(targetWidth))) : 500;
+      embedUrl += `&width=${w}`;
+    }
+    return embedUrl;
+  }
+
+  // Automatic Facebook Video / Image Story Card Initialization in the Slider
+  document.querySelectorAll('.portrait-video-card').forEach((card) => {
+    const rawUrl = card.getAttribute('data-fb-url') ||
+      card.getAttribute('data-video-url') ||
+      card.getAttribute('data-post-url');
+    let iframe = card.querySelector('.portrait-fb-iframe') || card.querySelector('iframe');
+    const existingImg = card.querySelector('.portrait-video-img');
+
+    // Auto-adjust aspect ratio from content / attributes
+    const ratio = getContentAspectRatio(card);
+    card.setAttribute('data-aspect-ratio', ratio);
+
+    const isVideo = isFacebookVideoUrl(rawUrl) || card.classList.contains('is-video');
+    const isReel = isFacebookReelUrl(rawUrl) || ratio === '9 / 16';
+
+    if (isVideo) {
+      card.classList.add('is-video');
+      card.classList.remove('is-image-post');
+      if (isReel) {
+        card.classList.add('is-reel');
+        card.classList.remove('is-landscape');
+      } else {
+        card.classList.add('is-landscape');
+        card.classList.remove('is-reel');
+      }
+    } else {
+      card.classList.add('is-image-post');
+      card.classList.remove('is-video', 'is-reel');
+      if (ratio === '1 / 1') {
+        card.classList.add('is-square');
+      }
+    }
+
+    if (rawUrl && (rawUrl.includes('facebook.com') || rawUrl.includes('fb.watch'))) {
+      if (existingImg && iframe) {
+        existingImg.remove();
+      }
+
+      const embedUrl = formatFacebookEmbedUrl(rawUrl, false);
+
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.className = 'portrait-fb-iframe';
+        iframe.setAttribute('src', embedUrl);
+        iframe.setAttribute('scrolling', 'no');
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', 'true');
+        iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share');
+        iframe.setAttribute('loading', 'lazy');
+        card.insertBefore(iframe, card.firstChild);
+      } else {
+        const currentSrc = iframe.getAttribute('src');
+        if (!currentSrc) {
+          iframe.setAttribute('src', embedUrl);
+        } else if (currentSrc.includes('show_text=true')) {
+          iframe.setAttribute('src', formatFacebookEmbedUrl(currentSrc, false));
+        }
+      }
+
+      // Route all Facebook share cards to videoPlayerModal for clean lightbox viewing
+      card.setAttribute('data-bs-target', '#videoPlayerModal');
+    } else {
+      // Fallback for non-Facebook static image slides if any remain
+      const imgSrc = card.getAttribute('data-img-src') || card.getAttribute('data-thumb');
+      if (existingImg && (!existingImg.src || existingImg.src === '#' || existingImg.getAttribute('src') === '')) {
+        if (imgSrc) existingImg.src = imgSrc;
+      }
+    }
+  });
+
+  // Swiper initialization
+  let activitiesSwiper = null;
   if (typeof Swiper !== 'undefined') {
-    new Swiper('.activities-slider', {
+    activitiesSwiper = new Swiper('.activities-slider', {
       slidesPerView: 'auto',
       spaceBetween: 16,
       loop: true,
@@ -1245,129 +1411,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --------------------------------------------------------------------------
-  // Helper: Format Facebook Share URLs (Videos & Image Posts) into Embed Plugin URLs
-  // Always enforces show_text=false (Hides post titles, author, and captions)
-  // --------------------------------------------------------------------------
-  function isFacebookVideoUrl(url) {
-    if (!url) return false;
-    return /\/(?:share\/v|share\/r|reel|videos|watch)\b/i.test(url) || url.includes('plugins/video.php');
-  }
-
-  function formatFacebookEmbedUrl(url, autoplay = false) {
-    if (!url) return '';
-
-    // If it's already an embed plugin URL
-    if (url.includes('facebook.com/plugins/')) {
-      let cleanUrl = url;
-      // Enforce show_text=false so post title, author, and caption never show
-      if (cleanUrl.includes('show_text=true')) {
-        cleanUrl = cleanUrl.replace('show_text=true', 'show_text=false');
-      } else if (!cleanUrl.includes('show_text=')) {
-        cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + 'show_text=false';
-      }
-      if (cleanUrl.includes('plugins/post.php') && !cleanUrl.includes('width=')) {
-        cleanUrl += '&width=500';
-      }
-      if (autoplay && !cleanUrl.includes('autoplay=true')) {
-        cleanUrl += '&autoplay=true';
-      } else if (!autoplay && cleanUrl.includes('autoplay=true')) {
-        cleanUrl = cleanUrl.replace(/[?&]autoplay=true/, '');
-      }
-      return cleanUrl;
-    }
-
-    // YouTube handler
-    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
-    if (ytMatch) {
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=${autoplay ? '1' : '0'}&rel=0`;
-    }
-
-    // Facebook Share URL handling (video reel vs photo/image post)
-    const isVideo = isFacebookVideoUrl(url);
-    const pluginType = isVideo ? 'video.php' : 'post.php';
-    const encodedHref = encodeURIComponent(url);
-
-    let embedUrl = `https://www.facebook.com/plugins/${pluginType}?href=${encodedHref}&show_text=false`;
-    if (!isVideo) {
-      embedUrl += '&width=500';
-    }
-    if (isVideo && autoplay) {
-      embedUrl += '&autoplay=true';
-    }
-    return embedUrl;
-  }
-
-  // Automatic Facebook Video / Image Story Card Initialization in the Slider
-  document.querySelectorAll('.portrait-video-card').forEach((card) => {
-    const rawUrl = card.getAttribute('data-fb-url') ||
-      card.getAttribute('data-video-url') ||
-      card.getAttribute('data-post-url');
-    let iframe = card.querySelector('.portrait-fb-iframe') || card.querySelector('iframe');
-    const existingImg = card.querySelector('.portrait-video-img');
-
-    if (rawUrl && (rawUrl.includes('facebook.com') || rawUrl.includes('fb.watch'))) {
-      // For Facebook share URLs: NEVER show local <img> - remove it completely
-      if (existingImg) {
-        existingImg.remove();
-      }
-
-      const isVideo = isFacebookVideoUrl(rawUrl) || card.classList.contains('is-video');
-      const embedUrl = formatFacebookEmbedUrl(rawUrl, false);
-
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.className = 'portrait-fb-iframe';
-        iframe.setAttribute('src', embedUrl);
-        iframe.setAttribute('scrolling', 'no');
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allowfullscreen', 'true');
-        iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share');
-        iframe.setAttribute('loading', 'lazy');
-        card.insertBefore(iframe, card.firstChild);
-      } else {
-        const currentSrc = iframe.getAttribute('src');
-        if (!currentSrc) {
-          iframe.setAttribute('src', embedUrl);
-        } else if (currentSrc.includes('show_text=true') || (!isVideo && !currentSrc.includes('width='))) {
-          iframe.setAttribute('src', formatFacebookEmbedUrl(currentSrc, false));
-        }
-      }
-
-      // Configure card post type classes & natural orientation
-      if (isVideo) {
-        card.classList.add('is-video');
-        card.classList.remove('is-image-post');
-      } else {
-        card.classList.add('is-image-post');
-        card.classList.remove('is-video');
-        const customCardRatio = card.getAttribute('data-aspect-ratio');
-        if (customCardRatio) {
-          card.style.aspectRatio = customCardRatio;
-        }
-      }
-
-      // Route all Facebook share cards to videoPlayerModal for clean lightbox viewing
-      card.setAttribute('data-bs-target', '#videoPlayerModal');
-    } else {
-      // Fallback for non-Facebook static image slides if any remain
-      const imgSrc = card.getAttribute('data-img-src') || card.getAttribute('data-thumb');
-      if (existingImg && (!existingImg.src || existingImg.src === '#' || existingImg.getAttribute('src') === '')) {
-        if (imgSrc) existingImg.src = imgSrc;
-      }
-    }
-  });
-
-  // Video & Story Lightbox Modal (Pure Media - Fixed Height & Auto Width for Content)
+  // Video & Story Lightbox Modal (Auto Width & Height for Content)
   const videoModalEl = document.getElementById('videoPlayerModal');
   const videoIframe = document.getElementById('modalVideoIframe');
   const videoWrapper = videoModalEl ? videoModalEl.querySelector('.portrait-video-wrapper') : null;
+  let activeModalTrigger = null;
+
+  function setModalContentDimensions(trigger) {
+    if (!videoWrapper || !trigger) return null;
+    const ratio = getContentAspectRatio(trigger);
+    let ratioVal = 9 / 16;
+    if (ratio.includes('/')) {
+      const parts = ratio.split('/').map(p => parseFloat(p.trim()));
+      if (parts.length === 2 && parts[0] > 0 && parts[1] > 0) {
+        ratioVal = parts[0] / parts[1];
+      }
+    }
+
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    const maxW = Math.min(screenW * 0.92, ratioVal >= 1.5 ? 880 : ratioVal >= 1.1 ? 680 : 500);
+    const maxH = Math.min(screenH * 0.82, 740);
+
+    let targetW, targetH;
+    if (maxW / ratioVal <= maxH) {
+      targetW = maxW;
+      targetH = maxW / ratioVal;
+    } else {
+      targetH = maxH;
+      targetW = maxH * ratioVal;
+    }
+
+    targetW = Math.round(targetW);
+    targetH = Math.round(targetH);
+
+    videoWrapper.style.width = `${targetW}px`;
+    videoWrapper.style.height = `${targetH}px`;
+    videoWrapper.style.aspectRatio = ratio;
+
+    const isReel = trigger.classList.contains('is-reel') || ratio === '9 / 16';
+    videoWrapper.classList.remove('is-reel-modal', 'is-landscape-modal', 'is-square-modal', 'is-image-modal', 'is-video-modal');
+    if (isReel) {
+      videoWrapper.classList.add('is-reel-modal', 'is-video-modal');
+    } else if (ratioVal >= 1.5) {
+      videoWrapper.classList.add('is-landscape-modal', 'is-video-modal');
+    } else if (Math.abs(ratioVal - 1) < 0.15) {
+      videoWrapper.classList.add('is-square-modal');
+    } else {
+      videoWrapper.classList.add('is-image-modal');
+    }
+
+    return { targetW, targetH };
+  }
 
   if (videoModalEl) {
     videoModalEl.addEventListener('show.bs.modal', function (event) {
       if (lenis) lenis.stop();
+      if (activitiesSwiper && activitiesSwiper.autoplay) {
+        activitiesSwiper.autoplay.stop();
+      }
+
       const trigger = event.relatedTarget;
       if (!trigger) return;
+      activeModalTrigger = trigger;
 
       const cardIframe = trigger.querySelector('.portrait-fb-iframe') || trigger.querySelector('iframe');
       const cardSrc = cardIframe ? cardIframe.getAttribute('src') : null;
@@ -1379,38 +1485,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const isVideo = trigger.classList.contains('is-video') || (rawUrl ? isFacebookVideoUrl(rawUrl) : false);
 
-      // Dynamically adjust modal aspect ratio and layout mode based on content type
-      if (videoWrapper) {
-        const customRatio = trigger.getAttribute('data-aspect-ratio');
-        if (customRatio) {
-          videoWrapper.style.aspectRatio = customRatio;
-          if (isVideo) {
-            videoWrapper.classList.remove('is-image-modal');
-            videoWrapper.classList.add('is-video-modal');
-          } else {
-            videoWrapper.classList.remove('is-video-modal');
-            videoWrapper.classList.add('is-image-modal');
-          }
-        } else if (isVideo) {
-          videoWrapper.classList.remove('is-image-modal');
-          videoWrapper.classList.add('is-video-modal');
-          videoWrapper.style.aspectRatio = '9 / 16';
-        } else {
-          videoWrapper.classList.remove('is-video-modal');
-          videoWrapper.classList.add('is-image-modal');
-          videoWrapper.style.aspectRatio = '4 / 3';
-        }
-      }
+      const dims = setModalContentDimensions(trigger);
+      const targetW = dims ? dims.targetW : null;
 
-      // Prioritize the exact working embed URL from the card's active iframe
+      // Prioritize clean embed URL with target width
       let embedUrl = '';
-      if (cardSrc && cardSrc.includes('facebook.com/plugins/')) {
-        embedUrl = cardSrc;
-        if (isVideo && !embedUrl.includes('autoplay=true')) {
-          embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'autoplay=true';
-        }
-      } else if (rawUrl) {
-        embedUrl = formatFacebookEmbedUrl(rawUrl, isVideo);
+      const sourceUrl = cardSrc || rawUrl;
+      if (sourceUrl) {
+        embedUrl = formatFacebookEmbedUrl(sourceUrl, isVideo, targetW);
       }
 
       if (videoIframe && embedUrl) {
@@ -1423,10 +1505,22 @@ document.addEventListener('DOMContentLoaded', () => {
         videoIframe.setAttribute('src', '');
       }
       if (videoWrapper) {
-        videoWrapper.classList.remove('is-image-modal', 'is-video-modal');
-        videoWrapper.style.aspectRatio = '9 / 16';
+        videoWrapper.style.width = '';
+        videoWrapper.style.height = '';
+        videoWrapper.style.aspectRatio = '';
+        videoWrapper.classList.remove('is-reel-modal', 'is-landscape-modal', 'is-square-modal', 'is-image-modal', 'is-video-modal');
+      }
+      activeModalTrigger = null;
+      if (activitiesSwiper && activitiesSwiper.autoplay) {
+        activitiesSwiper.autoplay.start();
       }
       if (lenis) lenis.start();
+    });
+
+    window.addEventListener('resize', function () {
+      if (videoModalEl.classList.contains('show') && activeModalTrigger) {
+        setModalContentDimensions(activeModalTrigger);
+      }
     });
   }
 
@@ -1471,6 +1565,56 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 50);
     });
   });
+
+  // --------------------------------------------------------------------------
+  // FAQ Sticky Note Memo Accordion (Screenshot-Style Interactive Toggling)
+  // --------------------------------------------------------------------------
+  const initFaqNotes = () => {
+    const faqCards = document.querySelectorAll('.faq-note-card');
+    if (!faqCards.length) return;
+
+    faqCards.forEach((card) => {
+      const toggleText = card.querySelector('.faq-toggle-text');
+
+      const toggleCard = (e) => {
+        // Prevent accidental toggle if clicking on any embedded links
+        if (e.target.closest('a')) return;
+
+        const isOpen = card.classList.contains('is-open');
+
+        if (isOpen) {
+          card.classList.remove('is-open');
+          card.setAttribute('aria-expanded', 'false');
+          if (toggleText) toggleText.textContent = 'click to see answer';
+        } else {
+          card.classList.add('is-open');
+          card.setAttribute('aria-expanded', 'true');
+          if (toggleText) toggleText.textContent = 'click to close';
+        }
+
+        // Notify smooth scrolling engines of height change
+        if (window.lenis) {
+          window.lenis.resize();
+        }
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.refresh();
+        }
+      };
+
+      // Toggle on card click
+      card.addEventListener('click', toggleCard);
+
+      // Keyboard accessibility (Enter / Spacebar)
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleCard(e);
+        }
+      });
+    });
+  };
+
+  initFaqNotes();
 });
 
 // Copy to Clipboard Utility for Donation Modal

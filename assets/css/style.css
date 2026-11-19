@@ -417,6 +417,83 @@ a {
 }
 
 /* --------------------------------------------------------------------------
+   EXPANDED CONTAINER WIDTH SYSTEM (Computer Screens & Desktops)
+   Modernizes container widths across laptops, desktops, and wide monitors
+   replacing Bootstrap 5 default bottlenecks (1140px & 1320px).
+   -------------------------------------------------------------------------- */
+@media (min-width: 1200px) {
+
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    max-width: 1180px;
+  }
+}
+
+@media (min-width: 1280px) {
+
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    max-width: 1240px;
+  }
+}
+
+@media (min-width: 1400px) {
+
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    max-width: 1380px;
+  }
+}
+
+@media (min-width: 1600px) {
+
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    max-width: 1540px;
+  }
+}
+
+@media (min-width: 1920px) {
+
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    max-width: 1720px;
+  }
+}
+
+@media (min-width: 2200px) {
+
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    max-width: 1880px;
+  }
+}
+
+/* --------------------------------------------------------------------------
    NAVBAR (Seamless Blend to Hero, Glass on Scroll, Smart Scroll-Up Reveal)
    -------------------------------------------------------------------------- */
 .pth-navbar-wrapper {
@@ -527,7 +604,7 @@ a {
   color: var(--pth-amber);
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
   .nav-link-item.active-home {
     color: var(--pth-amber) !important;
   }
@@ -556,7 +633,7 @@ a {
 .nav-social-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .nav-social-btn {
@@ -610,7 +687,7 @@ a {
   display: none;
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 1199.98px) {
   .navbar-toggler.pth-nav-toggler {
     position: relative;
     width: 44px;
@@ -765,113 +842,218 @@ a {
   }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
   .navbar-toggler.pth-nav-toggler {
     display: none !important;
+  }
+
+  .pth-navbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: clamp(8px, 1.2vw, 16px);
+  }
+
+  /* Reset Mobile Dropdown into Pristine Desktop Flex Bar */
+  .pth-navbar .navbar-collapse {
+    position: static !important;
+    display: flex !important;
+    flex-basis: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-top: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-grow: 1 !important;
+    gap: clamp(8px, 1.2vw, 16px) !important;
+  }
+
+  .pth-navbar .navbar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: auto !important;
+    margin: 0 auto !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .pth-navbar .navbar-nav .nav-item {
+    width: auto !important;
+    flex-shrink: 0;
+  }
+
+  .pth-navbar .nav-social-links {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
   }
 }
 
 /* --------------------------------------------------------------------------
-   Responsive Navbar: Nest Hub Max (1280px) & Medium Desktops (1200px - 1399.98px)
+   Responsive Navbar: Medium Desktops & Laptops (1200px - 1399.98px)
    -------------------------------------------------------------------------- */
 @media (min-width: 1200px) and (max-width: 1399.98px) {
+
+  .pth-navbar-wrapper .container,
   .pth-navbar-wrapper .container-fluid {
-    padding-left: clamp(14px, 2vw, 24px) !important;
-    padding-right: clamp(14px, 2vw, 24px) !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
   }
 
   .pth-navbar {
-    min-height: 70px;
+    min-height: 80px;
     padding: 6px 0;
   }
 
   .brand-svg-logo {
-    height: 76px;
+    height: 72px;
   }
 
   .pth-navbar-wrapper.scrolled .brand-svg-logo {
-    height: 56px;
+    height: 65px;
   }
 
   .pth-navbar-wrapper.scrolled .pth-navbar {
     padding: 4px 0;
-    min-height: 52px;
+    min-height: 64px;
   }
 
   .navbar-nav {
-    gap: clamp(4px, 0.7vw, 8px);
+    gap: clamp(4px, 0.45vw, 8px) !important;
     flex-wrap: nowrap !important;
   }
 
   .nav-link-item {
-    font-size: clamp(0.74rem, 0.88vw, 0.8rem);
-    padding: 6px 8px !important;
-    letter-spacing: 0.35px;
-    white-space: nowrap !important;
-    flex-shrink: 0;
-  }
-
-  .nav-social-links {
-    gap: 5px;
-    flex-shrink: 0;
-  }
-
-  .nav-social-btn {
-    width: 33px;
-    height: 33px;
-    font-size: 0.88rem;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   Responsive Navbar: Nest Hub (1024px) & Small Laptops (992px to 1199.98px)
-   -------------------------------------------------------------------------- */
-@media (min-width: 992px) and (max-width: 1199.98px) {
-  .pth-navbar-wrapper .container-fluid {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
-  .pth-navbar {
-    min-height: 66px;
-    padding: 5px 0;
-  }
-
-  .brand-svg-logo {
-    height: 76px;
-  }
-
-  .pth-navbar-wrapper.scrolled .brand-svg-logo {
-    height: 48px;
-  }
-
-  .pth-navbar-wrapper.scrolled .pth-navbar {
-    padding: 3px 0;
-    min-height: 48px;
-  }
-
-  .navbar-nav {
-    gap: 2px;
-    flex-wrap: nowrap !important;
-  }
-
-  .nav-link-item {
-    font-size: 0.71rem;
-    padding: 5px 5px !important;
+    font-size: clamp(0.72rem, 0.72vw, 0.76rem);
+    padding: 6px clamp(5px, 0.45vw, 7px) !important;
     letter-spacing: 0.2px;
     white-space: nowrap !important;
     flex-shrink: 0;
   }
 
   .nav-social-links {
-    gap: 3px;
+    gap: 6px !important;
     flex-shrink: 0;
   }
 
   .nav-social-btn {
-    width: 29px;
-    height: 29px;
-    font-size: 0.8rem;
+    width: 30px;
+    height: 30px;
+    font-size: 0.84rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Navbar: Large Screens & Monitors (1400px - 1599.98px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1400px) and (max-width: 1599.98px) {
+
+  .pth-navbar-wrapper .container,
+  .pth-navbar-wrapper .container-fluid {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .pth-navbar {
+    min-height: 86px;
+    padding: 6px 0;
+  }
+
+  .brand-svg-logo {
+    height: 80px;
+  }
+
+  .pth-navbar-wrapper.scrolled .brand-svg-logo {
+    height: 66px;
+  }
+
+  .pth-navbar-wrapper.scrolled .pth-navbar {
+    padding: 5px 0;
+    min-height: 70px;
+  }
+
+  .navbar-nav {
+    gap: clamp(6px, 0.6vw, 10px) !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .nav-link-item {
+    font-size: clamp(0.77rem, 0.78vw, 0.82rem);
+    padding: 6px clamp(7px, 0.58vw, 10px) !important;
+    letter-spacing: 0.3px;
+    white-space: nowrap !important;
+    flex-shrink: 0;
+  }
+
+  .nav-social-links {
+    gap: 7px !important;
+    flex-shrink: 0;
+  }
+
+  .nav-social-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.90rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Navbar: Ultra-Wide Screens & Monitors (>= 1600px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1600px) {
+
+  .pth-navbar-wrapper .container,
+  .pth-navbar-wrapper .container-fluid {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  .pth-navbar {
+    min-height: 92px;
+    padding: 8px 0;
+  }
+
+  .brand-svg-logo {
+    height: 86px;
+  }
+
+  .pth-navbar-wrapper.scrolled .brand-svg-logo {
+    height: 72px;
+  }
+
+  .pth-navbar-wrapper.scrolled .pth-navbar {
+    padding: 5px 0;
+    min-height: 74px;
+  }
+
+  .navbar-nav {
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .nav-link-item {
+    font-size: 0.84rem;
+    padding: 7px 11px !important;
+    letter-spacing: 0.35px;
+    white-space: nowrap !important;
+    flex-shrink: 0;
+  }
+
+  .nav-social-links {
+    gap: 8px !important;
+    flex-shrink: 0;
+  }
+
+  .nav-social-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.96rem;
   }
 }
 
@@ -1680,6 +1862,24 @@ html.modal-open .pth-floating-donate-wrapper {
     line-height: 1.32;
     margin-top: 6px;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Mobile & Tablet Navbar (Below 1200px - Complete Smooth Responsive Drawer)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1199.98px) {
+  .brand-svg-logo {
+    height: 72px;
+  }
+
+  .pth-navbar-wrapper.scrolled .brand-svg-logo {
+    height: 65px;
+  }
+
+  .pth-navbar-wrapper.scrolled .pth-navbar {
+    padding: 4px 0;
+    min-height: 58px;
+  }
 
   .pth-navbar-wrapper {
     overflow: visible !important;
@@ -1689,6 +1889,7 @@ html.modal-open .pth-floating-donate-wrapper {
     position: relative;
   }
 
+  .pth-navbar-wrapper .container,
   .pth-navbar-wrapper .container-fluid {
     padding-left: clamp(14px, 3.5vw, 24px) !important;
     padding-right: clamp(14px, 3.5vw, 24px) !important;
@@ -1793,7 +1994,7 @@ html.modal-open .pth-floating-donate-wrapper {
 
   .nav-social-links {
     justify-content: center;
-    gap: 12px;
+    gap: 8px;
     margin-top: 14px;
     padding-top: 14px;
     border-top: 1px solid rgba(0, 63, 148, 0.08);
@@ -1807,6 +2008,8 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 575.98px) {
+
+  .pth-navbar-wrapper .container,
   .pth-navbar-wrapper .container-fluid {
     padding-left: max(14px, env(safe-area-inset-left)) !important;
     padding-right: max(14px, env(safe-area-inset-right)) !important;
@@ -5527,129 +5730,114 @@ html.modal-open .pth-floating-donate-wrapper {
   transition: all 0.28s ease;
 }
 
-/* Portrait Video Story Card (Reel Style - Compact Size) */
+/* Activities Facebook Media Slide: Direct Image / Video View - No Background Container */
 .activities-slider {
   padding: 14px 4px 22px 4px;
   margin: -14px -4px -22px -4px;
+}
+
+.activities-slider .swiper-wrapper {
+  align-items: center;
 }
 
 .activities-slider .swiper-slide {
   width: auto !important;
   height: auto;
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .portrait-video-card {
   position: relative;
-  height: 390px;
-  /* Fixed Height */
   width: auto;
-  /* Width Auto for Content */
-  aspect-ratio: 9 / 16;
-  border-radius: 22px;
+  height: auto;
+  max-width: 100%;
+  border-radius: 16px;
   overflow: hidden;
-  background: #081526;
-  box-shadow: 0 10px 30px -8px rgba(1, 30, 123, 0.14), 0 2px 6px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
   cursor: pointer;
-  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.38s ease;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .portrait-video-card:hover {
-  transform: translateY(-9px);
-  border-color: rgba(24, 119, 242, 0.65);
-  box-shadow: 0 0 0 1px rgba(24, 119, 242, 0.65), 0 24px 50px -8px rgba(24, 119, 242, 0.35), 0 8px 16px -4px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: none !important;
+  border: none !important;
 }
 
-/* Facebook Live Embed Iframe inside Slider Card */
+/* Facebook Live Embed Iframe inside Slider: Direct Display with Original Dimensions */
 .portrait-fb-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 22px;
-  overflow: hidden;
-  background: #081526;
-  z-index: 1;
-  pointer-events: none;
-  /* Allows swiper dragging and card clicks without capturing touch */
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.portrait-video-card:hover .portrait-fb-iframe {
-  transform: scale(1.035);
-}
-
-.portrait-video-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 22px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.portrait-video-card:hover .portrait-video-img {
-  transform: scale(1.045);
-}
-
-.portrait-video-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(4, 16, 36, 0.45) 100%);
-  border-radius: 22px;
-  transition: background 0.35s ease;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.portrait-video-card:hover .portrait-video-overlay {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(4, 16, 36, 0.6) 100%);
-}
-
-/* Card Variations & Post Type Styling: Fixed Height, Width Auto for Content */
-.portrait-video-card.is-video {
-  /* Video Reel card: 9:16 portrait video ratio */
-  aspect-ratio: 9 / 16;
-  width: auto;
-}
-
-.portrait-video-card.is-image-post {
-  /* Photo Post card: 4:3 natural horizontal post ratio */
-  aspect-ratio: 4 / 3;
-  width: auto;
-  cursor: pointer;
-  background: #081526;
   position: relative;
-  overflow: hidden;
-}
-
-/* Ensure embedded Facebook photo post fits the card naturally without overflow or cropping */
-.portrait-video-card.is-image-post .portrait-fb-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  display: block;
   border: none;
-  border-radius: 22px;
-  background: #081526;
+  border-radius: 16px;
+  overflow: hidden;
+  background: transparent !important;
+  z-index: 1;
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
   transition: transform 0.35s ease;
 }
 
-.portrait-video-card.is-image-post:hover .portrait-fb-iframe {
-  transform: scale(1.025);
+.portrait-video-card:hover .portrait-fb-iframe {
+  transform: scale(1.02);
+}
+
+/* Direct Image Display with Original Dimensions */
+.portrait-video-img {
+  position: relative;
+  display: block;
+  width: auto;
+  height: auto;
+  max-height: 480px;
+  max-width: calc(100vw - 32px);
+  object-fit: contain;
+  border-radius: 16px;
+  z-index: 1;
+  transition: transform 0.35s ease;
+}
+
+.portrait-video-card:hover .portrait-video-img {
+  transform: scale(1.02);
+}
+
+/* No background or dark overlay on the media */
+.portrait-video-overlay {
+  display: none !important;
+}
+
+/* Card Variations & Post Type Styling */
+.portrait-video-card.is-reel {
+  width: auto;
+  height: auto;
+}
+
+.portrait-video-card.is-landscape {
+  width: auto;
+  height: auto;
+  max-width: calc(100vw - 32px);
+}
+
+.portrait-video-card.is-square {
+  width: auto;
+  height: auto;
+}
+
+.portrait-video-card.is-image-post {
+  width: auto;
+  height: auto;
+  cursor: pointer;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Play button: ONLY shown on video cards */
@@ -5658,13 +5846,34 @@ html.modal-open .pth-floating-donate-wrapper {
   display: none !important;
 }
 
-/* Center Play Button (Compact Modern Frosted Glass) */
+/* Center Play Button on direct video */
 .portrait-play-btn {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(24, 119, 242, 0.9);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  padding-left: 3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.portrait-video-card:hover .portrait-play-btn {
+  transform: translate(-50%, -50%) scale(1.15);
+  background: #1877f2;
+  box-shadow: 0 10px 28px rgba(24, 119, 242, 0.6);
+}
   height: 52px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.88);
@@ -5690,38 +5899,41 @@ html.modal-open .pth-floating-donate-wrapper {
   box-shadow: 0 10px 28px rgba(24, 119, 242, 0.5), 0 0 0 6px rgba(24, 119, 242, 0.25);
 }
 
-/* Portrait Modal Player: Fixed Height, Width Auto for Content */
+/* Portrait Modal Player: Auto Width & Height for Content */
 .portrait-modal-dialog {
   width: auto !important;
-  max-width: 95vw !important;
+  max-width: 96vw !important;
   margin: 1.5rem auto;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .portrait-modal-dialog .modal-content {
   width: auto !important;
-  max-width: 95vw !important;
+  max-width: 96vw !important;
   display: inline-flex;
+  border-radius: 20px;
+  background: #000000;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
 }
 
 .portrait-video-wrapper {
-  height: min(82vh, 760px);
-  /* Fixed Height */
+  position: relative;
   width: auto;
-  /* Width Auto for Content */
+  height: auto;
+  max-width: 92vw;
+  max-height: 82vh;
   aspect-ratio: 9 / 16;
-  /* Adapts dynamically to content via JS / CSS */
-  max-width: 95vw;
   overflow: hidden;
   background: #000000;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  position: relative;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
 .portrait-video-wrapper iframe {
@@ -5731,23 +5943,39 @@ html.modal-open .pth-floating-donate-wrapper {
   display: block;
 }
 
-/* Image Post Lightbox Modal: natural 4:3 fit, not overflowing and not too small */
+/* Modal Content Type Variations (Fallbacks & Presets) */
+.portrait-video-wrapper.is-reel-modal {
+  height: min(80vh, 740px);
+  width: min(90vw, calc(min(80vh, 740px) * 9 / 16));
+  aspect-ratio: 9 / 16;
+  background: #000000;
+}
+
+.portrait-video-wrapper.is-landscape-modal {
+  width: min(92vw, 880px);
+  height: min(80vh, calc(min(92vw, 880px) * 9 / 16));
+  aspect-ratio: 16 / 9;
+  background: #000000;
+}
+
+.portrait-video-wrapper.is-square-modal {
+  width: min(88vw, 75vh, 520px);
+  height: min(88vw, 75vh, 520px);
+  aspect-ratio: 1 / 1;
+  background: #081d38;
+}
+
 .portrait-video-wrapper.is-image-modal {
-  height: min(76vh, 560px);
-  width: auto;
+  width: min(92vw, 680px);
+  height: min(78vh, calc(min(92vw, 680px) * 3 / 4));
   aspect-ratio: 4 / 3;
   background: #081d38;
 }
 
 .portrait-video-wrapper.is-image-modal iframe {
   position: relative;
-  top: auto;
-  left: auto;
   width: 100%;
   height: 100%;
-  min-width: 100%;
-  min-height: 100%;
-  transform: none;
   border-radius: 20px;
 }
 
@@ -5862,28 +6090,38 @@ html.modal-open .pth-floating-donate-wrapper {
 
 @media (max-width: 575.98px) {
   .portrait-video-card {
-    height: 330px;
+    height: auto;
     width: auto;
-    border-radius: 18px;
+    max-width: calc(100vw - 32px);
+    border-radius: 14px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  .portrait-video-card.is-image-post {
-    max-width: calc(100vw - 48px);
-    aspect-ratio: 4 / 3;
-  }
-
-  .portrait-fb-iframe,
-  .portrait-video-overlay {
-    border-radius: 18px;
+  .portrait-fb-iframe {
+    max-width: calc(100vw - 32px);
+    border-radius: 14px;
   }
 
   .portrait-video-img {
-    border-radius: 18px;
+    border-radius: 14px;
+    max-width: calc(100vw - 32px);
+  }
+
+  .portrait-video-overlay {
+    display: none !important;
+  }
+
+  .portrait-video-wrapper {
+    max-width: 94vw;
+    max-height: 80vh;
+    border-radius: 16px;
   }
 
   .portrait-video-wrapper.is-image-modal {
-    height: auto;
     width: 92vw;
+    height: auto;
     max-height: 70vh;
     aspect-ratio: 4 / 3;
   }
@@ -7078,6 +7316,9 @@ html.modal-open::-webkit-scrollbar {
   border-radius: 50px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
   transition: transform 0.35s var(--ease-spring),
     background 0.3s ease,
     color 0.3s ease,
@@ -7093,6 +7334,13 @@ html.modal-open::-webkit-scrollbar {
   border-color: #003f94;
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(0, 63, 148, 0.4);
+}
+
+.footer-back-to-top:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
 }
 
 .footer-back-to-top:active {
@@ -7128,8 +7376,10 @@ html.modal-open::-webkit-scrollbar {
 
   .footer-back-to-top {
     min-height: 42px;
-    padding: 9px 22px;
+    padding: 8px 20px;
     font-size: 0.82rem;
+    width: auto;
+    max-width: 100%;
   }
 }
 
@@ -7179,8 +7429,9 @@ html.modal-open::-webkit-scrollbar {
 
   .footer-back-to-top {
     font-size: 0.76rem;
-    padding: 7px 15px;
+    padding: 7px 14px;
     min-height: 38px;
+    gap: 6px;
   }
 }
 
@@ -7190,7 +7441,7 @@ html.modal-open::-webkit-scrollbar {
    Keeps all cards, section headings, buttons, and layouts flawless.
    ====================================================================== */
 
-/* --- Modal Responsiveness: Fixed Height, Width Auto for Content --- */
+/* --- Modal Responsiveness: Auto Width & Height for Content --- */
 @media (max-width: 767.98px) {
   .portrait-modal-dialog {
     margin: 0.75rem auto;
@@ -7201,16 +7452,16 @@ html.modal-open::-webkit-scrollbar {
 
 @media (max-width: 575.98px) {
   .portrait-video-wrapper {
-    height: min(78vh, 580px);
-    /* Fixed Height on Mobile */
     width: auto;
-    /* Width Auto for Content */
-    max-width: 95vw;
+    max-width: 94vw;
+    max-height: 80vh;
   }
 }
 
 /* --- iPhone Pro Max (428px - 440px) & Compact Mobile Screens (max-width: 480px) --- */
 @media (max-width: 480px) {
+
+  .pth-navbar-wrapper .container,
   .pth-navbar-wrapper .container-fluid {
     padding-left: max(12px, env(safe-area-inset-left)) !important;
     padding-right: max(12px, env(safe-area-inset-right)) !important;
@@ -8277,6 +8528,585 @@ html.modal-open::-webkit-scrollbar {
   .care-modal-badge {
     font-size: 0.62rem !important;
     padding: 2px 7px !important;
+  }
+}
+
+/* ==========================================================================
+   FAQ SECTION (Sticky Note Memo Cards - True to Screenshot Design Structure)
+   ========================================================================== */
+.pth-faq-section {
+  position: relative;
+  padding: 75px 0 85px 0;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f9fe 50%, #edf3fc 100%);
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 63, 148, 0.06);
+}
+
+.faq-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(100px);
+}
+
+.faq-ambient-glow.glow-1 {
+  width: 520px;
+  height: 520px;
+  top: -120px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(0, 63, 148, 0.10) 0%, transparent 70%);
+  opacity: 0.75;
+}
+
+.faq-ambient-glow.glow-2 {
+  width: 480px;
+  height: 480px;
+  bottom: -80px;
+  right: -80px;
+  background: radial-gradient(circle, rgba(2, 123, 21, 0.08) 0%, transparent 70%);
+  opacity: 0.7;
+}
+
+/* Sticky Note Cards Grid (3 Columns Desktop, 2 Tablet, 1 Mobile) */
+.faq-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  align-items: start;
+}
+
+/* Memo Note Card Base */
+.faq-note-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 32px 26px 22px 26px;
+  min-height: 245px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 24px -6px rgba(7, 26, 51, 0.07),
+    0 4px 8px -2px rgba(7, 26, 51, 0.03),
+    0 0 0 1px rgba(7, 26, 51, 0.06);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s ease,
+    border-color 0.3s ease,
+    background-color 0.3s ease;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transform-origin: center center;
+}
+
+/* Natural Subtle Pinned Tilts (Directly inspired by reference screenshot) */
+.faq-note-card.note-tilt-1 {
+  transform: rotate(-1.2deg);
+}
+
+.faq-note-card.note-tilt-2 {
+  transform: rotate(0.6deg);
+}
+
+.faq-note-card.note-tilt-3 {
+  transform: rotate(-0.5deg);
+}
+
+.faq-note-card.note-tilt-4 {
+  transform: rotate(0.8deg);
+}
+
+.faq-note-card.note-tilt-5 {
+  transform: rotate(-1deg);
+}
+
+.faq-note-card.note-tilt-6 {
+  transform: rotate(0.6deg);
+}
+
+/* Interactive Hover & Focus State */
+.faq-note-card:hover,
+.faq-note-card:focus-visible {
+  transform: translateY(-6px) rotate(0deg) !important;
+  box-shadow: 0 20px 42px -8px rgba(7, 26, 51, 0.13),
+    0 8px 16px -4px rgba(7, 26, 51, 0.06),
+    0 0 0 1px rgba(0, 63, 148, 0.18);
+}
+
+/* Active / Open State */
+.faq-note-card.is-open {
+  box-shadow: 0 18px 38px -6px rgba(0, 63, 148, 0.11),
+    0 6px 14px -3px rgba(7, 26, 51, 0.05),
+    0 0 0 1.5px rgba(0, 63, 148, 0.20);
+  background-color: #ffffff;
+}
+
+/* Realistic Metallic Pin / Paperclip PNG Image */
+.faq-clip-wrapper {
+  position: absolute;
+  top: -18px;
+  right: 28px;
+  width: 28px;
+  height: 62px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.faq-pin-img,
+.faq-paperclip {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 3px 4px rgba(7, 26, 51, 0.20));
+  user-select: none;
+}
+
+/* Card Content Area */
+.faq-card-content {
+  flex: 1 1 auto;
+}
+
+/* Question Heading */
+.faq-card-question {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--pth-text-heading);
+  margin-bottom: 0;
+  transition: color 0.25s ease;
+  letter-spacing: -0.01em;
+}
+
+.faq-note-card:hover .faq-card-question,
+.faq-note-card.is-open .faq-card-question {
+  color: var(--pth-primary);
+}
+
+/* Smooth Accordion Body (CSS Grid 0fr -> 1fr animation) */
+.faq-card-answer-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  transition: grid-template-rows 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.28s ease,
+    margin 0.3s ease;
+}
+
+.faq-note-card.is-open .faq-card-answer-wrap {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  margin-top: 12px;
+  margin-bottom: 14px;
+}
+
+.faq-card-answer-inner {
+  overflow: hidden;
+}
+
+.faq-card-answer {
+  font-family: var(--font-sans);
+  font-size: 0.93rem;
+  line-height: 1.68;
+  color: var(--pth-text-body);
+}
+
+/* Card Footer & Action Link */
+.faq-card-footer {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.faq-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 0.94rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1.5px dotted #94a3b8;
+  padding-bottom: 2px;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.faq-note-card:hover .faq-toggle-btn,
+.faq-note-card.is-open .faq-toggle-btn {
+  color: var(--pth-primary);
+  border-bottom-color: var(--pth-primary);
+}
+
+/* Bottom Care Assistance Strip */
+.faq-cta-banner {
+  position: relative;
+  z-index: 2;
+}
+
+.faq-cta-box {
+  background: #ffffff;
+  border: 1px solid rgba(0, 63, 148, 0.10);
+  box-shadow: 0 8px 24px -4px rgba(7, 26, 51, 0.05);
+}
+
+.faq-cta-label {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pth-text-heading);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 991.98px) {
+  .pth-faq-section {
+    padding: 65px 0 75px 0;
+  }
+
+  .faq-notes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .faq-note-card {
+    min-height: 230px;
+    padding: 28px 22px 20px 22px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .pth-faq-section {
+    padding: 50px 0 60px 0;
+  }
+
+  .faq-notes-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  /* Reset rotation on mobile to ensure crisp flush fit and avoid horizontal scroll */
+  .faq-note-card.note-tilt-1,
+  .faq-note-card.note-tilt-2,
+  .faq-note-card.note-tilt-3,
+  .faq-note-card.note-tilt-4,
+  .faq-note-card.note-tilt-5,
+  .faq-note-card.note-tilt-6 {
+    transform: none !important;
+  }
+
+  .faq-note-card {
+    min-height: auto;
+    padding: 20px 18px 18px 18px;
+    border-radius: 14px;
+  }
+
+  .faq-card-question {
+    font-size: 1.05rem;
+  }
+
+  /* Remove card pin on mobile screens */
+  .faq-clip-wrapper {
+    display: none !important;
+  }
+
+  .faq-cta-box {
+    padding: 16px !important;
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   FUTURE PLANS SECTION (2-Column Split & 4-Quadrant Cross Dividers)
+   ========================================================================== */
+.pth-future-plans-section {
+  position: relative;
+  padding: 80px 0 90px 0;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 50%, #f7faff 100%);
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 63, 148, 0.05);
+  border-bottom: 1px solid rgba(0, 63, 148, 0.05);
+}
+
+.plans-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(100px);
+}
+
+.plans-ambient-glow.glow-1 {
+  width: 500px;
+  height: 500px;
+  top: -100px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(0, 63, 148, 0.09) 0%, transparent 70%);
+  opacity: 0.75;
+}
+
+.plans-ambient-glow.glow-2 {
+  width: 450px;
+  height: 450px;
+  bottom: -80px;
+  right: -80px;
+  background: radial-gradient(circle, rgba(214, 0, 0, 0.06) 0%, transparent 70%);
+  opacity: 0.65;
+}
+
+/* Action Arrow Links (Screenshot Style) */
+.plans-arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: gap 0.25s ease, color 0.25s ease;
+}
+
+.plans-arrow-link:hover {
+  gap: 13px;
+}
+
+.plans-arrow-link.link-primary-action {
+  color: var(--pth-red);
+}
+
+.plans-arrow-link.link-primary-action:hover {
+  color: var(--pth-red-hover);
+}
+
+.plans-arrow-link.link-secondary-action {
+  color: var(--pth-text-heading);
+}
+
+.plans-arrow-link.link-secondary-action:hover {
+  color: var(--pth-primary);
+}
+
+/* 4-Quadrant Feature Grid with Red Cross Dividers (Screenshot Structure) */
+.plans-features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  position: relative;
+  background: transparent;
+}
+
+/* Red Cross Horizontal Divider */
+.plans-features-grid::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--pth-red);
+  transform: translateY(-50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Red Cross Vertical Divider */
+.plans-features-grid::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1.5px;
+  background: var(--pth-red);
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.plans-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+/* Quadrant padding around the red cross */
+.plans-feature-item.item-physio {
+  padding: 16px 36px 36px 8px;
+}
+
+.plans-feature-item.item-ambulance {
+  padding: 16px 8px 36px 36px;
+}
+
+.plans-feature-item.item-rehab {
+  padding: 36px 36px 16px 8px;
+}
+
+.plans-feature-item.item-zero-cost {
+  padding: 36px 8px 16px 36px;
+}
+
+.plans-icon-badge {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  margin-top: 2px;
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.plans-feature-item:hover .plans-icon-badge {
+  transform: scale(1.08) translateY(-2px);
+}
+
+/* Multi-colored Theme Badges for Future Plans Grid */
+/* 1. Physiotherapy Centre - Royal Blue */
+.plans-feature-item.item-physio .plans-icon-badge {
+  background: var(--pth-primary-light);
+  color: var(--pth-primary);
+  border: 1px solid rgba(0, 63, 148, 0.14);
+}
+
+.plans-feature-item.item-physio:hover .plans-icon-badge {
+  background: var(--pth-primary);
+  color: #ffffff;
+  border-color: var(--pth-primary);
+  box-shadow: 0 8px 22px rgba(0, 63, 148, 0.28);
+}
+
+/* 2. Ambulance Services - Emergency Crimson Red */
+.plans-feature-item.item-ambulance .plans-icon-badge {
+  background: var(--pth-red-light);
+  color: var(--pth-red);
+  border: 1px solid rgba(214, 0, 0, 0.14);
+}
+
+.plans-feature-item.item-ambulance:hover .plans-icon-badge {
+  background: var(--pth-red);
+  color: #ffffff;
+  border-color: var(--pth-red);
+  box-shadow: 0 8px 22px rgba(214, 0, 0, 0.28);
+}
+
+/* 3. Rehabilitation Care - Healing Palliative Green */
+.plans-feature-item.item-rehab .plans-icon-badge {
+  background: var(--pth-green-light);
+  color: var(--pth-green);
+  border: 1px solid rgba(2, 123, 21, 0.14);
+}
+
+.plans-feature-item.item-rehab:hover .plans-icon-badge {
+  background: var(--pth-green);
+  color: #ffffff;
+  border-color: var(--pth-green);
+  box-shadow: 0 8px 22px rgba(2, 123, 21, 0.28);
+}
+
+/* 4. 100% Free Access - Solar Gold / Amber */
+.plans-feature-item.item-zero-cost .plans-icon-badge {
+  background: var(--pth-gold-light);
+  color: var(--pth-gold-dark);
+  border: 1px solid rgba(252, 146, 0, 0.18);
+}
+
+.plans-feature-item.item-zero-cost:hover .plans-icon-badge {
+  background: linear-gradient(135deg, var(--pth-gold) 0%, var(--pth-gold-dark) 100%);
+  color: #ffffff;
+  border-color: var(--pth-gold-dark);
+  box-shadow: 0 8px 22px rgba(252, 146, 0, 0.32);
+}
+
+.plans-feature-content {
+  flex: 1 1 auto;
+}
+
+.plans-feature-title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--pth-text-heading);
+  margin-bottom: 8px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.plans-feature-desc {
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.62;
+  color: #64748b;
+  margin-bottom: 0;
+}
+
+/* Responsive Rules for Future Plans Section */
+@media (max-width: 991.98px) {
+  .pth-future-plans-section {
+    padding: 65px 0 75px 0;
+  }
+
+  .plans-feature-item.item-physio {
+    padding: 16px 24px 28px 4px;
+  }
+
+  .plans-feature-item.item-ambulance {
+    padding: 16px 4px 28px 24px;
+  }
+
+  .plans-feature-item.item-rehab {
+    padding: 28px 24px 16px 4px;
+  }
+
+  .plans-feature-item.item-zero-cost {
+    padding: 28px 4px 16px 24px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .pth-future-plans-section {
+    padding: 50px 0 60px 0;
+  }
+
+  .plans-features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Remove 2D cross dividers on single-column mobile */
+  .plans-features-grid::before,
+  .plans-features-grid::after {
+    display: none !important;
+  }
+
+  .plans-feature-item.item-physio,
+  .plans-feature-item.item-ambulance,
+  .plans-feature-item.item-rehab,
+  .plans-feature-item.item-zero-cost {
+    padding: 24px 0;
+  }
+
+  .plans-feature-item:not(:last-child) {
+    border-bottom: 1.5px solid var(--pth-red);
+  }
+
+  .plans-arrow-link {
+    font-size: 0.98rem;
   }
 }
 
