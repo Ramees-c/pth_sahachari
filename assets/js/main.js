@@ -1204,15 +1204,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const trigger = event.relatedTarget;
       if (!trigger) return;
 
-      const imgSrc = trigger.getAttribute('data-img-src') || (trigger.querySelector('img') ? trigger.querySelector('img').getAttribute('src') : null);
+      const imgEl = trigger.querySelector('img');
+      const imgSrc = trigger.getAttribute('data-img-src') || (imgEl ? imgEl.getAttribute('src') : null);
+      const imgAlt = imgEl ? (imgEl.getAttribute('alt') || 'Enlarged gallery photograph') : 'Enlarged gallery photograph';
       if (modalGalleryImg && imgSrc) {
         modalGalleryImg.src = imgSrc;
+        modalGalleryImg.alt = imgAlt;
       }
     });
 
     galleryModalEl.addEventListener('hidden.bs.modal', function () {
       if (modalGalleryImg) {
         modalGalleryImg.src = '';
+        modalGalleryImg.alt = 'Enlarged gallery photograph';
       }
       if (lenis) lenis.start();
     });

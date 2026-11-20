@@ -5399,11 +5399,12 @@ html.modal-open .pth-floating-donate-wrapper {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
   position: relative;
   background: #000000;
+  aspect-ratio: 16 / 10;
 }
 
 .flagoff-ceremony-img {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
   display: block;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -5425,6 +5426,7 @@ html.modal-open .pth-floating-donate-wrapper {
   position: absolute;
   bottom: clamp(10px, 2vw, 16px);
   left: clamp(10px, 2vw, 16px);
+  z-index: 3;
   background: rgba(7, 26, 51, 0.9);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -5438,6 +5440,19 @@ html.modal-open .pth-floating-donate-wrapper {
   align-items: center;
   gap: 7px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  max-width: calc(100% - 24px);
+}
+
+/* Home Care Direct Call Button */
+.flagoff-call-btn i {
+  color: #fbbf24 !important;
+  font-size: 1.05rem;
+  display: inline-block;
+  transition: transform 0.35s var(--ease-spring);
+}
+
+.flagoff-call-btn:hover i {
+  transform: scale(1.2) rotate(-10deg);
 }
 
 /* Content Column */
@@ -5583,11 +5598,37 @@ html.modal-open .pth-floating-donate-wrapper {
   display: block;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for Home Care Unit */
 @media (max-width: 991.98px) {
+  .pth-flagoff-section {
+    padding: 42px 0 46px 0;
+  }
+
   .flagoff-card-wrapper {
     padding: 32px 24px;
-    border-radius: 26px;
+    border-radius: 24px;
+  }
+
+  .flagoff-photo-container {
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .flagoff-photo-frame {
+    aspect-ratio: 16 / 10;
+  }
+
+  .flagoff-title {
+    font-size: clamp(1.4rem, 3.6vw, 2.1rem);
+  }
+
+  .flagoff-initiative-text {
+    font-size: 0.96rem;
+  }
+
+  .flagoff-narrative {
+    font-size: 0.9rem;
+    line-height: 1.65;
   }
 
   .flagoff-leader-card {
@@ -5595,28 +5636,85 @@ html.modal-open .pth-floating-donate-wrapper {
   }
 }
 
-@media (max-width: 575.98px) {
+@media (max-width: 767.98px) {
   .pth-flagoff-section {
-    padding: 38px 0 44px 0;
+    padding: 36px 0 40px 0;
   }
 
   .flagoff-card-wrapper {
-    padding: 22px 16px;
+    padding: 26px 18px;
+    border-radius: 20px;
+  }
+
+  .flagoff-photo-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .pth-flagoff-section {
+    padding: 30px 0 36px 0;
+  }
+
+  .flagoff-card-wrapper {
+    padding: 20px 14px;
     border-radius: 18px;
   }
 
+  .flagoff-photo-container {
+    max-width: 100%;
+  }
+
+  .flagoff-photo-frame {
+    border-radius: 16px;
+    border-width: 1.5px;
+    aspect-ratio: 16 / 10;
+  }
+
+  .flagoff-fleet-pill {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 3;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    gap: 6px;
+    max-width: calc(100% - 20px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .flagoff-kicker-pill {
+    font-size: clamp(0.6rem, 2.4vw, 0.68rem);
+    padding: 4px 10px;
+    letter-spacing: 0.8px;
+    line-height: 1.35;
+    max-width: 100%;
+  }
+
   .flagoff-title {
-    font-size: clamp(1.35rem, 5.2vw, 1.7rem);
-    line-height: 1.2;
+    font-size: clamp(1.28rem, 5.5vw, 1.65rem);
+    line-height: 1.22;
   }
 
   .flagoff-initiative-text {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    margin-bottom: 0.65rem !important;
   }
 
   .flagoff-narrative {
-    font-size: 0.86rem;
+    font-size: 0.84rem;
     line-height: 1.6;
+    margin-bottom: 1rem !important;
+  }
+
+  .flagoff-call-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 11px 20px;
+    font-size: 0.92rem;
+    min-height: 46px;
   }
 
   .flagoff-leader-card {
@@ -5637,14 +5735,6 @@ html.modal-open .pth-floating-donate-wrapper {
 
   .leader-role {
     font-size: 0.7rem;
-  }
-
-  .flagoff-fleet-pill {
-    position: static;
-    margin-top: 10px;
-    display: inline-flex;
-    font-size: 0.72rem;
-    padding: 4px 10px;
   }
 }
 
@@ -7410,11 +7500,14 @@ html.modal-open::-webkit-scrollbar {
   .flagoff-fleet-pill {
     font-size: 0.62rem;
     padding: 3px 8px;
+    bottom: 8px;
+    left: 8px;
   }
 
   .flagoff-kicker-pill {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     padding: 2px 6px;
+    letter-spacing: 0.5px;
   }
 
 
@@ -8500,6 +8593,249 @@ html.modal-open::-webkit-scrollbar {
 
   .plans-arrow-link {
     font-size: 0.98rem;
+  }
+}
+
+/* ==========================================================================
+   IPAD PRO 13 & TABLET RESPONSIVE SYSTEM
+   Fine-tuned for Apple iPad Pro 13" (1024px Portrait & 1366px Landscape)
+   ========================================================================== */
+
+/* --- 1. iPad Pro 13 Portrait (1024px Viewport Width × 1366px Viewport Height) --- */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+
+  /* Navbar: Sleek, right-anchored iPadOS Popover Card instead of 960px stretched sheet */
+  .pth-navbar .navbar-collapse {
+    max-width: 400px;
+    left: auto !important;
+    right: 0 !important;
+    margin-left: auto;
+    border-radius: 22px;
+    padding: 18px 16px 22px 16px;
+    box-shadow: 0 22px 55px rgba(1, 30, 123, 0.16), 0 3px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .pth-navbar .nav-link-item {
+    padding: 10px 14px !important;
+    font-size: 0.92rem;
+  }
+
+  /* Hero Section: Prevent massive empty vertical gap caused by 92vh on 1366px tall tablet */
+  .pth-hero-container {
+    min-height: 720px;
+    padding-top: 135px;
+    padding-bottom: 65px;
+    background-position: 72% center, top center, bottom center, 72% center;
+  }
+
+  .hero-col-content {
+    max-width: 600px;
+  }
+
+  .script-line-blue {
+    font-size: clamp(2.4rem, 3.4vw, 2.9rem);
+  }
+
+  .script-line-green {
+    font-size: clamp(2.55rem, 3.6vw, 3.1rem);
+  }
+
+  .hero-bio-text {
+    font-size: 1.1rem;
+    line-height: 1.82;
+  }
+
+  /* About Us Section: Keep 2-column balance and avoid blank bottom space */
+  .about-col-content {
+    padding: 42px 32px;
+  }
+
+  .about-paragraph {
+    font-size: 0.98rem;
+    line-height: 1.76;
+  }
+
+  .about-image-frame {
+    min-height: 100%;
+  }
+
+  /* What We Do: Balanced Sticky Card Height for Tablets */
+  .what-we-do-visual-card {
+    height: 520px;
+    max-width: 420px;
+  }
+
+  .service-card {
+    padding: 22px 20px;
+  }
+
+  /* Where We Are: Region Map View */
+  .kerala-map-card {
+    padding: 22px 18px;
+  }
+
+  .kerala-map-img {
+    max-height: 440px;
+    max-width: 100%;
+    width: auto;
+  }
+
+  /* The Journey / Wayanad: Clean 2-column portrait grid */
+  .wayanad-dual-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .wayanad-mission-card {
+    padding: 34px 28px;
+  }
+
+  /* Home Care Unit Card */
+  .flagoff-card-wrapper {
+    padding: 40px 34px;
+    border-radius: 28px;
+  }
+
+  .flagoff-title {
+    font-size: clamp(1.65rem, 2.8vw, 2.15rem);
+  }
+
+  /* Volunteers Section */
+  .volunteer-hero-img {
+    max-height: 480px;
+    object-fit: cover;
+  }
+
+  .volunteer-pillar-card {
+    padding: 16px 14px;
+  }
+
+  /* Future Plans 2-column grid inside 560px column */
+  .plans-features-grid {
+    gap: 0;
+  }
+
+  .plans-feature-item.item-physio {
+    padding: 14px 18px 14px 0;
+    gap: 14px;
+  }
+
+  .plans-feature-item.item-ambulance {
+    padding: 14px 0 14px 18px;
+    gap: 14px;
+  }
+
+  .plans-icon-badge {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    font-size: 1.2rem;
+  }
+
+  .plans-feature-title {
+    font-size: 1.12rem;
+    margin-bottom: 6px;
+  }
+
+  .plans-feature-desc {
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  /* FAQ Grid: Switch from cramped 3-col to spacious 2-col on iPad Pro Portrait */
+  .faq-notes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .faq-note-card {
+    min-height: 225px;
+    padding: 28px 24px 20px 24px;
+  }
+}
+
+/* --- 2. iPad Pro 13 Landscape (1366px Viewport Width × 1024px Viewport Height) --- */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+
+  .pth-navbar-wrapper .container {
+    max-width: 1320px;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .brand-svg-logo {
+    height: 68px;
+  }
+
+  .navbar-nav {
+    gap: clamp(4px, 0.46vw, 8px) !important;
+  }
+
+  .nav-link-item {
+    font-size: 0.74rem;
+    padding: 6px clamp(4px, 0.42vw, 7px) !important;
+    letter-spacing: 0.25px;
+  }
+
+  .pth-hero-container {
+    min-height: 86vh;
+    padding-top: 120px;
+    padding-bottom: 50px;
+  }
+
+  .hero-script-heading {
+    margin-bottom: 18px;
+  }
+
+  .script-line-blue {
+    font-size: clamp(2.7rem, 3.2vw, 3.2rem);
+  }
+
+  .script-line-green {
+    font-size: clamp(2.85rem, 3.4vw, 3.4rem);
+  }
+
+  /* What We Do visual card height tuned for 1024px viewport height */
+  .what-we-do-visual-card {
+    height: 520px;
+  }
+
+  /* FAQ Notes Grid: Balanced 3-column fit */
+  .faq-notes-grid {
+    gap: 22px;
+  }
+
+  .faq-note-card {
+    padding: 30px 22px 20px 22px;
+  }
+}
+
+/* --- 3. iPad Touch, Apple Pencil & Safe-Area Accommodations --- */
+@supports (padding: max(0px)) {
+  .pth-floating-donate-wrapper {
+    bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+    right: max(24px, calc(env(safe-area-inset-right, 0px) + 16px));
+  }
+
+  .footer-copyright-bar {
+    padding-bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .nav-link-item:active,
+  .btn-donation-pth:active,
+  .btn-hero-secondary:active,
+  .service-pill-chip:active,
+  .district-tab-btn:active,
+  .faq-note-card:active {
+    opacity: 0.88;
+    transform: scale(0.985);
+  }
+
+  /* Hide hover-only tooltip so it never remains stuck after tap on touchscreens */
+  .floating-donate-tooltip {
+    display: none !important;
   }
 }
 
