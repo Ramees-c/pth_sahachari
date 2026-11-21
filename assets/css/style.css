@@ -858,6 +858,7 @@ a {
   .pth-navbar .navbar-collapse {
     position: static !important;
     display: flex !important;
+    height: auto !important;
     flex-basis: auto !important;
     background: transparent !important;
     padding: 0 !important;
@@ -1910,11 +1911,28 @@ html.modal-open .pth-floating-donate-wrapper {
     max-height: calc(85vh - 70px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
     /* IE / Edge */
     z-index: 1050;
+  }
+
+  /* Smooth Bootstrap Collapsing Transition */
+  .navbar-collapse.collapsing {
+    overflow: hidden !important;
+    transition: height 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .navbar-collapse:not(.show):not(.collapsing) {
+    display: none !important;
+  }
+
+  /* Prevent background page scroll on mobile/tablet when menu is active */
+  body.nav-menu-open {
+    overflow: hidden !important;
+    touch-action: none;
   }
 
   .navbar-collapse::-webkit-scrollbar {
@@ -2004,6 +2022,24 @@ html.modal-open .pth-floating-donate-wrapper {
     width: 42px;
     height: 42px;
     font-size: 1.05rem;
+  }
+}
+
+/* Sleek Right-Anchored Popover Card for iPad & All Tablets (768px - 1199.98px) */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .pth-navbar .navbar-collapse {
+    max-width: 400px;
+    left: auto !important;
+    right: 0 !important;
+    margin-left: auto;
+    border-radius: 22px;
+    padding: 18px 16px 22px 16px;
+    box-shadow: 0 22px 55px rgba(1, 30, 123, 0.16), 0 3px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .pth-navbar .nav-link-item {
+    padding: 10px 14px !important;
+    font-size: 0.92rem;
   }
 }
 
@@ -4359,6 +4395,11 @@ html.modal-open .pth-floating-donate-wrapper {
   border: 1px solid rgba(0, 63, 148, 0.12);
 }
 
+.impact-mini-badge i {
+  color: var(--pth-green);
+  font-size: clamp(0.74rem, 1vw + 0.35rem, 0.84rem);
+}
+
 .badge-dot-green {
   width: 7px;
   height: 7px;
@@ -5801,6 +5842,11 @@ html.modal-open .pth-floating-donate-wrapper {
   font-size: clamp(0.66rem, 1.1vw + 0.32rem, 0.76rem);
   font-weight: 700;
   letter-spacing: clamp(0.4px, 0.8vw, 0.8px);
+}
+
+.wayanad-badge-pill i {
+  color: var(--pth-red);
+  font-size: clamp(0.76rem, 1vw + 0.35rem, 0.86rem);
 }
 
 /* Heading */
@@ -8752,6 +8798,30 @@ html.modal-open::-webkit-scrollbar {
     min-height: 225px;
     padding: 28px 24px 20px 24px;
   }
+
+  /* Footer: iPad Pro 13 Portrait (1024px) Layout Refinements */
+  .footer-col-brand {
+    max-width: 640px;
+    margin-bottom: 8px;
+  }
+
+  .footer-links-list {
+    gap: 12px 24px;
+  }
+
+  .footer-links-list a {
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .footer-contact-list .contact-value {
+    font-size: 0.92rem;
+  }
+
+  .copyright-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
 }
 
 /* --- 2. iPad Pro 13 Landscape (1366px Viewport Width × 1024px Viewport Height) --- */
@@ -8807,6 +8877,20 @@ html.modal-open::-webkit-scrollbar {
 
   .faq-note-card {
     padding: 30px 22px 20px 22px;
+  }
+
+  /* Footer: iPad Pro 13 Landscape (1366px) Layout Refinements */
+  .footer-links-list {
+    gap: 11px 18px;
+  }
+
+  .footer-links-list a {
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+
+  .footer-contact-list .contact-value {
+    font-size: 0.9rem;
   }
 }
 

@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const onScroll = () => {
     const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
     const scrollDelta = scrollY - lastScrollY;
-    const isMobileNavOpen = mainNav && mainNav.classList.contains('show');
+    const isMobileNavOpen = mainNav && (mainNav.classList.contains('show') || mainNav.classList.contains('collapsing'));
 
     // Only fix & show navbar when scrolling UP (or at top of page)
     if (scrollY <= 20) {
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
       navbar?.classList.remove('scrolled');
     } else {
       if (isMobileNavOpen) {
-        // Keep navbar visible while mobile menu is open
+        // Keep navbar visible while mobile menu is open or animating
         navbar?.classList.remove('navbar-hidden');
         navbar?.classList.add('scrolled');
       } else if (scrollDelta > 4 && scrollY > 80) {
@@ -293,25 +293,35 @@ document.addEventListener('DOMContentLoaded', () => {
     pthNavCollapse.addEventListener('show.bs.collapse', () => {
       pthNavToggler.classList.remove('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('nav-menu-open');
+      if (lenis && window.innerWidth < 1200) {
+        lenis.stop();
+      }
     });
 
     pthNavCollapse.addEventListener('shown.bs.collapse', () => {
       pthNavToggler.classList.remove('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('nav-menu-open');
     });
 
     pthNavCollapse.addEventListener('hide.bs.collapse', () => {
       pthNavToggler.classList.add('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('nav-menu-open');
     });
 
     pthNavCollapse.addEventListener('hidden.bs.collapse', () => {
       pthNavToggler.classList.add('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('nav-menu-open');
+      if (lenis) {
+        lenis.start();
+      }
     });
 
-    // Close mobile navbar on tap outside
-    document.addEventListener('click', (e) => {
+    // Close mobile navbar on tap outside (click + touchstart for iOS Safari)
+    const handleOutsideTap = (e) => {
       if (pthNavCollapse.classList.contains('show')) {
         if (!pthNavCollapse.contains(e.target) && !pthNavToggler.contains(e.target)) {
           if (typeof bootstrap !== 'undefined') {
@@ -320,7 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       }
-    });
+    };
+    document.addEventListener('click', handleOutsideTap);
+    document.addEventListener('touchstart', handleOutsideTap, { passive: true });
 
     // Close on Escape key
     document.addEventListener('keydown', (e) => {
@@ -333,15 +345,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Automatically close mobile menu if resizing to desktop (>= 1200px)
+    // Automatically clean up menu state when resizing across desktop breakpoint (>= 1200px)
     window.addEventListener('resize', () => {
-      if (window.innerWidth >= 1200 && pthNavCollapse.classList.contains('show')) {
-        if (typeof bootstrap !== 'undefined') {
-          const bsCollapse = bootstrap.Collapse.getOrCreateInstance(pthNavCollapse);
-          if (bsCollapse) bsCollapse.hide();
+      if (window.innerWidth >= 1200) {
+        if (pthNavCollapse.classList.contains('show') || pthNavCollapse.classList.contains('collapsing')) {
+          pthNavCollapse.classList.remove('show', 'collapsing');
+          pthNavCollapse.style.height = '';
+          pthNavToggler.classList.add('collapsed');
+          pthNavToggler.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('nav-menu-open');
+          if (lenis) lenis.start();
         }
       }
-    });
+    }, { passive: true });
   }
 
   // --------------------------------------------------------------------------
