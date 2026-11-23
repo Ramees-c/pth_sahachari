@@ -61,24 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Lenis Smooth Scroll Initialisation (Optimized for ALL Devices: Desktop, Laptop, Tablet, Mobile)
   // --------------------------------------------------------------------------
   try {
-    if (typeof Lenis !== 'undefined') {
+    if (typeof Lenis !== 'undefined' && !isMobile) {
       const prefersReducedMotion =
         window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const isMobileDevice =
-        window.innerWidth <= 991 ||
-        (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 1024);
-
       lenis = new Lenis({
-        duration: prefersReducedMotion ? 0.01 : (isMobileDevice ? 0.75 : 1.05),
+        duration: prefersReducedMotion ? 0.01 : 1.05,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        lerp: prefersReducedMotion ? 1 : (isMobileDevice ? 0.16 : 0.09),
+        lerp: prefersReducedMotion ? 1 : 0.09,
         wheelMultiplier: 0.9,
-        touchMultiplier: isMobileDevice ? 0.75 : 1.1,
-        touchInertiaMultiplier: isMobileDevice ? 6 : 20,
+        touchMultiplier: 1.1,
+        touchInertiaMultiplier: 20,
         smoothWheel: true,
-        syncTouch: true,
-        syncTouchLerp: isMobileDevice ? 0.16 : 0.09,
+        syncTouch: false,
+        syncTouchLerp: 0.09,
         infinite: false,
         autoResize: true,
       });
@@ -98,11 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gsap.ticker.add((time) => {
           lenis.raf(time * 1000);
         });
-        if (isMobileDevice) {
-          gsap.ticker.lagSmoothing(500, 33);
-        } else {
-          gsap.ticker.lagSmoothing(0);
-        }
+        gsap.ticker.lagSmoothing(0);
       } else {
         function raf(time) {
           lenis.raf(time);
@@ -216,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
 
-          // Smooth scroll execution: Unified Lenis across all devices (Desktop & Mobile)
+          // Smooth scroll execution: Lenis on desktop, native scroll on touch devices
           if (lenis) {
             lenis.scrollTo(targetId === '#home' ? 0 : targetElement, {
               offset: targetId === '#home' ? 0 : offsetVal,
@@ -983,8 +975,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ScrollTrigger Choreography
-    if (typeof ScrollTrigger !== 'undefined') {
-      // 1. Generic Section Header Reveals (Harmonious Staggered Rhythm)
+    if (!isMobile && typeof ScrollTrigger !== 'undefined') {
+      // Desktop-only ScrollTrigger choreography. Native mobile scrolling is
+      // kept free from GSAP transforms and scroll observers.
       const sectionHeaderConfigs = [
         '.pth-vision-mission-section',
         '.what-we-do-section',
@@ -1416,8 +1409,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Subtle Hero Image Parallax Scrub (Enhanced Lenis Momentum Depth)
-      if (document.querySelector('.hero-pure-img')) {
+      // Subtle hero parallax on desktop only; native scrolling stays unmodified on touch devices.
+      if (!isMobile && document.querySelector('.hero-pure-img')) {
         gsap.to('.hero-pure-img', {
           y: 25,
           ease: 'none',
@@ -1425,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', () => {
             trigger: '.pth-hero-container',
             start: 'top top',
             end: 'bottom top',
-            scrub: isMobile ? 0.6 : 1.2,
+            scrub: 1.2,
           }
         });
       }
