@@ -58,7 +58,7 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -79,6 +79,13 @@ html.loading-locked {
   height: 100% !important;
   touch-action: none;
   -webkit-overflow-scrolling: auto;
+}
+
+/* Loading lock state: keeps hero badge ready for first entrance animation */
+html.loading-locked .hero-badge-pill,
+body.loading-locked .hero-badge-pill {
+  opacity: 0;
+  transform: translateY(-22px) scale(0.88);
 }
 
 .pth-loading-screen {
@@ -145,7 +152,7 @@ html.loading-locked {
   border: var(--pth-loader-outer-border) solid rgba(0, 63, 148, 0.08);
   border-top-color: var(--pth-primary);
   border-right-color: var(--pth-cyan);
-  animation: pthSpin 0.85s cubic-bezier(0.5, 0.12, 0.45, 0.92) infinite;
+  animation: pthSpin 1.35s cubic-bezier(0.5, 0.12, 0.45, 0.92) infinite;
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -162,7 +169,7 @@ html.loading-locked {
   border: var(--pth-loader-inner-border) solid rgba(2, 123, 21, 0.08);
   border-bottom-color: var(--pth-green);
   border-left-color: var(--pth-red);
-  animation: pthSpinReverse 0.68s cubic-bezier(0.5, 0.12, 0.45, 0.92) infinite;
+  animation: pthSpinReverse 1.1s cubic-bezier(0.5, 0.12, 0.45, 0.92) infinite;
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -175,7 +182,7 @@ html.loading-locked {
   border-radius: 50%;
   background-color: var(--pth-primary);
   box-shadow: 0 0 var(--pth-loader-dot-glow) rgba(0, 63, 148, 0.45);
-  animation: pthPulseDot 1.1s ease-in-out infinite alternate;
+  animation: pthPulseDot 1.7s ease-in-out infinite alternate;
   will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -335,14 +342,28 @@ html.lenis body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 0%;
+  width: 100%;
   height: 3.5px;
   background: linear-gradient(90deg, var(--pth-primary) 0%, var(--pth-cyan) 30%, var(--pth-green) 65%, var(--pth-red) 100%);
   z-index: 1045;
   /* Sits above navbar (1040) but under modal backdrop (1050) & gallery modal (1060) */
   pointer-events: none;
   box-shadow: 0 0 10px rgba(0, 153, 227, 0.65), 0 1px 12px rgba(214, 0, 0, 0.35);
-  transition: width 0.08s linear;
+  transform: scaleX(0);
+  transform-origin: 0% 50%;
+  will-change: transform;
+}
+
+/* GPU Layer Promotion for Silky 120fps Smooth Scrolling */
+.pth-navbar-wrapper,
+.scroll-progress-line,
+.vm-ambient-glow,
+.impact-ambient-blob,
+.wayanad-ambient-glow,
+.flagoff-orb,
+.footer-ambient-glow {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 body.modal-open .scroll-progress-line {
@@ -503,19 +524,29 @@ a {
   width: 100%;
   z-index: 1040;
   background-color: transparent;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.35s ease,
-    box-shadow 0.35s ease,
-    border-color 0.35s ease;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    backdrop-filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    -webkit-backdrop-filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   border-bottom: 1px solid transparent;
   transform: translateY(0);
-  will-change: transform;
+  will-change: transform, background-color, backdrop-filter, box-shadow;
 }
 
 /* Hidden state when scrolling DOWN */
 .pth-navbar-wrapper.navbar-hidden {
   transform: translateY(-100%);
   pointer-events: none;
+}
+
+/* Ensure navbar remains visible and interactable whenever hovered */
+.pth-navbar-wrapper:hover {
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
 }
 
 /* Scrolled / Fixed state when scrolling UP */
@@ -530,8 +561,8 @@ a {
 .pth-navbar {
   padding: 10px 0;
   min-height: 74px;
-  transition: padding 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    min-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    min-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .pth-navbar-wrapper.scrolled .pth-navbar {
@@ -561,7 +592,7 @@ a {
   flex-shrink: 0;
   opacity: 1 !important;
   visibility: visible !important;
-  transition: height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+  transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.3s ease;
   will-change: height, transform;
 }
@@ -590,13 +621,14 @@ a {
   padding: 8px 12px !important;
   border-radius: 6px;
   position: relative;
-  transition: var(--transition);
+  transition: color 0.2s ease, background-color 0.2s ease;
   white-space: nowrap !important;
   flex-shrink: 0;
 }
 
 .nav-link-item:hover {
-  color: var(--pth-primary);
+  color: var(--pth-primary) !important;
+  background-color: rgba(0, 63, 148, 0.05);
 }
 
 /* Active HOME link (Golden Amber from Screenshot) */
@@ -607,6 +639,11 @@ a {
 @media (min-width: 1200px) {
   .nav-link-item.active-home {
     color: var(--pth-amber) !important;
+  }
+
+  .nav-link-item.active-home:hover {
+    color: var(--pth-amber) !important;
+    background-color: rgba(224, 159, 31, 0.08);
   }
 
   .nav-link-item.active-home::after {
@@ -1099,7 +1136,7 @@ a {
   border-radius: 50%;
   filter: blur(75px);
   opacity: 0.6;
-  animation: floatBlobs 12s ease-in-out infinite alternate;
+  animation: floatBlobs 20s ease-in-out infinite alternate;
 }
 
 .hero-blob-1 {
@@ -1181,21 +1218,20 @@ a {
   color: var(--pth-primary);
   margin-bottom: clamp(12px, 2.5vw, 18px);
   box-shadow: 0 4px 15px rgba(0, 63, 148, 0.06);
+  transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s ease;
+  user-select: none;
 }
 
-.hero-badge-pill span:not(.badge-dot) {
+.hero-badge-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 63, 148, 0.12);
+  border-color: rgba(0, 63, 148, 0.28);
+}
+
+.hero-badge-pill span {
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
-}
-
-.badge-dot {
-  width: 8px;
-  height: 8px;
-  background-color: var(--pth-green);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(2, 123, 21, 0.25);
-  display: inline-block;
 }
 
 /* Script Title / Malayalam Headline */
@@ -1623,12 +1659,12 @@ html.modal-open .pth-floating-donate-wrapper {
   border-radius: 50%;
   border: 1.5px solid rgba(0, 153, 227, 0.55);
   box-shadow: 0 0 16px rgba(0, 63, 148, 0.32);
-  animation: pthDonateAura 3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation: pthDonateAura 4.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   pointer-events: none;
 }
 
 .floating-donate-pulse-ring::after {
-  animation-delay: 1.5s;
+  animation-delay: 2.4s;
 }
 
 @keyframes pthDonateAura {
@@ -2355,7 +2391,7 @@ html.modal-open .pth-floating-donate-wrapper {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: servicesAutoScroll 65s linear infinite;
+  animation: servicesAutoScroll 105s linear infinite;
 }
 
 .services-quick-slider:hover .services-slider-track,
@@ -2555,7 +2591,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 .service-card.service-card-targeted {
-  animation: serviceTargetPulse 1.4s var(--ease-out);
+  animation: serviceTargetPulse 2.2s var(--ease-out);
   border-color: var(--pth-green) !important;
 }
 
@@ -4921,7 +4957,7 @@ html.modal-open .pth-floating-donate-wrapper {
   align-items: center;
   gap: 8px;
   transition: transform 0.35s var(--ease-spring), background 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
-  cursor: pointer;
+  cursor: default;
   box-shadow: 0 2px 6px rgba(1, 30, 123, 0.03);
 }
 
@@ -4936,6 +4972,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 .district-tab-btn:hover {
+  cursor: default;
   border-color: var(--pth-primary);
   color: var(--pth-primary);
   transform: translateY(-2px) scale(1.02);
@@ -5007,7 +5044,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 .blink-dot {
-  animation: blinkDot 1.6s infinite ease-in-out;
+  animation: blinkDot 2.4s infinite ease-in-out;
 }
 
 @keyframes blinkDot {
@@ -8907,6 +8944,7 @@ html.modal-open::-webkit-scrollbar {
 }
 
 @media (hover: none) and (pointer: coarse) {
+
   .nav-link-item:active,
   .btn-donation-pth:active,
   .btn-hero-secondary:active,

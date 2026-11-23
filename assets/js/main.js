@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingScreen.style.display = 'none';
       }, 400);
     }
+    // Launch first loading entrance animation for hero section & badge as screen clears
+    playHeroEntrance();
   };
 
   // Dismiss smoothly once resources load, with quick fallback so user is never blocked
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hidePreloader();
   } else {
     window.addEventListener('load', hidePreloader);
-    setTimeout(hidePreloader, 1200);
+    setTimeout(hidePreloader, 950);
   }
 
   // Dynamic Copyright Year
@@ -45,13 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     if (typeof Lenis !== 'undefined') {
       lenis = new Lenis({
-        duration: 1.15,
+        duration: 1.35,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: 'vertical',
-        gestureOrientation: 'vertical',
+        lerp: 0.055,
+        wheelMultiplier: 1.25,
+        touchMultiplier: 2.0,
         smoothWheel: true,
-        wheelMultiplier: 0.95,
-        touchMultiplier: 1.5,
         syncTouch: false,
         infinite: false,
         autoResize: true,
@@ -103,20 +104,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
           e.preventDefault();
-          const isServiceChip = this.classList.contains('service-pill-chip');
-          const offsetVal = isServiceChip ? -95 : -80;
 
+          // Immediately unlock body and resume Lenis if mobile navbar collapse was active
+          document.body.classList.remove('nav-menu-open');
           if (lenis) {
-            lenis.scrollTo(targetElement, {
-              offset: offsetVal,
-              duration: 1.15,
-              easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-              immediate: false,
-              lock: false,
-            });
-          } else {
-            const targetPos = targetElement.getBoundingClientRect().top + window.pageYOffset + offsetVal;
-            window.scrollTo({ top: targetPos, behavior: 'smooth' });
+            lenis.start();
+          }
+
+          // Close mobile menu collapse if open or animating
+          const navCollapse = document.getElementById('mainNav');
+          if (navCollapse && (navCollapse.classList.contains('show') || navCollapse.classList.contains('collapsing')) && typeof bootstrap !== 'undefined') {
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(navCollapse);
+            if (bsCollapse) bsCollapse.hide();
+          }
+
+          const isServiceChip = this.classList.contains('service-pill-chip');
+          const navEl = document.querySelector('.pth-navbar-wrapper');
+          const navHeight = navEl ? navEl.offsetHeight : 70;
+          const offsetVal = isServiceChip ? -95 : -(navHeight + 10);
+
+          const targetPos = targetId === '#home' ? 0 : Math.max(0, targetElement.getBoundingClientRect().top + window.pageYOffset + offsetVal);
+
+          // Nav Link & Brand Logo Active State Polish & Click Scroll Protection
+          const matchingNavLink = document.querySelector(`.pth-navbar .nav-link-item[href="${targetId}"]`) ||
+            (targetId === '#home' ? document.querySelector('.pth-navbar .nav-link-item[href="#home"]') : null);
+
+          if (matchingNavLink || this.classList.contains('nav-link-item') || targetId === '#home') {
+            document.querySelectorAll('.pth-navbar .nav-link-item').forEach(l => l.classList.remove('active-home'));
+            if (matchingNavLink) {
+              matchingNavLink.classList.add('active-home');
+            } else if (targetId === '#home') {
+              const homeLink = document.querySelector('.pth-navbar .nav-link-item[href="#home"]');
+              if (homeLink) homeLink.classList.add('active-home');
+            }
+            isNavClickScrolling = true;
+            clearTimeout(navClickTimeout);
+            navClickTimeout = setTimeout(() => {
+              isNavClickScrolling = false;
+            }, 1500);
           }
 
           // Service Directory Chip Navigation Polish
@@ -141,17 +166,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
 
-          // Nav Link Item Active State Polish
-          if (this.classList.contains('nav-link-item')) {
-            document.querySelectorAll('.pth-navbar .nav-link-item').forEach(l => l.classList.remove('active-home'));
-            this.classList.add('active-home');
-          }
-
-          // Close mobile menu collapse if open
-          const navCollapse = document.getElementById('mainNav');
-          if (navCollapse && navCollapse.classList.contains('show') && typeof bootstrap !== 'undefined') {
-            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(navCollapse);
-            if (bsCollapse) bsCollapse.hide();
+          // Smooth scroll execution: Lenis on desktop; dual-trigger (Lenis + native fallback) on mobile
+          if (lenis && window.innerWidth >= 1200) {
+            lenis.scrollTo(targetId === '#home' ? 0 : targetElement, {
+              offset: targetId === '#home' ? 0 : offsetVal,
+              duration: 1.45,
+              easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+              immediate: false,
+              lock: false,
+            });
+          } else {
+            if (lenis) {
+              lenis.scrollTo(targetId === '#home' ? 0 : targetElement, {
+                offset: targetId === '#home' ? 0 : offsetVal,
+                duration: 1.05,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                immediate: false,
+              });
+            }
+            window.scrollTo({ top: targetPos, behavior: 'smooth' });
           }
         }
       }
@@ -182,26 +215,113 @@ document.addEventListener('DOMContentLoaded', () => {
   const mainNav = document.getElementById('mainNav');
 
   let lastScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+  let isNavbarHovered = false;
+  let isNavClickScrolling = false;
+  let navClickTimeout = null;
 
-  const onScroll = () => {
-    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+  // Track mouse pointer hover over the navbar to prevent unwanted auto-hiding while user interacts
+  if (navbar) {
+    navbar.addEventListener('mouseenter', () => {
+      isNavbarHovered = true;
+      navbar.classList.remove('navbar-hidden');
+    });
+    navbar.addEventListener('mouseleave', () => {
+      isNavbarHovered = false;
+    });
+  }
+
+  // Top-edge mouse hover reveal: moving cursor near top 35px immediately reveals the navbar
+  document.addEventListener('mousemove', (e) => {
+    if (e.clientY <= 35 && navbar && navbar.classList.contains('navbar-hidden')) {
+      navbar.classList.remove('navbar-hidden');
+      navbar.classList.add('scrolled');
+    }
+  }, { passive: true });
+
+  // Cache navigation link elements and their target sections to prevent layout thrashing
+  const navSectionMap = Array.from(document.querySelectorAll('.pth-navbar .nav-link-item[href^="#"]'))
+    .map((link) => {
+      const targetId = link.getAttribute('href');
+      const targetSection = targetId && targetId !== '#' ? document.querySelector(targetId) : null;
+      return { link, targetSection };
+    })
+    .filter((item) => item.targetSection !== null);
+
+  let cachedSectionBounds = [];
+  const updateSectionBounds = () => {
+    const scrollCurrent = window.pageYOffset || document.documentElement.scrollTop || 0;
+    cachedSectionBounds = navSectionMap.map(({ link, targetSection }) => {
+      const rect = targetSection.getBoundingClientRect();
+      const top = Math.max(0, rect.top + scrollCurrent);
+      const height = targetSection.offsetHeight;
+      return { link, top, bottom: top + height };
+    });
+  };
+  updateSectionBounds();
+
+  // Cache services stream items for fast active chip tracking
+  const serviceChips = Array.from(document.querySelectorAll('.service-pill-chip'));
+  const serviceStreamItems = Array.from(document.querySelectorAll('.service-stream-item'));
+  let cachedServiceBounds = [];
+  const updateServiceBounds = () => {
+    cachedServiceBounds = serviceStreamItems.map((item) => {
+      const top = item.offsetTop;
+      const height = item.offsetHeight;
+      return { id: '#' + item.id, top, bottom: top + height };
+    });
+  };
+  if (serviceStreamItems.length > 0) {
+    updateServiceBounds();
+  }
+
+  const floatingDonateBtn = document.getElementById('pthFloatingDonate');
+  const heroSection = document.getElementById('home') || document.querySelector('.pth-hero-container');
+  const copyrightSection = document.querySelector('.footer-copyright-bar');
+  let cachedHeroThreshold = 600;
+  const updateHeroThreshold = () => {
+    if (heroSection) {
+      cachedHeroThreshold = (heroSection.offsetTop + heroSection.offsetHeight) - 120;
+    }
+  };
+  updateHeroThreshold();
+
+  const handleGeometryUpdate = () => {
+    updateSectionBounds();
+    if (serviceStreamItems.length > 0) updateServiceBounds();
+    updateHeroThreshold();
+  };
+
+  window.addEventListener('resize', handleGeometryUpdate, { passive: true });
+  window.addEventListener('load', handleGeometryUpdate, { passive: true });
+  if (typeof ScrollTrigger !== 'undefined') {
+    ScrollTrigger.addEventListener('refresh', handleGeometryUpdate);
+  }
+
+  const onScroll = (scrollEvent) => {
+    const scrollY = (scrollEvent && typeof scrollEvent.scroll === 'number')
+      ? scrollEvent.scroll
+      : (window.scrollY || window.pageYOffset || document.documentElement.scrollTop);
     const scrollDelta = scrollY - lastScrollY;
     const isMobileNavOpen = mainNav && (mainNav.classList.contains('show') || mainNav.classList.contains('collapsing'));
 
-    // Only fix & show navbar when scrolling UP (or at top of page)
-    if (scrollY <= 20) {
-      // At top of page: navbar in normal position, full size logo, transparent background
+    // Priority: If cursor is hovering on navbar, or user just clicked a nav link, or mobile menu is open:
+    // ALWAYS KEEP NAVBAR VISIBLE & STABLE
+    if (isNavbarHovered || isNavClickScrolling || isMobileNavOpen) {
+      navbar?.classList.remove('navbar-hidden');
+      if (scrollY > 35) {
+        navbar?.classList.add('scrolled');
+      } else {
+        navbar?.classList.remove('scrolled');
+      }
+    } else if (scrollY <= 35) {
+      // At top header: smoothly merge into header state (full size logo, transparent background)
       navbar?.classList.remove('navbar-hidden');
       navbar?.classList.remove('scrolled');
     } else {
-      if (isMobileNavOpen) {
-        // Keep navbar visible while mobile menu is open or animating
-        navbar?.classList.remove('navbar-hidden');
-        navbar?.classList.add('scrolled');
-      } else if (scrollDelta > 4 && scrollY > 80) {
-        // Scrolling DOWN: hide navbar smoothly to give full content view
+      if (scrollDelta > 8 && scrollY > 120) {
+        // Scrolling DOWN significantly: hide navbar smoothly to give full content view
         navbar?.classList.add('navbar-hidden');
-      } else if (scrollDelta < -4) {
+      } else if (scrollDelta < -8) {
         // Scrolling UP: reveal fixed navbar with compact scrolled style & reduced logo
         navbar?.classList.remove('navbar-hidden');
         navbar?.classList.add('scrolled');
@@ -213,44 +333,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lastScrollY = scrollY <= 0 ? 0 : scrollY;
 
-    // Top Reading Scroll Progress Line
+    // Top Reading Scroll Progress Line (Pure GPU transform scaleX, zero layout reflows)
     if (scrollProgressBar) {
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
-      scrollProgressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+      let progress = 0;
+      if (scrollEvent && typeof scrollEvent.progress === 'number') {
+        progress = scrollEvent.progress;
+      } else {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        progress = docHeight > 0 ? scrollY / docHeight : 0;
+      }
+      scrollProgressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, progress))})`;
     }
 
-    // Dynamic Active Link State in Navbar on Scroll
-    const navLinks = document.querySelectorAll('.pth-navbar .nav-link-item[href^="#"]');
-    const scrollPos = scrollY + 120;
-    navLinks.forEach((link) => {
-      const targetId = link.getAttribute('href');
-      if (targetId && targetId !== '#') {
-        const targetSection = document.querySelector(targetId);
-        if (targetSection) {
-          const top = targetSection.getBoundingClientRect().top + scrollY;
-          const height = targetSection.offsetHeight;
-          if (scrollPos >= top && scrollPos < top + height) {
-            link.classList.add('active-home');
+    // Dynamic Active Link State in Navbar on Scroll (0ms layout reflow, pure cached check)
+    if (cachedSectionBounds.length > 0 && !isNavClickScrolling) {
+      if (scrollY <= 100) {
+        // At top of page: always ensure HOME link is active and others are cleared
+        document.querySelectorAll('.pth-navbar .nav-link-item').forEach(l => l.classList.remove('active-home'));
+        const homeLink = document.querySelector('.pth-navbar .nav-link-item[href="#home"]');
+        if (homeLink) homeLink.classList.add('active-home');
+      } else {
+        const scrollPos = scrollY + 130;
+        let matched = false;
+        for (let i = cachedSectionBounds.length - 1; i >= 0; i--) {
+          const item = cachedSectionBounds[i];
+          if (!matched && scrollPos >= item.top && scrollPos < item.bottom) {
+            item.link.classList.add('active-home');
+            matched = true;
           } else {
-            link.classList.remove('active-home');
+            item.link.classList.remove('active-home');
           }
         }
       }
-    });
+    }
 
     // Dynamic Active State for Quick Services Directory Chips on Scroll
-    const serviceChips = document.querySelectorAll('.service-pill-chip');
-    if (serviceChips.length > 0) {
-      const serviceItems = document.querySelectorAll('.service-stream-item');
+    if (cachedServiceBounds.length > 0 && serviceChips.length > 0) {
+      const checkPos = scrollY + 220;
       let activeServiceId = null;
-
-      serviceItems.forEach((item) => {
-        const rect = item.getBoundingClientRect();
-        if (rect.top <= 240 && rect.bottom >= 120) {
-          activeServiceId = '#' + item.id;
+      for (let i = 0; i < cachedServiceBounds.length; i++) {
+        const item = cachedServiceBounds[i];
+        if (checkPos >= item.top && checkPos < item.bottom) {
+          activeServiceId = item.id;
+          break;
         }
-      });
+      }
 
       if (activeServiceId) {
         serviceChips.forEach((chip) => {
@@ -263,12 +390,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Dynamic Visibility for Floating Donation Button (Visible after Hero Section)
-    const floatingDonateBtn = document.getElementById('pthFloatingDonate');
-    const heroSection = document.getElementById('home') || document.querySelector('.pth-hero-container');
-    if (floatingDonateBtn && heroSection) {
-      const triggerThreshold = (heroSection.offsetTop + heroSection.offsetHeight) - 120;
-      if (scrollY > triggerThreshold) {
+    // Dynamic Visibility for Floating Donation Button:
+    // Visible after Hero Section, smoothly hides when entering the Copyright Section
+    if (floatingDonateBtn) {
+      const isPastHero = scrollY > cachedHeroThreshold;
+      const isEnteringCopyright = copyrightSection
+        ? copyrightSection.getBoundingClientRect().top <= (window.innerHeight - 30)
+        : false;
+
+      if (isPastHero && !isEnteringCopyright) {
         floatingDonateBtn.classList.add('is-visible');
       } else {
         floatingDonateBtn.classList.remove('is-visible');
@@ -276,10 +406,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
+  // Synchronized Scroll Ticking (Unified between Lenis and native events)
+  let isScrollTicking = false;
+  const handleScroll = (e) => {
+    if (!isScrollTicking) {
+      requestAnimationFrame(() => {
+        onScroll(e);
+        isScrollTicking = false;
+      });
+      isScrollTicking = true;
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('resize', handleScroll, { passive: true });
   if (lenis) {
-    lenis.on('scroll', onScroll);
+    lenis.on('scroll', (e) => {
+      onScroll(e);
+    });
   }
   onScroll();
 
@@ -294,9 +438,6 @@ document.addEventListener('DOMContentLoaded', () => {
       pthNavToggler.classList.remove('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'true');
       document.body.classList.add('nav-menu-open');
-      if (lenis && window.innerWidth < 1200) {
-        lenis.stop();
-      }
     });
 
     pthNavCollapse.addEventListener('shown.bs.collapse', () => {
@@ -309,6 +450,9 @@ document.addEventListener('DOMContentLoaded', () => {
       pthNavToggler.classList.add('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('nav-menu-open');
+      if (lenis) {
+        lenis.start();
+      }
     });
 
     pthNavCollapse.addEventListener('hidden.bs.collapse', () => {
@@ -443,13 +587,39 @@ document.addEventListener('DOMContentLoaded', () => {
         scale: 1,
         rotate: 0,
         textShadow: '',
-        duration: 0.65,
+        duration: 0.95,
         stagger: {
-          each: 0.03,
+          each: 0.05,
           from: 'start',
         },
         ease: 'elastic.out(1.2, 0.42)',
         clearProps: 'transform,textShadow',
+      }
+    );
+  }
+
+  function replayHeroBadge() {
+    if (typeof gsap === 'undefined') return;
+    const badge = document.querySelector('.hero-badge-pill');
+    if (!badge) return;
+
+    gsap.killTweensOf(badge);
+    gsap.fromTo(
+      badge,
+      {
+        y: -22,
+        opacity: 0,
+        scale: 0.88,
+        filter: 'blur(6px)',
+      },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 0.9,
+        ease: 'back.out(1.6)',
+        clearProps: 'transform,opacity,filter',
       }
     );
   }
@@ -463,23 +633,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroHeading = document.querySelector('.hero-script-heading');
     if (heroHeading) {
       heroHeading.addEventListener('click', () => {
+        replayHeroBadge();
         replayHeroLetterWave();
+      });
+    }
+
+    // Interactive Replay: Clicking or tapping the hero badge also triggers its spring bounce animation
+    const heroBadge = document.querySelector('.hero-badge-pill');
+    if (heroBadge) {
+      heroBadge.style.cursor = 'pointer';
+      heroBadge.addEventListener('click', () => {
+        replayHeroBadge();
       });
     }
 
     // Replay when clicking the HOME navigation link
     document.querySelectorAll('a[href="#home"]').forEach((homeLink) => {
       homeLink.addEventListener('click', () => {
-        setTimeout(replayHeroLetterWave, 250);
+        setTimeout(() => {
+          replayHeroBadge();
+          replayHeroLetterWave();
+        }, 250);
       });
     });
   }
 
   // Pre-split the hero letters immediately upon script execution
   initHeroLetterTypography();
-
-  // Play hero entrance immediately on first load
-  playHeroEntrance();
 
   function playHeroEntrance() {
     if (heroEntrancePlayed || typeof gsap === 'undefined') return;
@@ -512,8 +692,8 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           y: 0,
           opacity: 1,
-          duration: 0.55,
-          stagger: 0.05,
+          duration: 0.85,
+          stagger: 0.07,
           clearProps: 'transform,opacity',
         }
       )
@@ -524,22 +704,35 @@ document.addEventListener('DOMContentLoaded', () => {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 0.45,
-          stagger: 0.05,
+          duration: 0.7,
+          stagger: 0.07,
           ease: 'back.out(1.5)',
           clearProps: 'transform,opacity',
         },
-        '-=0.25'
+        '-=0.35'
       );
 
     // Hero Elements Entrance Timeline
     const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-    // 1. Tagline Pill drops in
+    // 1. Tagline Pill drops in first (The primary loading animation for the hero badge)
     heroTl.fromTo(
       '.hero-badge-pill, .hero-overline',
-      { y: 18, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.65, ease: 'power2.out', clearProps: 'transform,opacity' }
+      {
+        y: -22,
+        opacity: 0,
+        scale: 0.88,
+        filter: 'blur(6px)',
+      },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 0.9,
+        ease: 'back.out(1.6)',
+        clearProps: 'transform,opacity,filter',
+      }
     );
 
     // 2. Line 1: "അതിരുകൾക്കപ്പുറം" Letter-by-Letter Kinetic Wave
@@ -560,19 +753,19 @@ document.addEventListener('DOMContentLoaded', () => {
           scale: 1,
           rotateX: 0,
           filter: 'blur(0px)',
-          duration: 0.72,
-          stagger: 0.04,
+          duration: 1.05,
+          stagger: 0.06,
           ease: 'back.out(1.5)',
           clearProps: 'transform,opacity,filter',
         },
-        '-=0.35'
+        '-=0.45'
       );
     } else {
       heroTl.fromTo(
         '.script-line-blue',
         { y: 35, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.4)', clearProps: 'transform,opacity' },
-        '-=0.35'
+        { y: 0, opacity: 1, duration: 1.2, ease: 'back.out(1.4)', clearProps: 'transform,opacity' },
+        '-=0.45'
       );
     }
 
@@ -594,19 +787,19 @@ document.addEventListener('DOMContentLoaded', () => {
           scale: 1,
           rotateX: 0,
           filter: 'blur(0px)',
-          duration: 0.72,
-          stagger: 0.04,
+          duration: 1.05,
+          stagger: 0.06,
           ease: 'back.out(1.5)',
           clearProps: 'transform,opacity,filter',
         },
-        '-=0.52'
+        '-=0.65'
       );
     } else {
       heroTl.fromTo(
         '.script-line-green',
         { y: 35, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.4)', clearProps: 'transform,opacity' },
-        '-=0.52'
+        { y: 0, opacity: 1, duration: 1.2, ease: 'back.out(1.4)', clearProps: 'transform,opacity' },
+        '-=0.65'
       );
     }
 
@@ -624,19 +817,19 @@ document.addEventListener('DOMContentLoaded', () => {
           y: 0,
           opacity: 1,
           filter: 'blur(0px)',
-          duration: 0.65,
-          stagger: 0.065,
+          duration: 0.95,
+          stagger: 0.09,
           ease: 'power2.out',
           clearProps: 'transform,opacity,filter',
         },
-        '-=0.4'
+        '-=0.55'
       );
     } else {
       heroTl.fromTo(
         '.hero-bio-text',
         { y: 22, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.75, ease: 'power2.out', clearProps: 'transform,opacity' },
-        '-=0.4'
+        { y: 0, opacity: 1, duration: 1.15, ease: 'power2.out', clearProps: 'transform,opacity' },
+        '-=0.55'
       );
     }
 
@@ -648,12 +841,12 @@ document.addEventListener('DOMContentLoaded', () => {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 0.55,
-          stagger: 0.1,
+          duration: 0.85,
+          stagger: 0.14,
           ease: 'back.out(1.4)',
           clearProps: 'transform,opacity',
         },
-        '-=0.35'
+        '-=0.45'
       )
       .fromTo(
         '.hero-action-buttons .btn',
@@ -662,12 +855,12 @@ document.addEventListener('DOMContentLoaded', () => {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 0.55,
-          stagger: 0.12,
+          duration: 0.85,
+          stagger: 0.16,
           ease: 'back.out(1.5)',
           clearProps: 'transform,opacity',
         },
-        '-=0.3'
+        '-=0.4'
       )
       .fromTo(
         '.hero-pure-img',
@@ -675,20 +868,22 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           y: 0,
           opacity: 1,
-          duration: 0.9,
+          duration: 1.35,
           ease: 'power2.out',
           clearProps: 'transform,opacity',
         },
-        '-=0.5'
+        '-=0.65'
       );
   }
 
-  // Trigger hero entrance immediately on first load
-  playHeroEntrance();
+  // Safety fallback: ensure hero entrance always triggers even if preloader was dismissed early
+  if (!heroEntrancePlayed && (!document.getElementById('pthLoadingScreen') || !document.body.classList.contains('loading-locked'))) {
+    playHeroEntrance();
+  }
 
   if (typeof gsap !== 'undefined') {
     // Number Counter Roll-Up Animation Helper
-    function animateCounter(el, duration = 1.8) {
+    function animateCounter(el, duration = 2.6) {
       if (!el || el.dataset.counterAnimated === 'true') return;
       el.dataset.counterAnimated = 'true';
 
@@ -758,8 +953,8 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             y: 26,
             opacity: 0,
-            duration: 0.75,
-            stagger: 0.1,
+            duration: 1.15,
+            stagger: 0.14,
             ease: 'power3.out',
             clearProps: 'transform,opacity',
           });
@@ -775,8 +970,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 24,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.12,
+        duration: 1.2,
+        stagger: 0.16,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -790,7 +985,7 @@ document.addEventListener('DOMContentLoaded', () => {
         x: 35,
         opacity: 0,
         scale: 0.96,
-        duration: 0.95,
+        duration: 1.35,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -805,8 +1000,8 @@ document.addEventListener('DOMContentLoaded', () => {
         y: 35,
         opacity: 0,
         scale: 0.98,
-        duration: 0.85,
-        stagger: 0.18,
+        duration: 1.25,
+        stagger: 0.22,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -819,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 25,
         opacity: 0,
-        duration: 0.75,
+        duration: 1.1,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -833,7 +1028,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         x: -35,
         opacity: 0,
-        duration: 0.9,
+        duration: 1.3,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -846,8 +1041,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 35,
         opacity: 0,
-        duration: 0.7,
-        stagger: 0.08,
+        duration: 1.1,
+        stagger: 0.12,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -860,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 20,
         opacity: 0,
-        duration: 0.75,
+        duration: 1.1,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -874,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         x: -30,
         opacity: 0,
-        duration: 0.9,
+        duration: 1.3,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -887,8 +1082,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         scale: 0.92,
         opacity: 0,
-        duration: 0.5,
-        stagger: 0.04,
+        duration: 0.75,
+        stagger: 0.06,
         ease: 'back.out(1.4)',
         clearProps: 'transform,opacity',
       });
@@ -902,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', () => {
         x: 30,
         opacity: 0,
         scale: 0.97,
-        duration: 0.95,
+        duration: 1.35,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -916,8 +1111,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 35,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.12,
+        duration: 1.2,
+        stagger: 0.16,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -930,7 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 25,
         opacity: 0,
-        duration: 0.8,
+        duration: 1.2,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -944,7 +1139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 22,
         opacity: 0,
-        duration: 0.8,
+        duration: 1.2,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -957,8 +1152,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 20,
         opacity: 0,
-        duration: 0.7,
-        stagger: 0.1,
+        duration: 1.1,
+        stagger: 0.14,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -972,8 +1167,8 @@ document.addEventListener('DOMContentLoaded', () => {
         y: 35,
         opacity: 0,
         scale: 0.97,
-        duration: 0.8,
-        stagger: 0.12,
+        duration: 1.2,
+        stagger: 0.16,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -987,8 +1182,8 @@ document.addEventListener('DOMContentLoaded', () => {
         y: 30,
         opacity: 0,
         scale: 0.97,
-        duration: 0.8,
-        stagger: 0.15,
+        duration: 1.2,
+        stagger: 0.18,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -1001,8 +1196,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 20,
         opacity: 0,
-        duration: 0.6,
-        stagger: 0.05,
+        duration: 0.95,
+        stagger: 0.08,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -1014,7 +1209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         once: true,
         onEnter: () => {
           document.querySelectorAll('.pth-impact-section .kpi-number, .pth-impact-section .people-kpi-number, .pth-impact-section .strip-stat-val').forEach((el) => {
-            animateCounter(el, 1.8);
+            animateCounter(el, 2.6);
           });
         }
       });
@@ -1028,7 +1223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         x: -30,
         opacity: 0,
-        duration: 0.9,
+        duration: 1.3,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -1042,7 +1237,7 @@ document.addEventListener('DOMContentLoaded', () => {
         x: 30,
         opacity: 0,
         scale: 0.96,
-        duration: 0.95,
+        duration: 1.35,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -1055,8 +1250,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 25,
         opacity: 0,
-        stagger: 0.1,
-        duration: 0.75,
+        stagger: 0.14,
+        duration: 1.15,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -1068,7 +1263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         once: true,
         onEnter: () => {
           document.querySelectorAll('.pth-wayanad-section .stat-number').forEach((el) => {
-            animateCounter(el, 1.6);
+            animateCounter(el, 2.4);
           });
         }
       });
@@ -1082,7 +1277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         x: -35,
         opacity: 0,
-        duration: 0.9,
+        duration: 1.3,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -1096,7 +1291,7 @@ document.addEventListener('DOMContentLoaded', () => {
         x: 35,
         opacity: 0,
         scale: 0.96,
-        duration: 0.95,
+        duration: 1.35,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -1111,7 +1306,7 @@ document.addEventListener('DOMContentLoaded', () => {
         x: -30,
         opacity: 0,
         scale: 0.96,
-        duration: 0.9,
+        duration: 1.3,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -1124,7 +1319,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         x: 30,
         opacity: 0,
-        duration: 0.9,
+        duration: 1.3,
         ease: 'power3.out',
         clearProps: 'transform,opacity',
       });
@@ -1140,8 +1335,8 @@ document.addEventListener('DOMContentLoaded', () => {
         y: 30,
         opacity: 0,
         scale: 0.96,
-        stagger: 0.06,
-        duration: 0.8,
+        stagger: 0.09,
+        duration: 1.2,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
@@ -1155,27 +1350,56 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         y: 25,
         opacity: 0,
-        stagger: 0.12,
-        duration: 0.8,
+        stagger: 0.16,
+        duration: 1.2,
         ease: 'power2.out',
         clearProps: 'transform,opacity',
       });
 
-      // 14. Subtle Parallax Scrub on Ambient Glow Elements
+      // 14. Smooth Parallax Scrub on Ambient Glow & Visual Elements (Synced to Lenis Momentum)
       gsap.utils.toArray('.vm-ambient-glow, .impact-ambient-blob, .wayanad-ambient-glow, .flagoff-orb, .footer-ambient-glow').forEach((glow) => {
         if (glow.parentElement) {
           gsap.to(glow, {
-            y: -35,
+            y: -65,
             ease: 'none',
             scrollTrigger: {
               trigger: glow.parentElement,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 1.5,
+              scrub: 1.2,
+              fastScrollEnd: true,
+              preventOverlaps: true,
             }
           });
         }
       });
+
+      // Subtle Hero & Section Image Parallax Scrub (Enhanced Lenis Momentum Depth)
+      if (document.querySelector('.hero-pure-img')) {
+        gsap.to('.hero-pure-img', {
+          y: 35,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.pth-hero-container',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 1.2,
+          }
+        });
+      }
+
+      if (document.querySelector('.about-caregiver-img')) {
+        gsap.to('.about-caregiver-img', {
+          y: -25,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.about-us-section',
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2,
+          }
+        });
+      }
     }
   }
 
@@ -1185,29 +1409,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const districtTabs = document.querySelectorAll('.district-tab-btn');
   const districtItems = document.querySelectorAll('.district-accord-item');
 
-  districtTabs.forEach((tab) => {
-    tab.addEventListener('click', function () {
-      districtTabs.forEach((t) => t.classList.remove('active'));
-      this.classList.add('active');
+  if (districtItems.length > 0) {
+    districtTabs.forEach((tab) => {
+      tab.addEventListener('click', function () {
+        districtTabs.forEach((t) => t.classList.remove('active'));
+        this.classList.add('active');
 
-      const targetDistrict = this.getAttribute('data-district');
+        const targetDistrict = this.getAttribute('data-district');
 
-      districtItems.forEach((item) => {
-        const itemDistrict = item.getAttribute('data-district-card');
-        const collapseEl = item.querySelector('.collapse');
+        districtItems.forEach((item) => {
+          const itemDistrict = item.getAttribute('data-district-card');
+          const collapseEl = item.querySelector('.collapse');
 
-        if (targetDistrict === 'all' || targetDistrict === itemDistrict) {
-          item.style.display = 'block';
-          if (targetDistrict !== 'all' && collapseEl && typeof bootstrap !== 'undefined') {
-            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
-            bsCollapse.show();
+          if (targetDistrict === 'all' || targetDistrict === itemDistrict) {
+            item.style.display = 'block';
+            if (targetDistrict !== 'all' && collapseEl && typeof bootstrap !== 'undefined') {
+              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+              bsCollapse.show();
+            }
+          } else {
+            item.style.display = 'none';
           }
-        } else {
-          item.style.display = 'none';
-        }
+        });
       });
     });
-  });
+  }
 
 
   // Gallery Lightbox Modal (Pure Photo - No Titles)
