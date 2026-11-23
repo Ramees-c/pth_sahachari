@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let lenis = null;
   const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
   const isMobile = window.innerWidth <= 991 || (isTouchDevice && window.innerWidth <= 1024);
+  const prefersReducedMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+  }
 
   // --------------------------------------------------------------------------
   // 0. Initial Setup & Responsive Small Loading Spinner Dismissal
@@ -62,13 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   try {
     if (typeof Lenis !== 'undefined' && !isMobile) {
-      const prefersReducedMotion =
-        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
       lenis = new Lenis({
         duration: prefersReducedMotion ? 0.01 : 1.05,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        lerp: prefersReducedMotion ? 1 : 0.09,
+        lerp: prefersReducedMotion ? 1 : 0.085,
         wheelMultiplier: 0.9,
         touchMultiplier: 1.1,
         touchInertiaMultiplier: 20,
@@ -88,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // GSAP ScrollTrigger Integration (Unified Single Ticker)
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-        gsap.registerPlugin(ScrollTrigger);
         ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
         lenis.on('scroll', ScrollTrigger.update);
         gsap.ticker.add((time) => {
@@ -212,14 +214,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (lenis) {
             lenis.scrollTo(targetId === '#home' ? 0 : targetElement, {
               offset: targetId === '#home' ? 0 : offsetVal,
-              duration: 1.1,
+              duration: prefersReducedMotion ? 0 : 1.1,
               easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-              immediate: false,
+              immediate: prefersReducedMotion,
               lock: false,
             });
           } else {
             const fallbackPos = targetId === '#home' ? 0 : Math.max(0, targetElement.getBoundingClientRect().top + window.pageYOffset + offsetVal);
-            window.scrollTo({ top: fallbackPos, behavior: 'smooth' });
+            window.scrollTo({ top: fallbackPos, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
           }
         }
       }
@@ -714,8 +716,6 @@ document.addEventListener('DOMContentLoaded', () => {
     heroEntrancePlayed = true;
 
     // Respect user's motion preferences
-    const prefersReducedMotion =
-      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
       gsap.set(
         '.hero-badge-pill, .script-line-blue, .script-line-green, .hero-char, .hero-bio-word, .hero-bio-text, .hero-stat-chip, .btn, .hero-pure-img',
@@ -975,9 +975,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ScrollTrigger Choreography
-    if (!isMobile && typeof ScrollTrigger !== 'undefined') {
-      // Desktop-only ScrollTrigger choreography. Native mobile scrolling is
-      // kept free from GSAP transforms and scroll observers.
+    if (typeof ScrollTrigger !== 'undefined' && !prefersReducedMotion) {
+      // Use native-scroll triggers on touch devices; reserve parallax for desktop.
       const sectionHeaderConfigs = [
         '.pth-vision-mission-section',
         '.what-we-do-section',
