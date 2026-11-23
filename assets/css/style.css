@@ -550,7 +550,7 @@ a {
     border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   border-bottom: 1px solid transparent;
   transform: translateY(0);
-  will-change: transform, background-color, backdrop-filter, box-shadow;
+  will-change: transform;
 }
 
 /* Hidden state when scrolling DOWN */
@@ -8956,6 +8956,24 @@ html.modal-open::-webkit-scrollbar {
 
   .footer-copyright-bar {
     padding-bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+  }
+}
+
+@media (max-width: 991.98px) {
+  /* Reduce filter blur radius on ambient glow elements to save mobile GPU fill-rate */
+  .vm-ambient-glow,
+  .impact-ambient-blob,
+  .volunteer-ambient-blob,
+  .wayanad-ambient-glow,
+  .gallery-ambient-glow,
+  .flagoff-orb,
+  .footer-ambient-glow,
+  .faq-ambient-glow,
+  .plans-ambient-glow {
+    filter: blur(28px) !important;
+    opacity: 0.3 !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 }
 

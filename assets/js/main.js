@@ -6,6 +6,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Shared Lenis Smooth Scroll Instance (Accessible across all modules)
   let lenis = null;
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const isMobile = window.innerWidth <= 991 || (isTouchDevice && window.innerWidth <= 1024);
 
   // --------------------------------------------------------------------------
   // 0. Initial Setup & Responsive Small Loading Spinner Dismissal
@@ -63,16 +65,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const prefersReducedMotion =
         window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      const isMobileDevice =
+        window.innerWidth <= 991 ||
+        (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 1024);
+
       lenis = new Lenis({
-        duration: prefersReducedMotion ? 0.01 : 1.05,
+        duration: prefersReducedMotion ? 0.01 : (isMobileDevice ? 0.75 : 1.05),
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        lerp: prefersReducedMotion ? 1 : 0.09,
+        lerp: prefersReducedMotion ? 1 : (isMobileDevice ? 0.16 : 0.09),
         wheelMultiplier: 0.9,
-        touchMultiplier: 1.2,
-        touchInertiaMultiplier: 22,
+        touchMultiplier: isMobileDevice ? 0.75 : 1.1,
+        touchInertiaMultiplier: isMobileDevice ? 6 : 20,
         smoothWheel: true,
         syncTouch: true,
-        syncTouchLerp: 0.09,
+        syncTouchLerp: isMobileDevice ? 0.16 : 0.09,
         infinite: false,
         autoResize: true,
       });
@@ -87,12 +93,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // GSAP ScrollTrigger Integration (Unified Single Ticker)
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
-        ScrollTrigger.config({ ignoreMobileResize: true });
+        ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
         lenis.on('scroll', ScrollTrigger.update);
         gsap.ticker.add((time) => {
           lenis.raf(time * 1000);
         });
-        gsap.ticker.lagSmoothing(0);
+        if (isMobileDevice) {
+          gsap.ticker.lagSmoothing(500, 33);
+        } else {
+          gsap.ticker.lagSmoothing(0);
+        }
       } else {
         function raf(time) {
           lenis.raf(time);
@@ -318,10 +328,20 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   updateHeroThreshold();
 
+  let cachedCopyrightTop = 999999;
+  const updateCopyrightTop = () => {
+    if (copyrightSection) {
+      const scrollCurrent = window.pageYOffset || document.documentElement.scrollTop || 0;
+      cachedCopyrightTop = copyrightSection.getBoundingClientRect().top + scrollCurrent;
+    }
+  };
+  updateCopyrightTop();
+
   const handleGeometryUpdate = () => {
     updateSectionBounds();
     if (serviceStreamItems.length > 0) updateServiceBounds();
     updateHeroThreshold();
+    updateCopyrightTop();
   };
 
   window.addEventListener('resize', handleGeometryUpdate, { passive: true });
@@ -427,9 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Visible after Hero Section, smoothly hides when entering the Copyright Section
     if (floatingDonateBtn) {
       const isPastHero = scrollY > cachedHeroThreshold;
-      const isEnteringCopyright = copyrightSection
-        ? copyrightSection.getBoundingClientRect().top <= (window.innerHeight - 30)
-        : false;
+      const isEnteringCopyright = (scrollY + window.innerHeight - 30) >= cachedCopyrightTop;
 
       if (isPastHero && !isEnteringCopyright) {
         floatingDonateBtn.classList.add('is-visible');
@@ -1365,47 +1383,49 @@ document.addEventListener('DOMContentLoaded', () => {
         clearProps: 'transform,opacity',
       });
 
-      // 14. Smooth Parallax Scrub on Ambient Glow & Visual Elements (Synced to Lenis Momentum)
-      gsap.utils.toArray('.vm-ambient-glow, .impact-ambient-blob, .wayanad-ambient-glow, .flagoff-orb, .footer-ambient-glow').forEach((glow) => {
-        if (glow.parentElement) {
-          gsap.to(glow, {
-            y: -65,
+      // 14. Smooth Parallax Scrub on Ambient Glow & Visual Elements (Desktop only to maximize 60/120fps on mobile)
+      if (!isMobile) {
+        gsap.utils.toArray('.vm-ambient-glow, .impact-ambient-blob, .wayanad-ambient-glow, .flagoff-orb, .footer-ambient-glow').forEach((glow) => {
+          if (glow.parentElement) {
+            gsap.to(glow, {
+              y: -50,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: glow.parentElement,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1.2,
+                fastScrollEnd: true,
+                preventOverlaps: true,
+              }
+            });
+          }
+        });
+
+        if (document.querySelector('.about-caregiver-img')) {
+          gsap.to('.about-caregiver-img', {
+            y: -25,
             ease: 'none',
             scrollTrigger: {
-              trigger: glow.parentElement,
+              trigger: '.about-us-section',
               start: 'top bottom',
               end: 'bottom top',
               scrub: 1.2,
-              fastScrollEnd: true,
-              preventOverlaps: true,
             }
           });
         }
-      });
+      }
 
-      // Subtle Hero & Section Image Parallax Scrub (Enhanced Lenis Momentum Depth)
+      // Subtle Hero Image Parallax Scrub (Enhanced Lenis Momentum Depth)
       if (document.querySelector('.hero-pure-img')) {
         gsap.to('.hero-pure-img', {
-          y: 35,
+          y: 25,
           ease: 'none',
           scrollTrigger: {
             trigger: '.pth-hero-container',
             start: 'top top',
             end: 'bottom top',
-            scrub: 1.2,
-          }
-        });
-      }
-
-      if (document.querySelector('.about-caregiver-img')) {
-        gsap.to('.about-caregiver-img', {
-          y: -25,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.about-us-section',
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1.2,
+            scrub: isMobile ? 0.6 : 1.2,
           }
         });
       }
