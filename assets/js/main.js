@@ -64,15 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
         window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       lenis = new Lenis({
-        duration: prefersReducedMotion ? 0.01 : 1.45,
+        duration: prefersReducedMotion ? 0.01 : 1.05,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        lerp: prefersReducedMotion ? 1 : 0.05,
-        wheelMultiplier: 1.35,
-        touchMultiplier: 2.2,
-        touchInertiaMultiplier: 45,
+        lerp: prefersReducedMotion ? 1 : 0.09,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        touchInertiaMultiplier: 22,
         smoothWheel: true,
         syncTouch: true,
-        syncTouchLerp: 0.055,
+        syncTouchLerp: 0.09,
         infinite: false,
         autoResize: true,
       });
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (lenis) {
             lenis.scrollTo(targetId === '#home' ? 0 : targetElement, {
               offset: targetId === '#home' ? 0 : offsetVal,
-              duration: 1.25,
+              duration: 1.1,
               easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
               immediate: false,
               lock: false,
