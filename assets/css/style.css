@@ -313,11 +313,17 @@ html {
 }
 
 /* ==========================================================================
-   LENIS SMOOTH SCROLL ENHANCEMENTS
+   LENIS SMOOTH SCROLL ENHANCEMENTS (Desktop + Mobile Touch Optimization)
    ========================================================================== */
 html.lenis,
 html.lenis body {
   height: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+html.lenis {
+  overflow-x: clip;
 }
 
 .lenis.lenis-smooth {
@@ -326,10 +332,11 @@ html.lenis body {
 
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
+  touch-action: auto;
 }
 
 .lenis.lenis-stopped {
-  overflow: hidden;
+  overflow: clip;
 }
 
 /* Prevent embedded iframes from capturing pointer/wheel events during active scroll */
@@ -388,8 +395,17 @@ body {
   color: var(--pth-text-body);
   background-color: var(--pth-white);
   line-height: 1.7;
-  overflow-x: hidden;
+  overflow-x: clip;
+  width: 100%;
+  position: relative;
   -webkit-font-smoothing: antialiased;
+}
+
+@supports not (overflow-x: clip) {
+  html.lenis,
+  body {
+    overflow-x: hidden;
+  }
 }
 
 h1,

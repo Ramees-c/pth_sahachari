@@ -4,6 +4,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Shared Lenis Smooth Scroll Instance (Accessible across all modules)
+  let lenis = null;
+
   // --------------------------------------------------------------------------
   // 0. Initial Setup & Responsive Small Loading Spinner Dismissal
   // --------------------------------------------------------------------------
@@ -15,8 +18,21 @@ document.addEventListener('DOMContentLoaded', () => {
       loadingScreen.classList.add('fade-out');
       setTimeout(() => {
         loadingScreen.style.display = 'none';
+        if (lenis) {
+          lenis.resize();
+        }
       }, 400);
     }
+
+    // Immediately wake up Lenis and recalculate exact page dimensions now that loading-locked is cleared
+    if (lenis) {
+      lenis.start();
+      lenis.resize();
+    }
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
+
     // Launch first loading entrance animation for hero section & badge as screen clears
     playHeroEntrance();
   };
@@ -40,29 +56,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --------------------------------------------------------------------------
-  // 1. Lenis Smooth Scroll Initialisation
+  // 1. Lenis Smooth Scroll Initialisation (Optimized for ALL Devices: Desktop, Laptop, Tablet, Mobile)
   // --------------------------------------------------------------------------
-  let lenis = null;
-
   try {
     if (typeof Lenis !== 'undefined') {
+      const prefersReducedMotion =
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       lenis = new Lenis({
-        duration: 1.35,
+        duration: prefersReducedMotion ? 0.01 : 1.45,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        lerp: 0.055,
-        wheelMultiplier: 1.25,
-        touchMultiplier: 2.0,
+        lerp: prefersReducedMotion ? 1 : 0.05,
+        wheelMultiplier: 1.35,
+        touchMultiplier: 2.2,
+        touchInertiaMultiplier: 45,
         smoothWheel: true,
-        syncTouch: false,
+        syncTouch: true,
+        syncTouchLerp: 0.055,
         infinite: false,
         autoResize: true,
       });
 
       window.lenis = lenis;
 
+      // If page is still in preloader lock, pause Lenis until preloader is dismissed
+      if (document.body.classList.contains('loading-locked')) {
+        lenis.stop();
+      }
+
       // GSAP ScrollTrigger Integration (Unified Single Ticker)
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
+        ScrollTrigger.config({ ignoreMobileResize: true });
         lenis.on('scroll', ScrollTrigger.update);
         gsap.ticker.add((time) => {
           lenis.raf(time * 1000);
@@ -76,13 +101,28 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(raf);
       }
 
-      window.addEventListener('load', () => {
+      // Immediate double measurement pass for 100% accurate document boundaries
+      requestAnimationFrame(() => {
         if (lenis) lenis.resize();
         if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
       });
 
+      window.addEventListener('load', () => {
+        if (lenis) {
+          lenis.resize();
+          lenis.start();
+        }
+        if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+      });
+
+      // Avoid layout thrashing on mobile address bar show/hide (only resize when width changes)
+      let prevWindowWidth = window.innerWidth;
       window.addEventListener('resize', () => {
-        if (lenis) lenis.resize();
+        if (window.innerWidth !== prevWindowWidth) {
+          prevWindowWidth = window.innerWidth;
+          if (lenis) lenis.resize();
+          if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+        }
       }, { passive: true });
 
       if (document.fonts && document.fonts.ready) {
@@ -166,25 +206,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
 
-          // Smooth scroll execution: Lenis on desktop; dual-trigger (Lenis + native fallback) on mobile
-          if (lenis && window.innerWidth >= 1200) {
+          // Smooth scroll execution: Unified Lenis across all devices (Desktop & Mobile)
+          if (lenis) {
             lenis.scrollTo(targetId === '#home' ? 0 : targetElement, {
               offset: targetId === '#home' ? 0 : offsetVal,
-              duration: 1.45,
+              duration: 1.25,
               easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
               immediate: false,
               lock: false,
             });
           } else {
-            if (lenis) {
-              lenis.scrollTo(targetId === '#home' ? 0 : targetElement, {
-                offset: targetId === '#home' ? 0 : offsetVal,
-                duration: 1.05,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                immediate: false,
-              });
-            }
-            window.scrollTo({ top: targetPos, behavior: 'smooth' });
+            const fallbackPos = targetId === '#home' ? 0 : Math.max(0, targetElement.getBoundingClientRect().top + window.pageYOffset + offsetVal);
+            window.scrollTo({ top: fallbackPos, behavior: 'smooth' });
           }
         }
       }
@@ -406,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Synchronized Scroll Ticking (Unified between Lenis and native events)
+  // Synchronized Scroll Ticking (Unified Lenis on-scroll with native fallback)
   let isScrollTicking = false;
   const handleScroll = (e) => {
     if (!isScrollTicking) {
@@ -418,13 +451,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  window.addEventListener('resize', handleScroll, { passive: true });
   if (lenis) {
-    lenis.on('scroll', (e) => {
-      onScroll(e);
-    });
+    lenis.on('scroll', onScroll);
+  } else {
+    window.addEventListener('scroll', handleScroll, { passive: true });
   }
+  window.addEventListener('resize', handleScroll, { passive: true });
   onScroll();
 
   // --------------------------------------------------------------------------
@@ -438,12 +470,18 @@ document.addEventListener('DOMContentLoaded', () => {
       pthNavToggler.classList.remove('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'true');
       document.body.classList.add('nav-menu-open');
+      if (lenis) {
+        lenis.stop();
+      }
     });
 
     pthNavCollapse.addEventListener('shown.bs.collapse', () => {
       pthNavToggler.classList.remove('collapsed');
       pthNavToggler.setAttribute('aria-expanded', 'true');
       document.body.classList.add('nav-menu-open');
+      if (lenis) {
+        lenis.stop();
+      }
     });
 
     pthNavCollapse.addEventListener('hide.bs.collapse', () => {
@@ -670,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
       gsap.set(
-        '.hero-badge-pill, .hero-overline, .script-line-blue, .script-line-green, .hero-char, .hero-bio-word, .hero-bio-text, .hero-stat-chip, .btn, .hero-pure-img',
+        '.hero-badge-pill, .script-line-blue, .script-line-green, .hero-char, .hero-bio-word, .hero-bio-text, .hero-stat-chip, .btn, .hero-pure-img',
         {
           opacity: 1,
           y: 0,
@@ -716,24 +754,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     // 1. Tagline Pill drops in first (The primary loading animation for the hero badge)
-    heroTl.fromTo(
-      '.hero-badge-pill, .hero-overline',
-      {
-        y: -22,
-        opacity: 0,
-        scale: 0.88,
-        filter: 'blur(6px)',
-      },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        filter: 'blur(0px)',
-        duration: 0.9,
-        ease: 'back.out(1.6)',
-        clearProps: 'transform,opacity,filter',
-      }
-    );
+    if (document.querySelector('.hero-badge-pill')) {
+      heroTl.fromTo(
+        '.hero-badge-pill',
+        {
+          y: -22,
+          opacity: 0,
+          scale: 0.88,
+          filter: 'blur(6px)',
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          filter: 'blur(0px)',
+          duration: 0.9,
+          ease: 'back.out(1.6)',
+          clearProps: 'transform,opacity,filter',
+        }
+      );
+    }
 
     // 2. Line 1: "അതിരുകൾക്കപ്പുറം" Letter-by-Letter Kinetic Wave
     const blueChars = document.querySelectorAll('.script-line-blue .hero-char');
@@ -1074,19 +1114,21 @@ document.addEventListener('DOMContentLoaded', () => {
         clearProps: 'transform,opacity',
       });
 
-      gsap.from('.district-tab-btn', {
-        scrollTrigger: {
-          trigger: '.district-nav-tabs',
-          start: 'top 85%',
-          once: true,
-        },
-        scale: 0.92,
-        opacity: 0,
-        duration: 0.75,
-        stagger: 0.06,
-        ease: 'back.out(1.4)',
-        clearProps: 'transform,opacity',
-      });
+      if (document.querySelector('.district-filter-tabs') && document.querySelector('.district-tab-btn')) {
+        gsap.from('.district-tab-btn', {
+          scrollTrigger: {
+            trigger: '.district-filter-tabs',
+            start: 'top 85%',
+            once: true,
+          },
+          scale: 0.92,
+          opacity: 0,
+          duration: 0.75,
+          stagger: 0.06,
+          ease: 'back.out(1.4)',
+          clearProps: 'transform,opacity',
+        });
+      }
 
       gsap.from('.where-visual-col', {
         scrollTrigger: {
@@ -1144,75 +1186,52 @@ document.addEventListener('DOMContentLoaded', () => {
         clearProps: 'transform,opacity',
       });
 
-      gsap.from('.impact-block:first-of-type .row.align-items-end > *', {
-        scrollTrigger: {
-          trigger: '.impact-block:first-of-type',
-          start: 'top 82%',
-          once: true,
-        },
-        y: 20,
-        opacity: 0,
-        duration: 1.1,
-        stagger: 0.14,
-        ease: 'power2.out',
-        clearProps: 'transform,opacity',
-      });
+      if (document.querySelector('.impact-block')) {
+        gsap.from('.impact-block .row.align-items-end > *', {
+          scrollTrigger: {
+            trigger: '.impact-block',
+            start: 'top 82%',
+            once: true,
+          },
+          y: 20,
+          opacity: 0,
+          duration: 1.1,
+          stagger: 0.14,
+          ease: 'power2.out',
+          clearProps: 'transform,opacity',
+        });
+      }
 
-      gsap.from('.kpi-hero-card', {
-        scrollTrigger: {
-          trigger: '.pth-impact-section .kpi-hero-card',
-          start: 'top 82%',
-          once: true,
-        },
-        y: 35,
-        opacity: 0,
-        scale: 0.97,
-        duration: 1.2,
-        stagger: 0.16,
-        ease: 'power2.out',
-        clearProps: 'transform,opacity',
-      });
-
-      gsap.from('.people-hero-card', {
-        scrollTrigger: {
-          trigger: '.people-hero-card',
-          start: 'top 85%',
-          once: true,
-        },
-        y: 30,
-        opacity: 0,
-        scale: 0.97,
-        duration: 1.2,
-        stagger: 0.18,
-        ease: 'power2.out',
-        clearProps: 'transform,opacity',
-      });
-
-      gsap.from('.metric-strip-item', {
-        scrollTrigger: {
-          trigger: '.strip-card-people',
-          start: 'top 88%',
-          once: true,
-        },
-        y: 20,
-        opacity: 0,
-        duration: 0.95,
-        stagger: 0.08,
-        ease: 'power2.out',
-        clearProps: 'transform,opacity',
-      });
+      if (document.querySelector('.kpi-hero-card')) {
+        gsap.from('.kpi-hero-card', {
+          scrollTrigger: {
+            trigger: '.pth-impact-section .kpi-hero-card',
+            start: 'top 82%',
+            once: true,
+          },
+          y: 35,
+          opacity: 0,
+          scale: 0.97,
+          duration: 1.2,
+          stagger: 0.16,
+          ease: 'power2.out',
+          clearProps: 'transform,opacity',
+        });
+      }
 
       // Trigger Impact Numbers Animation
-      ScrollTrigger.create({
-        trigger: '.pth-impact-section',
-        start: 'top 75%',
-        once: true,
-        onEnter: () => {
-          document.querySelectorAll('.pth-impact-section .kpi-number, .pth-impact-section .people-kpi-number, .pth-impact-section .strip-stat-val').forEach((el) => {
-            animateCounter(el, 2.6);
-          });
-        }
-      });
+      if (document.querySelector('.pth-impact-section')) {
+        ScrollTrigger.create({
+          trigger: '.pth-impact-section',
+          start: 'top 75%',
+          once: true,
+          onEnter: () => {
+            document.querySelectorAll('.pth-impact-section .kpi-number').forEach((el) => {
+              animateCounter(el, 2.6);
+            });
+          }
+        });
+      }
 
       // 8. Wayanad Mega Homecare Drive
       gsap.from('.wayanad-col-content', {
@@ -1242,31 +1261,21 @@ document.addEventListener('DOMContentLoaded', () => {
         clearProps: 'transform,opacity',
       });
 
-      gsap.from('.wayanad-stat-item', {
-        scrollTrigger: {
-          trigger: '.wayanad-stats-strip',
-          start: 'top 85%',
-          once: true,
-        },
-        y: 25,
-        opacity: 0,
-        stagger: 0.14,
-        duration: 1.15,
-        ease: 'power2.out',
-        clearProps: 'transform,opacity',
-      });
-
-      // Trigger Wayanad Numbers Animation
-      ScrollTrigger.create({
-        trigger: '.pth-wayanad-section',
-        start: 'top 75%',
-        once: true,
-        onEnter: () => {
-          document.querySelectorAll('.pth-wayanad-section .stat-number').forEach((el) => {
-            animateCounter(el, 2.4);
-          });
-        }
-      });
+      if (document.querySelector('.wayanad-portrait-item')) {
+        gsap.from('.wayanad-portrait-item', {
+          scrollTrigger: {
+            trigger: '.wayanad-photo-wrapper',
+            start: 'top 82%',
+            once: true,
+          },
+          y: 25,
+          opacity: 0,
+          stagger: 0.15,
+          duration: 1.15,
+          ease: 'power2.out',
+          clearProps: 'transform,opacity',
+        });
+      }
 
       // 9. Volunteers Section
       gsap.from('.volunteer-col-content', {
