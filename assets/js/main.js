@@ -262,14 +262,92 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bsCollapse) bsCollapse.hide();
           }
 
+          const isNavbarLink = this.classList.contains('nav-link-item') ||
+            Boolean(this.closest('.pth-navbar')) ||
+            this.classList.contains('footer-back-to-top') ||
+            Boolean(this.closest('.footer-links-list'));
+
           const isServiceChip = this.classList.contains('service-pill-chip');
           const navEl = document.querySelector('.pth-navbar-wrapper');
-          const navHeight = navEl ? navEl.offsetHeight : 70;
+          const navHeight = 70;
           const offsetVal = isServiceChip ? -95 : -(navHeight + 16);
 
           // Nav Link & Brand Logo Active State Polish & Click Scroll Protection
           const matchingNavLink = document.querySelector(`.pth-navbar .nav-link-item[href="${targetId}"]`) ||
             (targetId === '#home' ? document.querySelector('.pth-navbar .nav-link-item[href="#home"]') : null);
+
+          // Sudden Instant Navigation for Navbar and Header Links
+          if (isNavbarLink) {
+            document.querySelectorAll('.pth-navbar .nav-link-item').forEach(l => l.classList.remove('active-home'));
+            if (matchingNavLink) {
+              matchingNavLink.classList.add('active-home');
+            } else if (targetId === '#home') {
+              const homeLink = document.querySelector('.pth-navbar .nav-link-item[href="#home"]');
+              if (homeLink) homeLink.classList.add('active-home');
+            }
+
+            const navbarWrapper = document.querySelector('.pth-navbar-wrapper');
+            if (navbarWrapper) {
+              navbarWrapper.classList.remove('navbar-hidden');
+              if (targetId === '#home') {
+                navbarWrapper.classList.remove('scrolled');
+              } else {
+                navbarWrapper.classList.add('scrolled');
+              }
+            }
+
+            isNavClickScrolling = true;
+            clearTimeout(navClickTimeout);
+            navClickTimeout = setTimeout(() => {
+              isNavClickScrolling = false;
+            }, 350);
+
+            const scrollCurrent = (window.lenis && typeof window.lenis.scroll === 'number')
+              ? window.lenis.scroll
+              : (window.pageYOffset || document.documentElement.scrollTop || 0);
+            const targetPos = targetId === '#home'
+              ? 0
+              : Math.max(0, targetElement.getBoundingClientRect().top + scrollCurrent + offsetVal);
+
+            // Instant / sudden teleportation to target section
+            if (lenis) {
+              lenis.scrollTo(targetId === '#home' ? 0 : targetPos, {
+                immediate: true,
+                lock: false,
+                onComplete: () => {
+                  if (history.pushState && targetId !== '#') {
+                    history.pushState(null, '', targetId);
+                  }
+                  if (typeof ScrollTrigger !== 'undefined') {
+                    ScrollTrigger.update();
+                    ScrollTrigger.refresh();
+                  }
+                }
+              });
+            } else {
+              window.scrollTo({ top: targetPos, behavior: 'instant' });
+              if (history.pushState && targetId !== '#') {
+                history.pushState(null, '', targetId);
+              }
+              if (typeof ScrollTrigger !== 'undefined') {
+                ScrollTrigger.update();
+                ScrollTrigger.refresh();
+              }
+            }
+
+            // Subtle, tasteful arrival pulse on the destination section heading/badge
+            const arrivalAccent = targetElement.querySelector('.section-badge-pill, .section-main-heading, .vm-badge-pill, .wayanad-badge-pill, .hero-script-heading');
+            if (arrivalAccent) {
+              arrivalAccent.classList.remove('nav-arrival-pulse');
+              void arrivalAccent.offsetWidth;
+              arrivalAccent.classList.add('nav-arrival-pulse');
+              setTimeout(() => {
+                arrivalAccent.classList.remove('nav-arrival-pulse');
+              }, 600);
+            }
+
+            return;
+          }
 
           if (matchingNavLink || this.classList.contains('nav-link-item') || targetId === '#home') {
             document.querySelectorAll('.pth-navbar .nav-link-item').forEach(l => l.classList.remove('active-home'));
@@ -334,20 +412,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Quick Services Directory Slider Touch-Pause Support
+  // Quick Services Directory Slider Touch-Pause Support & Swipe Protection
   const quickSlider = document.querySelector('.services-quick-slider');
   if (quickSlider) {
     let touchResumeTimer = null;
-    quickSlider.addEventListener('touchstart', () => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+
+    quickSlider.addEventListener('touchstart', (e) => {
       quickSlider.classList.add('is-paused');
       clearTimeout(touchResumeTimer);
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isSwiping = false;
+      }
+    }, { passive: true });
+
+    quickSlider.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) {
+        const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+        const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+        if (deltaX > 8 && deltaX > deltaY) {
+          isSwiping = true;
+        }
+      }
     }, { passive: true });
 
     quickSlider.addEventListener('touchend', () => {
       touchResumeTimer = setTimeout(() => {
         quickSlider.classList.remove('is-paused');
-      }, 2500);
+      }, 2000);
     }, { passive: true });
+
+    // Prevent accidental chip link activation if the user was swiping/dragging horizontally
+    quickSlider.addEventListener('click', (e) => {
+      if (isSwiping) {
+        e.preventDefault();
+        e.stopPropagation();
+        isSwiping = false;
+      }
+    }, true);
   }
 
   // --------------------------------------------------------------------------
@@ -373,15 +479,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Top-edge mouse hover reveal: moving cursor near top 35px immediately reveals the navbar
+  // Top-edge mouse hover reveal: throttled via rAF to avoid unnecessary event handler executions
+  let mouseMoveScheduled = false;
   document.addEventListener('mousemove', (e) => {
-    if (e.clientY <= 35 && navbar && navbar.classList.contains('navbar-hidden')) {
-      navbar.classList.remove('navbar-hidden');
-      navbar.classList.add('scrolled');
-    }
+    if (mouseMoveScheduled) return;
+    mouseMoveScheduled = true;
+    requestAnimationFrame(() => {
+      if (e.clientY <= 35 && navbar && navbar.classList.contains('navbar-hidden')) {
+        navbar.classList.remove('navbar-hidden');
+        navbar.classList.add('scrolled');
+      }
+      mouseMoveScheduled = false;
+    });
   }, { passive: true });
 
   // Cache navigation link elements and their target sections to prevent layout thrashing
+  const allNavLinks = Array.from(document.querySelectorAll('.pth-navbar .nav-link-item'));
+  const homeNavLink = document.querySelector('.pth-navbar .nav-link-item[href="#home"]');
   const navSectionMap = Array.from(document.querySelectorAll('.pth-navbar .nav-link-item[href^="#"]'))
     .map((link) => {
       const targetId = link.getAttribute('href');
@@ -404,13 +518,21 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   updateSectionBounds();
 
-  // Cache services stream items for fast active chip tracking
+  // Cache services stream items and chip data for fast active chip tracking
   const serviceChips = Array.from(document.querySelectorAll('.service-pill-chip'));
+  const cachedServiceChipItems = serviceChips.map((chip) => ({
+    chip,
+    href: chip.getAttribute('href')
+  }));
   const serviceStreamItems = Array.from(document.querySelectorAll('.service-stream-item'));
   let cachedServiceBounds = [];
   const updateServiceBounds = () => {
+    const scrollCurrent = (window.lenis && typeof window.lenis.scroll === 'number')
+      ? window.lenis.scroll
+      : (window.pageYOffset || document.documentElement.scrollTop || 0);
     cachedServiceBounds = serviceStreamItems.map((item) => {
-      const top = item.offsetTop;
+      const rect = item.getBoundingClientRect();
+      const top = Math.max(0, rect.top + scrollCurrent);
       const height = item.offsetHeight;
       return { id: '#' + item.id, top, bottom: top + height };
     });
@@ -512,10 +634,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dynamic Active Link State in Navbar on Scroll (0ms layout reflow, pure cached check)
     if (cachedSectionBounds.length > 0 && !isNavClickScrolling) {
       if (scrollY <= 100) {
-        // At top of page: always ensure HOME link is active and others are cleared
-        document.querySelectorAll('.pth-navbar .nav-link-item').forEach(l => l.classList.remove('active-home'));
-        const homeLink = document.querySelector('.pth-navbar .nav-link-item[href="#home"]');
-        if (homeLink) homeLink.classList.add('active-home');
+        // At top of page: always ensure HOME link is active and others are cleared (using pre-cached elements)
+        for (let i = 0; i < allNavLinks.length; i++) {
+          allNavLinks[i].classList.remove('active-home');
+        }
+        if (homeNavLink) homeNavLink.classList.add('active-home');
       } else {
         const scrollPos = scrollY + 130;
         let matched = false;
@@ -532,8 +655,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Dynamic Active State for Quick Services Directory Chips on Scroll
-    if (cachedServiceBounds.length > 0 && serviceChips.length > 0) {
-      const checkPos = scrollY + 220;
+    if (cachedServiceBounds.length > 0 && cachedServiceChipItems.length > 0) {
+      const checkPos = scrollY + 200;
       let activeServiceId = null;
       for (let i = 0; i < cachedServiceBounds.length; i++) {
         const item = cachedServiceBounds[i];
@@ -543,14 +666,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      if (activeServiceId) {
-        serviceChips.forEach((chip) => {
-          if (chip.getAttribute('href') === activeServiceId) {
-            chip.classList.add('is-active');
-          } else {
-            chip.classList.remove('is-active');
-          }
-        });
+      for (let i = 0; i < cachedServiceChipItems.length; i++) {
+        const item = cachedServiceChipItems[i];
+        if (activeServiceId && item.href === activeServiceId) {
+          item.chip.classList.add('is-active');
+        } else {
+          item.chip.classList.remove('is-active');
+        }
       }
     }
 
@@ -800,17 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroHeading = document.querySelector('.hero-script-heading');
     if (heroHeading) {
       heroHeading.addEventListener('click', () => {
-        replayHeroBadge();
         replayHeroLetterWave();
-      });
-    }
-
-    // Interactive Replay: Clicking or tapping the hero badge also triggers its spring bounce animation
-    const heroBadge = document.querySelector('.hero-badge-pill');
-    if (heroBadge) {
-      heroBadge.style.cursor = 'pointer';
-      heroBadge.addEventListener('click', () => {
-        replayHeroBadge();
       });
     }
 
@@ -879,6 +991,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hero Elements Entrance Timeline
     const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    const heroBlurPill = isMobile ? 'none' : 'blur(6px)';
+    const heroBlurChar = isMobile ? 'none' : 'blur(7px)';
+    const heroBlurBio = isMobile ? 'none' : 'blur(5px)';
+    const heroCharRotate = isMobile ? 0 : -45;
 
     // 1. Tagline Pill drops in first (The primary loading animation for the hero badge)
     if (document.querySelector('.hero-badge-pill')) {
@@ -888,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', () => {
           y: -22,
           opacity: 0,
           scale: 0.88,
-          filter: 'blur(6px)',
+          filter: heroBlurPill,
         },
         {
           y: 0,
@@ -911,8 +1027,8 @@ document.addEventListener('DOMContentLoaded', () => {
           y: 38,
           opacity: 0,
           scale: 0.76,
-          rotateX: -45,
-          filter: 'blur(7px)',
+          rotateX: heroCharRotate,
+          filter: heroBlurChar,
         },
         {
           y: 0,
@@ -945,8 +1061,8 @@ document.addEventListener('DOMContentLoaded', () => {
           y: 38,
           opacity: 0,
           scale: 0.76,
-          rotateX: -45,
-          filter: 'blur(7px)',
+          rotateX: heroCharRotate,
+          filter: heroBlurChar,
         },
         {
           y: 0,
@@ -978,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           y: 18,
           opacity: 0,
-          filter: 'blur(5px)',
+          filter: heroBlurBio,
         },
         {
           y: 0,
@@ -1152,8 +1268,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (heading) {
           headerTl.fromTo(
             heading,
-            { y: 30, opacity: 0, filter: 'blur(4px)' },
-            { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.92, ease: EASE_POWER4, clearProps: 'transform,opacity,filter' },
+            { y: 26, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.88, ease: EASE_POWER4, clearProps: 'transform,opacity' },
             badge ? '-=0.55' : 0
           );
         }
