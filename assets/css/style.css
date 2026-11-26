@@ -53,7 +53,8 @@
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-script: var(--font-heading);
-  --font-malayalam: 'Anek Malayalam', 'Manjari', 'Noto Sans Malayalam', sans-serif;
+  --font-malayalam: 'Anek Malayalam', 'Noto Sans Malayalam', 'Manjari', sans-serif;
+  --font-malayalam-desc: 'Noto Sans Malayalam', 'Anek Malayalam', sans-serif;
 
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -402,6 +403,7 @@ body {
 }
 
 @supports not (overflow-x: clip) {
+
   html.lenis,
   body {
     overflow-x: hidden;
@@ -681,10 +683,12 @@ a {
     transform: scale(0.97);
     opacity: 0.88;
   }
+
   50% {
     transform: scale(1.025);
     opacity: 1;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -1302,7 +1306,7 @@ a {
 
 /* Description */
 .hero-bio-text {
-  font-family: var(--font-malayalam);
+  font-family: var(--font-malayalam-desc);
   font-size: 1.15rem;
   line-height: 1.85;
   color: #3b4d63;
@@ -2221,6 +2225,8 @@ html.modal-open .pth-floating-donate-wrapper {
     align-self: flex-start;
     height: auto;
     z-index: 20;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .what-we-do-visual-card {
@@ -2246,6 +2252,8 @@ html.modal-open .pth-floating-donate-wrapper {
   justify-content: flex-end;
   padding: 12px;
   background: #011e7b;
+  contain: layout style;
+  transform: translateZ(0);
   transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out), border-color 0.35s ease;
 }
 
@@ -2512,6 +2520,9 @@ html.modal-open .pth-floating-donate-wrapper {
   width: 100%;
   scroll-margin-top: 105px;
   position: relative;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .service-card {
@@ -2523,7 +2534,9 @@ html.modal-open .pth-floating-donate-wrapper {
   box-shadow: 0 10px 30px rgba(1, 30, 123, 0.04);
   display: flex;
   flex-direction: column;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.25s ease,
@@ -2531,14 +2544,18 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 .service-icon-box {
-  transition: transform 0.4s var(--ease-spring);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
 }
 
 /* Service Card Hover & Touch States (Optimized for Desktop and Mobile Screens) */
 .service-stream-item:hover .service-card,
 .service-card:hover,
 .service-card:active {
-  transform: translateY(-6px);
+  transform: translateY(-6px) translateZ(0);
   border-color: rgba(0, 63, 148, 0.35);
   box-shadow: 0 18px 42px rgba(1, 30, 123, 0.10);
 }
@@ -2546,7 +2563,7 @@ html.modal-open .pth-floating-donate-wrapper {
 .service-stream-item:hover .service-card .service-icon-box,
 .service-card:hover .service-icon-box,
 .service-card:active .service-icon-box {
-  transform: scale(1.08) rotate(3deg);
+  transform: scale(1.08) rotate(3deg) translateZ(0);
 }
 
 .service-stream-item:hover .service-card .service-title,
@@ -2631,16 +2648,17 @@ html.modal-open .pth-floating-donate-wrapper {
 
 /* Mobile Screen Specific Gentle Elevation (Stable for touch scrolling) */
 @media (max-width: 991.98px) {
+
   .service-stream-item:hover .service-card,
   .service-card:hover,
   .service-card:active {
-    transform: translateY(-3px);
+    transform: translateY(-3px) translateZ(0);
   }
 
   .service-stream-item:hover .service-card .service-icon-box,
   .service-card:hover .service-icon-box,
   .service-card:active .service-icon-box {
-    transform: scale(1.06) rotate(2deg);
+    transform: scale(1.06) rotate(2deg) translateZ(0);
   }
 }
 
@@ -2650,7 +2668,7 @@ html.modal-open .pth-floating-donate-wrapper {
   border-color: var(--pth-primary) !important;
   box-shadow: 0 12px 32px rgba(1, 30, 123, 0.08) !important;
   outline: none !important;
-  transform: translateY(-4px);
+  transform: translateY(-4px) translateZ(0);
   transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
 }
 
@@ -2675,7 +2693,36 @@ html.modal-open .pth-floating-donate-wrapper {
   align-items: center;
   justify-content: center;
   font-size: 1.55rem;
-  transition: transform 0.3s ease;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.service-icon-box i,
+.service-icon-box svg {
+  display: inline-block;
+  line-height: 1;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  will-change: transform;
+}
+
+.service-feature-list li i {
+  color: var(--pth-green);
+  font-size: 1rem;
+  display: inline-block;
+  line-height: 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .bg-blue-tint {
@@ -3279,11 +3326,11 @@ html.modal-open .pth-floating-donate-wrapper {
 /* Body Text */
 .about-text-content {
   margin-bottom: 0;
-  font-family: var(--font-malayalam);
+  font-family: var(--font-malayalam-desc);
 }
 
 .about-paragraph {
-  font-family: var(--font-malayalam);
+  font-family: var(--font-malayalam-desc);
   font-size: clamp(0.98rem, 0.35vw + 0.88rem, 1.04rem);
   color: var(--pth-text-body);
   line-height: 1.82;
@@ -3501,6 +3548,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 991.98px) {
+
   .vm-col-card:hover .vm-vision-card,
   .vm-col-card:active .vm-vision-card,
   .vm-vision-card:hover,
@@ -3563,20 +3611,31 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 /* Typography */
-.vm-card-title {
-  font-family: var(--font-heading);
+.pth-vision-mission-section .section-main-heading {
+  font-family: var(--font-malayalam);
+}
+
+.pth-vision-mission-section .section-sub-text {
+  font-family: var(--font-malayalam-desc);
+}
+
+.vm-card-title,
+.pth-vision-mission-section .vm-card-title {
+  font-family: var(--font-malayalam);
   font-size: clamp(1.05rem, 1.2vw + 0.75rem, 1.35rem);
   font-weight: 800;
   color: var(--pth-text-heading);
-  line-height: 1.3;
+  line-height: 1.35;
   margin-bottom: 8px;
   letter-spacing: -0.2px;
   overflow-wrap: break-word;
 }
 
-.vm-card-desc {
+.vm-card-desc,
+.pth-vision-mission-section .vm-card-desc {
+  font-family: var(--font-malayalam-desc);
   font-size: 0.88rem;
-  line-height: 1.55;
+  line-height: 1.65;
   color: var(--pth-text-body);
   margin-bottom: 14px;
 }
@@ -3624,11 +3683,24 @@ html.modal-open .pth-floating-donate-wrapper {
   overflow-wrap: break-word;
 }
 
+.pth-vision-mission-section .pillar-title,
+.vm-pillar-item .pillar-title {
+  font-family: var(--font-malayalam);
+  line-height: 1.35;
+}
+
 .pillar-text {
+  font-family: var(--font-malayalam-desc);
   font-size: 0.82rem;
   color: #64748b;
   line-height: 1.45;
   margin-bottom: 0;
+}
+
+.pth-vision-mission-section .pillar-text,
+.vm-pillar-item .pillar-text {
+  font-family: var(--font-malayalam-desc);
+  line-height: 1.6;
 }
 
 /* Bottom Driving Principles Strip */
@@ -3807,6 +3879,7 @@ html.modal-open .pth-floating-donate-wrapper {
   border: 1px solid rgba(0, 63, 148, 0.09);
   padding: 30px 24px 26px 24px;
   box-shadow: 0 10px 30px rgba(1, 30, 123, 0.04);
+  contain: layout style;
   transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), border-color 0.3s ease;
   position: relative;
   display: flex;
@@ -3858,6 +3931,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 991.98px) {
+
   .journey-card:hover,
   .journey-card:active,
   .journey-card-blue:hover,
@@ -4448,11 +4522,12 @@ html.modal-open .pth-floating-donate-wrapper {
 .impact-ambient-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(40px);
+  filter: blur(28px);
   pointer-events: none;
   opacity: 0.55;
   z-index: 0;
-  will-change: auto;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .impact-ambient-blob.blob-left {
@@ -4781,6 +4856,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 991.98px) {
+
   .kpi-hero-card:hover,
   .kpi-hero-card:active,
   .kpi-card-green:hover,
@@ -5407,6 +5483,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 991.98px) {
+
   .volunteer-pillar-card:hover,
   .volunteer-pillar-card:active {
     transform: translateY(-3px);
@@ -5764,6 +5841,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 991.98px) {
+
   .flagoff-leader-card:hover,
   .flagoff-leader-card:active {
     transform: translateY(-3px);
@@ -6032,6 +6110,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 991.98px) {
+
   .wayanad-mission-card:hover,
   .wayanad-mission-card:active {
     transform: translateY(-3px);
@@ -6519,6 +6598,7 @@ html.modal-open .pth-floating-donate-wrapper {
 }
 
 @media (max-width: 991.98px) {
+
   .gallery-card:hover,
   .gallery-card:active {
     transform: translateY(-3px);
@@ -8538,6 +8618,7 @@ html.modal-open::-webkit-scrollbar {
 }
 
 @media (max-width: 991.98px) {
+
   .faq-note-card:hover,
   .faq-note-card:active,
   .faq-note-card:focus-visible {
@@ -9233,6 +9314,7 @@ html.modal-open::-webkit-scrollbar {
 }
 
 @media (max-width: 991.98px) {
+
   /* Native touch scrolling should not promote large sections or blur fixed headers
      onto extra compositor layers. */
   .pth-navbar-wrapper,

@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gsap.ticker.add((time) => {
           lenis.raf(time * 1000);
         });
-        gsap.ticker.lagSmoothing(0);
+        gsap.ticker.lagSmoothing(500, 33);
       } else {
         function raf(time) {
           lenis.raf(time);
@@ -139,12 +139,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // Continuous DOM layout observer: keeps Lenis and ScrollTrigger in perfect sync when accordions, modals, or content mutate
       if (typeof ResizeObserver !== 'undefined' && document.body) {
         let resizeDebounce = null;
+        let lastKnownDocHeight = document.documentElement.scrollHeight;
         const resizeObserver = new ResizeObserver(() => {
+          // Skip if user is actively scrolling to prevent frame drops
+          if (lenis && lenis.isScrolling) return;
           clearTimeout(resizeDebounce);
           resizeDebounce = setTimeout(() => {
-            if (lenis) lenis.resize();
-            if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
-          }, 100);
+            if (lenis && lenis.isScrolling) return;
+            const currentDocHeight = document.documentElement.scrollHeight;
+            if (Math.abs(currentDocHeight - lastKnownDocHeight) > 30) {
+              lastKnownDocHeight = currentDocHeight;
+              if (lenis) lenis.resize();
+              if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+            }
+          }, 250);
         });
         resizeObserver.observe(document.body);
       }
@@ -454,6 +462,23 @@ document.addEventListener('DOMContentLoaded', () => {
         isSwiping = false;
       }
     }, true);
+
+    // Pause infinite marquee when out of viewport to eliminate background GPU draw
+    if (typeof IntersectionObserver !== 'undefined') {
+      const sliderTrack = quickSlider.querySelector('.services-slider-track');
+      if (sliderTrack) {
+        const sliderObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              sliderTrack.style.animationPlayState = '';
+            } else {
+              sliderTrack.style.animationPlayState = 'paused';
+            }
+          });
+        }, { rootMargin: '100px 0px' });
+        sliderObserver.observe(quickSlider);
+      }
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -576,6 +601,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ScrollTrigger.addEventListener('refresh', handleGeometryUpdate);
   }
 
+  let currentActiveNavLink = null;
+  let currentActiveServiceId = undefined;
+  let currentFloatingDonateVisible = false;
+
   const onScroll = (scrollEvent) => {
     const scrollY = (scrollEvent && typeof scrollEvent.scroll === 'number')
       ? scrollEvent.scroll
@@ -633,22 +662,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dynamic Active Link State in Navbar on Scroll (0ms layout reflow, pure cached check)
     if (cachedSectionBounds.length > 0 && !isNavClickScrolling) {
+      let activeTargetLink = null;
       if (scrollY <= 100) {
-        // At top of page: always ensure HOME link is active and others are cleared (using pre-cached elements)
-        for (let i = 0; i < allNavLinks.length; i++) {
-          allNavLinks[i].classList.remove('active-home');
-        }
-        if (homeNavLink) homeNavLink.classList.add('active-home');
+        activeTargetLink = homeNavLink;
       } else {
         const scrollPos = scrollY + 130;
-        let matched = false;
         for (let i = cachedSectionBounds.length - 1; i >= 0; i--) {
           const item = cachedSectionBounds[i];
-          if (!matched && scrollPos >= item.top && scrollPos < item.bottom) {
-            item.link.classList.add('active-home');
-            matched = true;
+          if (scrollPos >= item.top && scrollPos < item.bottom) {
+            activeTargetLink = item.link;
+            break;
+          }
+        }
+      }
+
+      if (activeTargetLink !== currentActiveNavLink) {
+        currentActiveNavLink = activeTargetLink;
+        for (let i = 0; i < allNavLinks.length; i++) {
+          if (allNavLinks[i] === activeTargetLink) {
+            allNavLinks[i].classList.add('active-home');
           } else {
-            item.link.classList.remove('active-home');
+            allNavLinks[i].classList.remove('active-home');
           }
         }
       }
@@ -657,21 +691,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dynamic Active State for Quick Services Directory Chips on Scroll
     if (cachedServiceBounds.length > 0 && cachedServiceChipItems.length > 0) {
       const checkPos = scrollY + 200;
+      const firstBound = cachedServiceBounds[0];
+      const lastBound = cachedServiceBounds[cachedServiceBounds.length - 1];
       let activeServiceId = null;
-      for (let i = 0; i < cachedServiceBounds.length; i++) {
-        const item = cachedServiceBounds[i];
-        if (checkPos >= item.top && checkPos < item.bottom) {
-          activeServiceId = item.id;
-          break;
+
+      // Only search bounds if scroll position is within the services section range
+      if (firstBound && lastBound && checkPos >= firstBound.top && checkPos <= lastBound.bottom) {
+        for (let i = 0; i < cachedServiceBounds.length; i++) {
+          const item = cachedServiceBounds[i];
+          if (checkPos >= item.top && checkPos < item.bottom) {
+            activeServiceId = item.id;
+            break;
+          }
         }
       }
 
-      for (let i = 0; i < cachedServiceChipItems.length; i++) {
-        const item = cachedServiceChipItems[i];
-        if (activeServiceId && item.href === activeServiceId) {
-          item.chip.classList.add('is-active');
-        } else {
-          item.chip.classList.remove('is-active');
+      // ONLY mutate DOM when the active chip ID actually changes!
+      // This completely stops 44 unnecessary classList operations per scroll frame past services!
+      if (activeServiceId !== currentActiveServiceId) {
+        currentActiveServiceId = activeServiceId;
+        for (let i = 0; i < cachedServiceChipItems.length; i++) {
+          const item = cachedServiceChipItems[i];
+          if (activeServiceId && item.href === activeServiceId) {
+            item.chip.classList.add('is-active');
+          } else {
+            item.chip.classList.remove('is-active');
+          }
         }
       }
     }
@@ -681,11 +726,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (floatingDonateBtn) {
       const isPastHero = scrollY > cachedHeroThreshold;
       const isEnteringCopyright = (scrollY + window.innerHeight - 30) >= cachedCopyrightTop;
+      const shouldBeVisible = isPastHero && !isEnteringCopyright;
 
-      if (isPastHero && !isEnteringCopyright) {
-        floatingDonateBtn.classList.add('is-visible');
-      } else {
-        floatingDonateBtn.classList.remove('is-visible');
+      if (shouldBeVisible !== currentFloatingDonateVisible) {
+        currentFloatingDonateVisible = shouldBeVisible;
+        if (shouldBeVisible) {
+          floatingDonateBtn.classList.add('is-visible');
+        } else {
+          floatingDonateBtn.classList.remove('is-visible');
+        }
       }
     }
   };
@@ -1173,6 +1222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const EASE_SPRING = 'back.out(1.4)';
 
     // Tactile Number Counter Roll-Up Animation with Finish Accent Pulse
+    const intlNumberFormatter = new Intl.NumberFormat('en-US');
     function animateCounter(el, duration = 2.2) {
       if (!el || el.dataset.counterAnimated === 'true') return;
       el.dataset.counterAnimated = 'true';
@@ -1202,7 +1252,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (hasLeadingZero) {
             formatted = String(current).padStart(padLength, '0');
           } else if (hasCommas || targetVal >= 1000) {
-            formatted = current.toLocaleString('en-US');
+            formatted = intlNumberFormatter.format(current);
           } else {
             formatted = String(current);
           }
@@ -1384,24 +1434,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       );
 
-      gsap.fromTo(
-        '.what-we-do-section .service-stream-item',
-        { y: 35, opacity: 0, scale: 0.96 },
-        {
-          scrollTrigger: {
-            trigger: '.scrolling-services-wrap',
-            start: 'top 84%',
-            once: true,
-          },
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.9,
-          stagger: 0.08,
-          ease: 'power3.out',
-          clearProps: 'transform,opacity',
-        }
-      );
+      // Viewport-batched card reveal: animates only cards currently entering the viewport
+      // Eliminates the heavy 22-item simultaneous cascade across 7000px that previously lagged scroll
+      ScrollTrigger.batch('.what-we-do-section .service-stream-item', {
+        start: 'top 90%',
+        once: true,
+        onEnter: (batch) => {
+          gsap.fromTo(
+            batch,
+            { y: 24, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.65,
+              stagger: 0.06,
+              ease: 'power3.out',
+              clearProps: 'transform,opacity',
+            }
+          );
+        },
+      });
 
       gsap.fromTo(
         '.what-we-do-strip',
@@ -1769,41 +1821,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       );
 
-      // 15. Luxury 3D Card Tilt Micro-Interaction (Desktop Fine Pointer Only)
+      // 15. Luxury 3D Card Tilt Micro-Interaction (Desktop Fine Pointer Only, Suppressed During Active Scroll)
       if (!isMobile && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
         const tiltCards = document.querySelectorAll(
-          '.kpi-hero-card, .vm-col-card .vm-card, .journey-col-item .journey-card, .service-card'
+          '.kpi-hero-card, .vm-col-card .vm-card, .journey-col-item .journey-card'
         );
 
         tiltCards.forEach((card) => {
           let cardRect = null;
+          let tiltRafId = null;
+
           const onMouseEnter = () => {
+            if (window.lenis && window.lenis.isScrolling) return;
             cardRect = card.getBoundingClientRect();
           };
 
           const onMouseMove = (e) => {
-            if (!cardRect) cardRect = card.getBoundingClientRect();
-            const relX = (e.clientX - cardRect.left) / cardRect.width;
-            const relY = (e.clientY - cardRect.top) / cardRect.height;
-            const tiltX = (0.5 - relY) * 6; // max 3deg
-            const tiltY = (relX - 0.5) * 6;
+            // Suppress tilt while scrolling to prevent jank when mouse rests over cards
+            if (window.lenis && window.lenis.isScrolling) return;
+            if (tiltRafId) return;
 
-            gsap.to(card, {
-              rotateX: tiltX,
-              rotateY: tiltY,
-              transformPerspective: 1000,
-              duration: 0.35,
-              ease: 'power2.out',
-              overwrite: 'auto',
+            tiltRafId = requestAnimationFrame(() => {
+              tiltRafId = null;
+              if (window.lenis && window.lenis.isScrolling) return;
+              if (!cardRect) cardRect = card.getBoundingClientRect();
+
+              const relX = (e.clientX - cardRect.left) / cardRect.width;
+              const relY = (e.clientY - cardRect.top) / cardRect.height;
+              const tiltX = (0.5 - relY) * 6; // max 3deg
+              const tiltY = (relX - 0.5) * 6;
+
+              gsap.to(card, {
+                rotateX: tiltX,
+                rotateY: tiltY,
+                transformPerspective: 1000,
+                duration: 0.35,
+                ease: 'power2.out',
+                overwrite: 'auto',
+              });
             });
           };
 
           const onMouseLeave = () => {
+            if (tiltRafId) {
+              cancelAnimationFrame(tiltRafId);
+              tiltRafId = null;
+            }
             cardRect = null;
             gsap.to(card, {
               rotateX: 0,
               rotateY: 0,
-              duration: 0.6,
+              duration: 0.5,
               ease: 'power3.out',
               overwrite: 'auto',
               clearProps: 'rotateX,rotateY,transformPerspective',
